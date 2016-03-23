@@ -108,7 +108,7 @@ def sendback_nrml(request):
         a `django.http.HttpRequest` object containing the mandatory
         parameter 'xml_text': the text of the XML to be validated as NRML
         and the optional parameter 'func_type': the function type (known types
-        are ['exposure', 'fragility', 'vulnerability', 'site_conditions'])
+        are ['exposure', 'fragility', 'vulnerability', 'site'])
 
     :returns: an XML file, containing the given NRML text
     """
@@ -118,7 +118,7 @@ def sendback_nrml(request):
         return HttpResponseBadRequest(
             'Please provide the "xml_text" parameter')
     known_func_types = [
-        'exposure', 'fragility', 'vulnerability', 'site_conditions']
+        'exposure', 'fragility', 'vulnerability', 'site']
     try:
         _do_validate_nrml(xml_text)
     except:
