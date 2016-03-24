@@ -14,13 +14,14 @@ class RiptTest(unittest.TestCase):
         #     class="btn btn-primary">Convert to NRML</button>
 
         convert_btn = pla.xpath_finduniq(
-            "//div[contains(concat(' ',normalize-space(@class),' '),' ex_gid ')]"
-            "//button[@id='convertBtn' and @type='button']"
+            "//div[contains(concat(' ',normalize-space(@class),' '),"
+            "' ex_gid ')]//button[@id='convertBtn' and @type='button'"
             " and normalize-space(text())='Convert to NRML']")
 
         convert_btn.click()
 
-        result = pla.xpath_finduniq(
-            "//div[contains(concat(' ',normalize-space(@class),' '),' ex_gid ')]"
-            "//div[@id='outputDiv']//div[@id='validationErrorMsg'"
-            " and normalize-space(text())='Validation error: empty cell at coords (1, 1).']")
+        pla.xpath_finduniq(
+            "//div[contains(concat(' ',normalize-space(@class),' '),"
+            "' ex_gid ')]//div[@id='outputDiv']//div[@id='validationErrorMsg'"
+            " and normalize-space(text())='Validation error:"
+            " empty cell at coords (1, 1).']")
