@@ -28,7 +28,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
 
-    url(r'test', TemplateView.as_view(
+    url(r'^test$', TemplateView.as_view(
         template_name="IRVTest.html"), name='irvtest'),
     url(r'^.*$', TemplateView.as_view(
         template_name="irv/irv_viewer.html"), name='irv'),
