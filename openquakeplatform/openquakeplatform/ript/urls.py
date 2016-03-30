@@ -19,8 +19,6 @@
 
 from django.conf.urls import patterns, url
 from openquakeplatform.ript import views
-from django.core.urlresolvers import reverse_lazy
-from django.views.generic import RedirectView
 from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
@@ -31,7 +29,8 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
 
-    url(r'^$', TemplateView.as_view(
-            template_name="ript/ript.html"), name='ript'),
+    url(r'^(?P<tab_id>\d+)?$', TemplateView.as_view(
+        template_name="ript/ript.html"), name='ript'),
     url(r'^valid$', views.validate_nrml, name='validate_nrml'),
+    url(r'^sendback$', views.sendback_nrml, name='sendback_nrml'),
 )
