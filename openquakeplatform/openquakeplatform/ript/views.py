@@ -19,9 +19,9 @@ import json
 from lxml import etree
 
 from django.http import (HttpResponse,
-                         HttpResponseNotFound,
                          HttpResponseBadRequest,
                          )
+
 
 def _get_error_line(exc_msg):
     # check if the exc_msg contains a line number indication
@@ -42,6 +42,14 @@ def _make_response(error_msg, error_line, valid):
 
 JSON = 'application/json'
 
+
+def _do_validate_nrml(xml_text):
+    from openquake.baselib.general import writetmp
+    from openquake.commonlib import nrml
+    xml_file = writetmp(xml_text, suffix='.xml')
+    nrml.parse(xml_file)
+
+
 def validate_nrml(request):
     """
     Leverage oq-risklib to check if a given XML text is a valid NRML
@@ -58,16 +66,12 @@ def validate_nrml(request):
                         (None if no error was found or if it was not a
                         validation error)
     """
-    from openquake.baselib.general import writetmp
-    from openquake.commonlib import nrml
-
     xml_text = request.POST.get('xml_text')
     if not xml_text:
         return HttpResponseBadRequest(
             'Please provide the "xml_text" parameter')
-    xml_file = writetmp(xml_text, suffix='.xml')
     try:
-        nrml.read(xml_file)
+        _do_validate_nrml(xml_text)
     except etree.ParseError as exc:
         return _make_response(error_msg=exc.message.message,
                               error_line=exc.message.lineno,
@@ -85,7 +89,8 @@ def validate_nrml(request):
             # but we can attempt anyway to extract it
             error_line = _get_error_line(unicode(exc_msg))
             return _make_response(
-                error_msg=unicode(exc_msg), error_line=error_line, valid=False)
+                error_msg=unicode(exc_msg), error_line=error_line,
+                valid=False)
         error_msg = exc_msg
         error_line = _get_error_line(exc_msg)
         return _make_response(
@@ -93,3 +98,39 @@ def validate_nrml(request):
     else:
         return _make_response(error_msg=None, error_line=None, valid=True)
 
+
+def sendback_nrml(request):
+    """
+    Leverage oq-risklib to check if a given XML text is a valid NRML. If it is,
+    save it as a XML file.
+
+    :param request:
+        a `django.http.HttpRequest` object containing the mandatory
+        parameter 'xml_text': the text of the XML to be validated as NRML
+        and the optional parameter 'func_type': the function type (known types
+        are ['exposure', 'fragility', 'vulnerability', 'site'])
+
+    :returns: an XML file, containing the given NRML text
+    """
+    xml_text = request.POST.get('xml_text')
+    func_type = request.POST.get('func_type')
+    if not xml_text:
+        return HttpResponseBadRequest(
+            'Please provide the "xml_text" parameter')
+    known_func_types = [
+        'exposure', 'fragility', 'vulnerability', 'site']
+    try:
+        _do_validate_nrml(xml_text)
+    except:
+        return HttpResponseBadRequest(
+            'Invalid NRML')
+    else:
+        if func_type in known_func_types:
+            filename = func_type + '_model.xml'
+        else:
+            filename = 'unknown_model.xml'
+        resp = HttpResponse(content=xml_text,
+                            content_type='application/xml')
+        resp['Content-Disposition'] = (
+            'attachment; filename="' + filename + '"')
+        return resp

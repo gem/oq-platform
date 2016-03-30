@@ -217,7 +217,7 @@ var startApp = function() {
     });
 
     $('#terms').button().click(function() {
-        window.location = "/account/terms/";
+        window.open('/account/terms/', '_blank');
     });
 
     map = new L.Map('map', {

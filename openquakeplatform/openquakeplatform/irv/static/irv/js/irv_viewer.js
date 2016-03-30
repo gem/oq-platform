@@ -803,7 +803,6 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     }
 
     $('#webGlThematicSelection').show();
-    $('#webGlColorPicker').show();
 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
@@ -824,41 +823,8 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     });
 }
 
-// Color options for GL map
-var colorsPalRedSingle = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
-var colorsPalBlueSingle = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
-var colorsPalGreenSingle = ['#edf8e9', '#c7e9c0', '#a1d99b', '#74c476', '#31a354', '#006d2c'];
-var colorsPalRedMulti = ['#fef0d9', '#fdd49e', '#fdbb84', '#fc8d59', '#e34a33', '#b30000'];
-var colorsPalBlueMulti = ['#f1eef6', '#d0d1e6', '#a6bddb', '#74a9cf', '#2b8cbe', '#045a8d'];
-var colorsPalGreenMulti = ['#edf8fb', '#ccece6', '#99d8c9', '#66c2a4', '#2ca25f', '#006d2c'];
 // Default color
-var colorsPal = colorsPalRedSingle;
-
-function colorPicker () {
-    $('#webGlColorPicker').change(function() {
-        //var colorsPal = colorsPalRedSingle;
-        var colorSelection = $(this).val();
-        if (colorSelection == 'Red Single Hue') {
-            colorsPal = colorsPalRedSingle;
-        }
-        if (colorSelection == 'Red Multi Hue') {
-            colorsPal = colorsPalRedMulti;
-        }
-        if (colorSelection == 'Blue Single Hue') {
-            colorsPal = colorsPalBlueSingle;
-        }
-        if (colorSelection == 'Blue Multi Hue') {
-            colorsPal = colorsPalBlueMulti;
-        }
-        if (colorSelection == 'Green Single Hue') {
-            colorsPal = colorsPalGreenMulti;
-        }
-        if (colorSelection == 'Green Multi Hue') {
-            colorsPal = colorsPalGreenMulti;
-        }
-        mapboxGlLayerCreation();
-    });
-}
+var colorsPal = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
 
 function mapboxGlLayerCreation() {
     // There are 5 cases for managing the state of the map:
@@ -1074,7 +1040,6 @@ function mapboxGlLayerCreation() {
             }
         });
     });
-    colorPicker();
 }
 
 function setupLeafletMap() {
@@ -1443,19 +1408,7 @@ var startApp = function() {
             '</select>'
         );
 
-        $('#map-tools').append(
-            '<select id="webGlColorPicker">'+
-                '<option>Red Single Hue</option>'+
-                '<option>Red Multi Hue</option>'+
-                '<option>Blue Single Hue</option>'+
-                '<option>Blue Multi Hue</option>'+
-                '<option>Green Single Hue</option>'+
-                '<option>Green Multi Hue</option>'+
-            '</select>'
-        );
-
         $('#webGlThematicSelection').hide();
-        $('#webGlColorPicker').hide();
 
         setupMapboxGlMap();
     }
@@ -1578,13 +1531,6 @@ var startApp = function() {
         'position': 'fixed',
         'left': '160px',
         'margin-bottom' : 0
-    });
-
-    $('#webGlColorPicker').css({
-        'position': 'fixed',
-        'left': '160px',
-        'margin-bottom' : 0,
-        'margin-top': '31px'
     });
 
     // Check the URL for layer parameter
