@@ -29,5 +29,7 @@ urlpatterns = patterns(
     '',
 
     url(r'test', TemplateView.as_view(
-        template_name="test/IRVTest.html"), name='irvtest'),
+        template_name="IRVTest.html"), name='irvtest'),
+    url(r'^.*$', TemplateView.as_view(
+        template_name="irv/irv_viewer.html"), name='irv'),
 )
