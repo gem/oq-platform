@@ -408,33 +408,6 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    /////////////////////////////////////////////////
-    //// Check for null values primary indicators ///
-    /////////////////////////////////////////////////
-
-    // Try and remove the warning message on each iteration.
-    try {
-        $('.incompleteData').remove();
-    } catch (exc) {
-        // continue
-    }
-
-    if (laValuesArray.indexOf(null) > -1) {
-        var warningMsg =
-            '<div class="alert alert-danger incompleteData" role="alert">'+
-                'The application is not able to render charts or the map layer for this project because the composite indicator data is incomplete.'+
-            '</div>';
-
-        // Provide warning message if the composite indicator data is incomplete
-        $('#iri-chart').prepend(warningMsg);
-        $('#cat-chart').prepend(warningMsg);
-        $('#primary-tab').prepend(warningMsg);
-        $('#project-def').prepend(warningMsg);
-        // Stop the function
-        $('#absoluteSpinner').hide();
-        return;
-    }
-
     ////////////////////////////////
     //// Check for scaled values ///
     ////////////////////////////////
