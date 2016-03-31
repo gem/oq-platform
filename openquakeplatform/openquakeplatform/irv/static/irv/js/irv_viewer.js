@@ -253,6 +253,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
             var tempThemeName = themeKeys[themeKey];
             var themeWeightVal;
+            var newElementValue = themeObj[idx][tempThemeName];
             if (operator.ignoresWeights) {
                 themeWeightVal = 1;
             } else {
@@ -260,9 +261,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             }
             if (themeWeightVal > 0) {
                 if (operator.multiplies) {
-                    tempElementValue = tempElementValue * themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                    tempElementValue = tempElementValue * newElementValue * themeWeightVal * themeInversionFactor;
                 } else {
-                    tempElementValue = tempElementValue + themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                    tempElementValue = tempElementValue + newElementValue * themeWeightVal * themeInversionFactor;
                 }
             }
         }
@@ -370,10 +371,18 @@ function processIndicators(layerAttributes, projectDef) {
                 } else {
                     tempValue = 0;
                 }
+                var nullWasFound = false;
                 for (var prop in la[o].properties) {
                     // iterate over the indicator child keys
+                    if (nullWasFound) break;
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (prop == tempIndicatorChildrenKeys[r]) {
+                            newValue = la[o].properties[prop];
+                            if (newValue === null) {
+                                tempValue = null;
+                                nullWasFound = true;
+                                break;
+                            }
                             if (tempChildren[r].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
@@ -387,21 +396,23 @@ function processIndicators(layerAttributes, projectDef) {
                                 weight = tempChildren[r].weight;
                             }
                             if (operator.multiplies) {
-                                tempValue = tempValue * la[o].properties[prop] * primaryInversionFactor * weight;
+                                tempValue = tempValue * newValue * primaryInversionFactor * weight;
                             } else {
-                                tempValue = tempValue + la[o].properties[prop] * primaryInversionFactor * weight;
+                                tempValue = tempValue + newValue * primaryInversionFactor * weight;
                             }
                             // NOTE: Ben had the following line only in case of weighted sum,
                             //       but I guess it should be there in all cases
                             // Collect an array of all the values that pass through the loop
-                            laValuesArray.push(la[o].properties[prop]);
+                            laValuesArray.push(newValue);
                         }
                     }
                 }
-                if (operator.code == 'AVG') {
-                    tempValue = tempValue / tempIndicatorChildrenKeys.length;
-                } else if (operator.code == 'GEOM_MEAN') {
-                    tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                if (!nullWasFound) {
+                    if (operator.code == 'AVG') {
+                        tempValue = tempValue / tempIndicatorChildrenKeys.length;
+                    } else if (operator.code == 'GEOM_MEAN') {
+                        tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                    }
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
             }
