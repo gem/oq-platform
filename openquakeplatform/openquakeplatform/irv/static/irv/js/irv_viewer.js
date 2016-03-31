@@ -246,6 +246,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             tempElementValue = 0;
         }
         var themeObjRegion = themeObj[idx].region;
+        var nullWasFound = false;
         // NOTE: themeKeys contains the list of names of all items to combine
         // compute the themes
         for (var themeKey = 0; themeKey < themeKeys.length; themeKey++) {
@@ -254,6 +255,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempThemeName = themeKeys[themeKey];
             var themeWeightVal;
             var newElementValue = themeObj[idx][tempThemeName];
+            if (newElementValue === null) {
+                tempElementValue = null;
+                nullWasFound = true;
+                break;
+            }
             if (operator.ignoresWeights) {
                 themeWeightVal = 1;
             } else {
@@ -267,10 +273,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                 }
             }
         }
-        if (operator.code == 'AVG') {
-            tempElementValue = tempElementValue / themeKeys.length;
-        } else if (operator.code == 'GEOM_MEAN') {
-            tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
+        if (!nullWasFound) {
+            if (operator.code == 'AVG') {
+                tempElementValue = tempElementValue / themeKeys.length;
+            } else if (operator.code == 'GEOM_MEAN') {
+                tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
+            }
         }
         subIndex[themeObjRegion] = tempElementValue;
     }
@@ -535,19 +543,25 @@ function processIndicators(layerAttributes, projectDef) {
             sviWeight = 1;
         }
         for (var regionName in SVI) {
-            sviComponent = SVI[regionName] * sviWeight * sviInversionFactor;
-            riComponent = RI[regionName] * riWeight * riInversionFactor;
-            if (iriOperator.multiplies) {
-                tempVal = sviComponent * riComponent;
+            var sviValue = SVI[regionName];
+            var riValue = RI[regionName];
+            if (sviValue === null || riValue === null) {
+                IRI[regionName] = null;
             } else {
-                tempVal = sviComponent + riComponent;
+                sviComponent = sviValue * sviWeight * sviInversionFactor;
+                riComponent = riValue * riWeight * riInversionFactor;
+                if (iriOperator.multiplies) {
+                    tempVal = sviComponent * riComponent;
+                } else {
+                    tempVal = sviComponent + riComponent;
+                }
+                if (iriOperator.code == 'AVG') {
+                    tempVal = tempVal / 2;
+                } else if (iriOperator.code == 'GEOM_MEAN') {
+                    tempVal = Math.pow(tempVal, 0.5);
+                }
+                IRI[regionName] = tempVal;
             }
-            if (iriOperator.code == 'AVG') {
-                tempVal = tempVal / 2;
-            } else if (iriOperator.code == 'GEOM_MEAN') {
-                tempVal = Math.pow(tempVal, 0.5);
-            }
-            IRI[regionName] = tempVal;
         }
         scale(IRI);
     }
@@ -562,14 +576,22 @@ function processIndicators(layerAttributes, projectDef) {
         la[i].newProperties = {};
         for (var key in IRI) {
             if (key == la[i].properties[selectedRegion]) {
-                tmpVal = (IRI[key]).toFixed(5);
+                try {
+                    tmpVal = (IRI[key]).toFixed(5);
+                } catch (exc) {
+                    tmpVal = null;
+                }
                 la[i].newProperties.IRI = parseFloat(tmpVal);
             }
         }
         if (svThemes) {
             for (var key in SVI) {
                 if (key == la[i].properties[selectedRegion]) {
-                    tmpVal = (SVI[key]).toFixed(5);
+                    try {
+                        tmpVal = (SVI[key]).toFixed(5);
+                    } catch (exc) {
+                        tmpVal = null;
+                    }
                     la[i].newProperties.SVI = parseFloat(tmpVal);
                 }
             }
@@ -578,7 +600,11 @@ function processIndicators(layerAttributes, projectDef) {
         if (riskIndicators !== undefined) {
             for (var key in RI) {
                 if (key == la[i].properties[selectedRegion]) {
-                    tmpVal = (RI[key]).toFixed(5);
+                    try {
+                        tmpVal = (RI[key]).toFixed(5);
+                    } catch (exc) {
+                        tmpVal = null;
+                    }
                     la[i].newProperties.RI = parseFloat(tmpVal);
                 }
             }
@@ -704,13 +730,20 @@ function scale(IndicatorObj) {
     for (var v in IndicatorObj) {
         ValueArray.push(IndicatorObj[v]);
     }
-    var tempMin = Math.min.apply(null, ValueArray),
-        tempMax = Math.max.apply(null, ValueArray);
+    function isNotNull(n) {
+        return n !== null;
+    }
+    var notNullElements = ValueArray.filter(isNotNull);
+    var tempMin = Math.min.apply(null, notNullElements),
+        tempMax = Math.max.apply(null, notNullElements);
 
     for (var j = 0; j < ValueArray.length; j++) {
+        if (ValueArray[j] === null) {
+            scaledValues.push(null);
+        }
         // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
-        if (tempMax == tempMin) {
+        else if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
             // Not using $.each in this case, just to avoid a syntax warning
