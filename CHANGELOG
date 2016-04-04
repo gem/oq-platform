@@ -1,3 +1,7 @@
+  [Paolo Tormene]
+  * irv: display meaningful results also for projects containing some missing
+    data
+
 python-oq-platform (1.5.0)
 
   [Matteo Nastasi]
