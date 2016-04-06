@@ -48,6 +48,8 @@ function IRI_PCP_Chart(iriPcpData) {
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient("left"),
         foreground;
+    line.defined(function(d) { return !isNaN(d[1]); });
+
 
     var x_scale = d3.scale.linear().domain([0, w]).range([0, w]);
     var y_scale = d3.scale.linear().domain([1, 0]).range([0, h]);
