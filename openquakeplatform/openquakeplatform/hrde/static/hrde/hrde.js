@@ -861,6 +861,11 @@ var startApp = function() {
         });
     }
 
+    // switch supplemental layers
+    $('#supplemental-layer-menu').change(function() {
+        addSingleCurveToMap('supplemental_layer');
+    });
+
     // Add single curve layers form tilestream list to map
     function addSingleCurveToMap(curveType) {
         var utfGrid = {};
@@ -923,6 +928,42 @@ var startApp = function() {
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
             hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
+
+        } else if (curveType == 'supplemental_layer') {
+            var supplementalLayerSelection = document.getElementById('supplemental-layer-menu').value;
+            var layerNameToAdd = supplementalLayerName[supplementalLayerSelection];
+            var addNewLayer = true;
+
+            // Define an exception to be used to break the eachLayer loop
+            var BreakException = {};
+
+            // check if the layer has already been added
+            try {
+                map.eachLayer(function (layer) {
+                    // only wms layers have wmsParams
+                    if (typeof(layer.wmsParams) !== 'undefined'
+                            && layer.wmsParams.layers == layerNameToAdd) {
+                        addNewLayer = false;
+                        // show the selected layer on top of the others
+                        layer.bringToFront();
+                        // no need to continue the loop, because the layer has been already found
+                        throw BreakException;
+                    }
+                });
+            } catch(e) {
+                // if the eachLayer loop was intentionally stopped, do nothing
+                if (e !== BreakException) throw e;
+            }
+
+            if (addNewLayer) {
+                var supplementalLayer = L.tileLayer.wms("/geoserver/wms", {
+                    layers: layerNameToAdd,
+                    format: 'image/png',
+                    transparent: true,
+                    version: '1.1.0'
+                });
+                map.addLayer(supplementalLayer);
+            }
 
         } else if (curveType == undefined || curveType == 'map') {
 
