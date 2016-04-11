@@ -963,8 +963,53 @@ var startApp = function() {
                     version: '1.1.0'
                 });
                 map.addLayer(supplementalLayer);
-            }
 
+                // FIXME BEGIN adding to list widget
+
+                // map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+
+                // var tileLayer = L.tileLayer(TILESTREAM_URL +
+                //     selectedLayer +
+                //     '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+                //     selectedLayer +
+                //     '.json'});
+
+                // AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+                //     selectedLayer +
+                //     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                // var utfGridGroup = L.featureGroup([
+                //     AppVars.utfGrid,
+                //     tileLayer
+                // ]);
+                var supplLayerGroup = L.featureGroup([
+                    AppVars.utfGrid,
+                    supplementalLayer
+                ]);
+
+                // AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
+                AppVars.layerControl.addOverlay(supplLayerGroup, supplementalLayer);
+                checkLayerController();
+                // AppVars.allLayers.push(AppVars.utfGrid);
+                //
+                AppVars.allLayers.push(supplementalLayer);
+
+                // // Capture the leaflet mouse and click event object
+                // for(var k  in map._leaflet_events.click_idx) {
+                //     if (k !== 'key') {
+                //         AppVars.leafletClickEventIdx[k] = map._leaflet_events.click_idx[k];
+                //         AppVars.leafletMouseEventIdx[k] = map._leaflet_events.mousemove_idx[k];
+                //     }
+                // }
+
+                layerControlLayerSwitch();
+                // getControlLayerId();
+                // if (curveType == undefined || curveType == 'map') {
+                // //     Opacity(tileLayer);
+                //     Opacity(supplementalLayer);
+                // }
+
+                // FIXME END adding to list widget
+            }
         } else if (curveType == undefined || curveType == 'map') {
 
             var scope = angular.element($("#layer-list")).scope();
