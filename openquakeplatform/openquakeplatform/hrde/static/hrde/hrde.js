@@ -962,22 +962,15 @@ var startApp = function() {
                     transparent: true,
                     version: '1.1.0'
                 });
-                map.addLayer(supplementalLayer);
+                supplementalLayer.addTo(map);
 
-                // FIXME BEGIN adding to list widget
-
-                AppVars.utfGrid = new L.UtfGrid();
-                var supplLayerGroup = L.featureGroup([
-                    AppVars.utfGrid,
-                    supplementalLayer
-                ]);
+                var supplLayerGroup = L.layerGroup()
+                    .addLayer(supplementalLayer);
 
                 layerNameToAddCleaned = layerNameToAdd.split(':')[1];
                 AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAddCleaned);
                 checkLayerController();
                 layerControlLayerSwitch();
-
-                // FIXME END adding to list widget
             }
         } else if (curveType == undefined || curveType == 'map') {
 
