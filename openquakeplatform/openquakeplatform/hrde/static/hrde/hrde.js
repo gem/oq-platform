@@ -966,18 +966,7 @@ var startApp = function() {
 
                 // FIXME BEGIN adding to list widget
 
-                var tileLayer = L.tileLayer(TILESTREAM_URL +
-                    supplementalLayer +
-                    '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-                    supplementalLayer +
-                    '.json'});
-                AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
-                    supplementalLayer +
-                    '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                var utfGridGroup = L.featureGroup([
-                    AppVars.utfGrid,
-                    tileLayer
-                ]);
+                AppVars.utfGrid = new L.UtfGrid();
                 var supplLayerGroup = L.featureGroup([
                     AppVars.utfGrid,
                     supplementalLayer
