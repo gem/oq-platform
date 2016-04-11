@@ -968,30 +968,29 @@ var startApp = function() {
 
                 // map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
 
-                // var tileLayer = L.tileLayer(TILESTREAM_URL +
-                //     selectedLayer +
-                //     '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-                //     selectedLayer +
-                //     '.json'});
-
-                // AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
-                //     selectedLayer +
-                //     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                // var utfGridGroup = L.featureGroup([
-                //     AppVars.utfGrid,
-                //     tileLayer
-                // ]);
+                var tileLayer = L.tileLayer(TILESTREAM_URL +
+                    supplementalLayer +
+                    '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+                    supplementalLayer +
+                    '.json'});
+                AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+                    supplementalLayer +
+                    '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                var utfGridGroup = L.featureGroup([
+                    AppVars.utfGrid,
+                    tileLayer
+                ]);
                 var supplLayerGroup = L.featureGroup([
                     AppVars.utfGrid,
                     supplementalLayer
                 ]);
 
-                // AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
-                AppVars.layerControl.addOverlay(supplLayerGroup, supplementalLayer);
+                // AppVars.layerControl.addOverlay(utfGridGroup, supplementalLayer);
+                // AppVars.layerControl.addOverlay(supplLayerGroup, supplementalLayer);
+                AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAdd);
                 checkLayerController();
+                // AppVars.allLayers.push(supplementalLayer);
                 // AppVars.allLayers.push(AppVars.utfGrid);
-                //
-                AppVars.allLayers.push(supplementalLayer);
 
                 // // Capture the leaflet mouse and click event object
                 // for(var k  in map._leaflet_events.click_idx) {
