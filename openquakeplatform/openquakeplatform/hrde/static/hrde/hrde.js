@@ -966,8 +966,6 @@ var startApp = function() {
 
                 // FIXME BEGIN adding to list widget
 
-                // map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-
                 var tileLayer = L.tileLayer(TILESTREAM_URL +
                     supplementalLayer +
                     '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
@@ -985,27 +983,10 @@ var startApp = function() {
                     supplementalLayer
                 ]);
 
-                // AppVars.layerControl.addOverlay(utfGridGroup, supplementalLayer);
-                // AppVars.layerControl.addOverlay(supplLayerGroup, supplementalLayer);
-                AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAdd);
+                layerNameToAddCleaned = layerNameToAdd.split(':')[1];
+                AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAddCleaned);
                 checkLayerController();
-                // AppVars.allLayers.push(supplementalLayer);
-                // AppVars.allLayers.push(AppVars.utfGrid);
-
-                // // Capture the leaflet mouse and click event object
-                // for(var k  in map._leaflet_events.click_idx) {
-                //     if (k !== 'key') {
-                //         AppVars.leafletClickEventIdx[k] = map._leaflet_events.click_idx[k];
-                //         AppVars.leafletMouseEventIdx[k] = map._leaflet_events.mousemove_idx[k];
-                //     }
-                // }
-
                 layerControlLayerSwitch();
-                // getControlLayerId();
-                // if (curveType == undefined || curveType == 'map') {
-                // //     Opacity(tileLayer);
-                //     Opacity(supplementalLayer);
-                // }
 
                 // FIXME END adding to list widget
             }
