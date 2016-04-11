@@ -965,7 +965,8 @@ var startApp = function() {
                 supplementalLayer.addTo(map);
 
                 var supplLayerGroup = L.layerGroup()
-                    .addLayer(supplementalLayer);
+                    .addLayer(supplementalLayer)
+                    .addTo(map);
 
                 layerNameToAddCleaned = layerNameToAdd.split(':')[1];
                 AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAddCleaned);
