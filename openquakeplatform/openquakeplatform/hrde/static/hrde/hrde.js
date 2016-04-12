@@ -861,9 +861,50 @@ var startApp = function() {
         });
     }
 
-    // switch supplemental layers
+    // select a supplemental layer from the dropdown menu
     $('#supplemental-layer-menu').change(function() {
-        addSingleCurveToMap('supplemental_layer');
+        var supplementalLayerSelection = document.getElementById('supplemental-layer-menu').value;
+        var layerNameToAdd = supplementalLayerName[supplementalLayerSelection];
+        var addNewLayer = true;
+
+        // Define an exception to be used to break the eachLayer loop
+        var BreakException = {};
+
+        // check if the layer has already been added
+        try {
+            map.eachLayer(function (layer) {
+                // only wms layers have wmsParams
+                if (typeof(layer.wmsParams) !== 'undefined' && layer.wmsParams.layers == layerNameToAdd) {
+                    addNewLayer = false;
+                    // show the selected layer on top of the others
+                    layer.bringToFront();
+                    // no need to continue the loop, because the layer has been already found
+                    throw BreakException;
+                }
+            });
+        } catch(e) {
+            // if the eachLayer loop was intentionally stopped, do nothing
+            if (e !== BreakException) throw e;
+        }
+
+        if (addNewLayer) {
+            var supplementalLayer = L.tileLayer.wms("/geoserver/wms", {
+                layers: layerNameToAdd,
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0'
+            });
+            supplementalLayer.addTo(map);
+
+            var supplLayerGroup = L.layerGroup()
+                .addLayer(supplementalLayer)
+                .addTo(map);
+
+            layerNameToAddCleaned = layerNameToAdd.split(':')[1];
+            AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAddCleaned);
+            checkLayerController();
+            layerControlLayerSwitch();
+        }
     });
 
     // Add single curve layers form tilestream list to map
@@ -929,50 +970,6 @@ var startApp = function() {
             utfGrid.utfGridType = "curve";
             hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
 
-        } else if (curveType == 'supplemental_layer') {
-            var supplementalLayerSelection = document.getElementById('supplemental-layer-menu').value;
-            var layerNameToAdd = supplementalLayerName[supplementalLayerSelection];
-            var addNewLayer = true;
-
-            // Define an exception to be used to break the eachLayer loop
-            var BreakException = {};
-
-            // check if the layer has already been added
-            try {
-                map.eachLayer(function (layer) {
-                    // only wms layers have wmsParams
-                    if (typeof(layer.wmsParams) !== 'undefined'
-                            && layer.wmsParams.layers == layerNameToAdd) {
-                        addNewLayer = false;
-                        // show the selected layer on top of the others
-                        layer.bringToFront();
-                        // no need to continue the loop, because the layer has been already found
-                        throw BreakException;
-                    }
-                });
-            } catch(e) {
-                // if the eachLayer loop was intentionally stopped, do nothing
-                if (e !== BreakException) throw e;
-            }
-
-            if (addNewLayer) {
-                var supplementalLayer = L.tileLayer.wms("/geoserver/wms", {
-                    layers: layerNameToAdd,
-                    format: 'image/png',
-                    transparent: true,
-                    version: '1.1.0'
-                });
-                supplementalLayer.addTo(map);
-
-                var supplLayerGroup = L.layerGroup()
-                    .addLayer(supplementalLayer)
-                    .addTo(map);
-
-                layerNameToAddCleaned = layerNameToAdd.split(':')[1];
-                AppVars.layerControl.addOverlay(supplLayerGroup, layerNameToAddCleaned);
-                checkLayerController();
-                layerControlLayerSwitch();
-            }
         } else if (curveType == undefined || curveType == 'map') {
 
             var scope = angular.element($("#layer-list")).scope();
