@@ -1,6 +1,8 @@
   [Paolo Tormene]
   * irv: display meaningful results also for projects containing some missing
     data
+  * vulnerability and irv: only authenticated superusers can run jasmine tests
+  * irv: display the project's title on top of the project definition widget
 
 python-oq-platform (1.5.0)
 

@@ -1631,6 +1631,8 @@ function projDefJSONRequest(selectedLayer) {
             tempProjectDef = data.project_definitions;
             selectedRegion = data.zone_label_field;
             selectedIndicator = undefined;
+            projectTitle = data.title;
+            $('a#project-def-title').text('Project: ' + projectTitle);
 
             // Remove alert div
             $('#alert').remove();
