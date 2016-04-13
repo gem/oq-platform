@@ -744,7 +744,7 @@ function scale(IndicatorObj) {
         // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
         else if (tempMax == tempMin) {
-            scaledValues = [1];
+            scaledValues.push(1);
             // Disable the chart tabs
             // Not using $.each in this case, just to avoid a syntax warning
             // about defining a function within a loop
