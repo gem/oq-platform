@@ -86,13 +86,12 @@ urlpatterns = patterns('',
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^grv/$', TemplateView.as_view(
         template_name="grv/grv_viewer.html"), name='grv'),
-    url(r'^irv/.*$', TemplateView.as_view(
-        template_name="irv/irv_viewer.html"), name='irv'),
     url(r'^hazus/$', TemplateView.as_view(
         template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde/hrde.html"), name='hrde'),
     url(r'^ript/', include('openquakeplatform.ript.urls')),
+    url(r'^irv/', include('openquakeplatform.irv.urls')),
  
     (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
