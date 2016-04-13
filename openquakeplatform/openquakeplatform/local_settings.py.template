@@ -78,9 +78,9 @@ BING_KEY = {
 
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
-ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']
+ALLOWED_HOSTS = ['%(hostname)s', 'testserver', 'localhost']
 
-PROXY_ALLOWED_HOSTS = ('%(host)s', 'localhost')
+PROXY_ALLOWED_HOSTS = ('%(hostname)s', 'localhost')
 
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
@@ -393,8 +393,8 @@ AUTH_EXEMPT_URLS = ('/$',
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 25
-# DEFAULT_FROM_EMAIL = 'info@%(host)s'
-# THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(host)s'
+# DEFAULT_FROM_EMAIL = 'info@%(hostname)s'
+# THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(hostname)s'
 
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
