@@ -181,7 +181,7 @@ var startApp = function() {
         autoOpen: false,
         height: winHaz,
         width: 500,
-        modal: true,
+        modal: false,
         position: [100,150]
     });
 
@@ -194,7 +194,7 @@ var startApp = function() {
         autoOpen: false,
         height: winHaz,
         width: 500,
-        modal: true,
+        modal: false,
         position: [100,150]
     });
 
