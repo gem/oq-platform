@@ -1396,72 +1396,74 @@ var startApp = function() {
                 var invest_time;
                 var imt;
 
-                try {
-                    $('#chartDialog').empty();
-                    if ($("#chartDialog").dialog("isOpen") === false) {
-                        $('#chartDialog').dialog('open');
-                    }
+                $('#chartDialog').empty();
+                if ($("#chartDialog").dialog("isOpen") === false) {
+                    $('#chartDialog').dialog('open');
+                }
 
+                try {
+                    prob = e.data.poe;
+                } catch (exc) {
+                    // continue
+                }
+
+                if (typeof prob == 'undefined') {
                     try {
-                        prob = e.data.poe;
+                        prob = e.data.prob;
                     } catch (exc) {
                         // continue
                     }
+                }
 
-                    if (typeof prob == 'undefined') {
-                        try {
-                            prob = e.data.prob;
-                        } catch (exc) {
-                            // continue
-                        }
-                    }
+                if (curveType == 'uhs') {
+                    prob = e.data.imls;
+                }
 
-                    if (curveType == 'uhs') {
-                        prob = e.data.imls;
-                    }
-
+                if (typeof prob !== 'undefined') {
                     probArray = prob.split(',');
-                    try {
-                        iml = e.data.iml;
-                    } catch(exc) {
-                        // continue
-                    }
-                    if (typeof iml == 'undefined') {
-                        iml = AppVars.layerIml;
-                    } else {
-                        imlArray = iml.split(',');
-                    }
-                    imt = e.data.imt;
-                    if (curveType == 'hc') {
-                        if(imt == 'PGA') {
-                            imt = 'Peak Ground Acceleration (g)';
-                        } else if (imt == 'PGV') {
-                            imt = 'Peak Ground Velocity (cm/s)';
-                        } else if (imt == 'PGD') {
-                            imt = 'Peak Ground Displacement (cm)';
-                        } else if (imt == 'SA') {
-                            imt = 'Spectral Acceleration (g)';
-                        }
-                    } else if (curveType == 'uhs') {
-                        imt = 'Period (s)';
-                    }
-
-                    lat = e.data.lat;
-                    lng = e.data.lon;
-
-                    if (typeof e.data.YCOORD != 'undefined') {
-                        lat = e.data.YCOORD;
-                        lng = e.data.XCOORD;
-                    }
-                    else if(typeof e.data.latitude != 'undefined') {
-                        lat = e.data.latitude;
-                        lng = e.data.longitude;
-                    }
-                    invest_time = e.data.invest_tim;
-
-                } catch (exc) {
+                }
+                try {
+                    iml = e.data.iml;
+                } catch(exc) {
                     // continue
-                    // FIXME: Long try/catch that doesn't handle any error!
+                }
+                if (typeof iml == 'undefined') {
+                    iml = AppVars.layerIml;
+                } else {
+                    try {
+                        imlArray = iml.split(',');
+                    } catch(exc) {
+                        imlArray = [iml];
+                    }
+                }
+                imt = e.data.imt;
+                if (curveType == 'hc') {
+                    if(imt == 'PGA') {
+                        imt = 'Peak Ground Acceleration (g)';
+                    } else if (imt == 'PGV') {
+                        imt = 'Peak Ground Velocity (cm/s)';
+                    } else if (imt == 'PGD') {
+                        imt = 'Peak Ground Displacement (cm)';
+                    } else if (imt == 'SA') {
+                        imt = 'Spectral Acceleration (g)';
+                    }
+                } else if (curveType == 'uhs') {
+                    imt = 'Period (s)';
+                }
+
+                lat = e.data.lat;
+                lng = e.data.lon;
+
+                if (typeof e.data.YCOORD != 'undefined') {
+                    lat = e.data.YCOORD;
+                    lng = e.data.XCOORD;
+                }
+                else if(typeof e.data.latitude != 'undefined') {
+                    lat = e.data.latitude;
+                    lng = e.data.longitude;
+                }
+                if (typeof e.data.invest_tim != 'undefined') {
+                    invest_time = e.data.invest_tim;
                 }
 
                 if (utfGrid.utfGridType == "map") {
