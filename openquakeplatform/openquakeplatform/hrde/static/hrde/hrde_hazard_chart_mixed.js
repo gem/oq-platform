@@ -232,7 +232,6 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
         }
 
         if (i === 0) {
-            // FIXME: we have to check this
             xAxis[i].tickFormat(function (d) { return d; });
         }
         else {
