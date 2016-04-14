@@ -858,7 +858,7 @@ var startApp = function() {
         });
     }
 
-    function getMetadataAndSetUtfGrid(selectedLayer) {
+    function getMetadataAndSetUtfGrid(selectedLayer, curveType, utfGrid) {
         getLayerMetadata(selectedLayer);
 
         utfGrid = createUtfLayerGroups(selectedLayer);
@@ -924,7 +924,7 @@ var startApp = function() {
                 var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
                 var selectedLayer = curveLayerIdArray.toString();
 
-                getMetadataAndSetUtfGrid(selectedLayer);
+                getMetadataAndSetUtfGrid(selectedLayer, utfGrid, curveType);
                 break;
 
             case 'uhs':
@@ -935,7 +935,7 @@ var startApp = function() {
                 var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
                 var selectedLayer = uhsLayerIdArray.toString();
 
-                getMetadataAndSetUtfGrid(selectedLayer);
+                getMetadataAndSetUtfGrid(selectedLayer, utfGrid, curveType);
                 break;
 
             case 'spectrum':
@@ -946,7 +946,7 @@ var startApp = function() {
                 var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
                 var selectedLayer = spectrumLayerIdArray.toString();
 
-                getMetadataAndSetUtfGrid(selectedLayer);
+                getMetadataAndSetUtfGrid(selectedLayer, utfGrid, curveType);
                 break;
 
             case 'input':
@@ -957,7 +957,7 @@ var startApp = function() {
                 var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
                 var selectedLayer = inputLayerIdArray.toString();
 
-                getMetadataAndSetUtfGrid(selectedLayer);
+                getMetadataAndSetUtfGrid(selectedLayer, utfGrid, curveType);
                 break;
 
             default:  // undefined or 'map'
