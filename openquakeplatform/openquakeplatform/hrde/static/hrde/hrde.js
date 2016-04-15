@@ -1356,10 +1356,9 @@ var startApp = function() {
                 for (var ia = 0; ia < acceleration.length; ia++) {
                     spectrumCurves[h].push([vectorofPeriods[ia], acceleration[ia]]);
                 }
+                // NOTE: the following line was outside the loop (out of scope).
+                AppVars.layerIml = vectorofPeriods;
             }
-
-            // FIXME: vectorOfPeriods out of scope (it will get it for the last spectrum)
-            AppVars.layerIml = vectorofPeriods;
             buildMixedSpectrumChart(spectrumCurves, lat, lng);
         });
     };
