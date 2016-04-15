@@ -26,7 +26,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% block map_tools %}
   {{block.super}}
   {% include "base_map_options.html" %}
-  {% include "supplemental_layer_options.html" %}
+  <select id="supplemental-layer-menu">
+    <option >Supplemental Layers </option>
+      <!-- dynamic content goes here -->
+  </select>
+
 {% endblock %}
 
 {% block title %}
@@ -167,8 +171,8 @@ HRDE - {{block.super}}
     <script src="{{ STATIC_URL }}hrde/hrde_spectrum_chart_mixed.js"></script>
     <script src="{{ STATIC_URL }}hrde/hrde_csv_download.js"></script>
     <script src="{{ STATIC_URL }}hrde/hrdeDrop.js"></script>
+    <script src="{{ STATIC_URL }}hrde/supplemental_layer_options.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
-    <script src="{{ STATIC_URL }}js/supplemental_layer_options.js"></script>
     <script>
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/hrde/'; }
