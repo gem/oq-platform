@@ -1492,7 +1492,7 @@ var startApp = function() {
                             data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
                         }
                     } else {
-                         data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
+                        data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
                     }
                 }
 
