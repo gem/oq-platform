@@ -308,7 +308,7 @@ var startApp = function() {
         var parameters = [name, cat, type, grids];
         parameters.forEach(function(parameter) {
             // accept zero as valid
-            if (typeof parameter == 'undefined' || parameter == "" || parameter == null) {
+            if (typeof parameter == 'undefined' || parameter === "" || parameter === null) {
                 return false;
             }
         });
@@ -960,8 +960,8 @@ var startApp = function() {
 
                 getMetadataAndSetUtfGrid(selectedLayer, utfGrid, curveType);
                 break;
-
-            default:  // undefined or 'map'
+            case 'map':
+            case undefined:
                 var scope = angular.element($("#layer-list")).scope();
                 mapLayerId = scope.selected_map.name;
 
