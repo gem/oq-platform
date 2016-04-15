@@ -307,7 +307,8 @@ var startApp = function() {
         // Use only valid  data returned from the tilestream server in the application
         var parameters = [name, cat, type, grids];
         parameters.forEach(function(parameter) {
-            if (typeof parameter == 'undefined' || !parameter) {
+            // accept zero as valid
+            if (typeof parameter == 'undefined' || parameter == "" || parameter == null) {
                 return false;
             }
         });
