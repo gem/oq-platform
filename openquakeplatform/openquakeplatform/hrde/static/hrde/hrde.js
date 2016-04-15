@@ -859,7 +859,7 @@ var startApp = function() {
         });
     }
 
-    function getMetadataAndSetUtfGrid(selectedLayer, curveType, utfGrid) {
+    function getMetadataAndSetUtfGrid(selectedLayer, utfGrid, curveType) {
         getLayerMetadata(selectedLayer);
 
         utfGrid = createUtfLayerGroups(selectedLayer);
