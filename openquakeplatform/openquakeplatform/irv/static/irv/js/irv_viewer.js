@@ -1019,21 +1019,60 @@ function mapboxGlLayerCreation() {
         '<div id="mapInfo"></div>'
     );
 
+    function findNameInProjDef(field, treeNode) {
+        // NOTE: in the project definition,
+        //       'name' is the extended name of a variable
+        //       'field' is the variable reference in the layer
+        //       (we are inspecting the project definition
+        //       to find the given field and to return the
+        //       corresponding extended name)
+        if (typeof treeNode.field !== 'undefined' && treeNode.field == field) {
+            try {
+                var name = treeNode.name;
+                return name;
+            } catch(exc) {
+                // if the name is undefined, but the field was found, then return the field
+                return field;
+            }
+        } else if (typeof treeNode.children !== 'undefined'){
+            for (var i = 0; i < treeNode.children.length; i++) {
+                try {
+                    var name = findNameInProjDef(field, treeNode.children[i]);
+                    return name;
+                } catch (exc) {
+                    // keep iterating on children
+                }
+            }
+        } else {
+            throw "Not found";
+        }
+    }
+
     map.on('click', function(e) {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
             $('#mapInfo').css({'visibility': 'visible'});
-            var isDataFromIrmt = false;
             try {
-                var layerSource = features[0].layer.source;
-                isDataFromIrmt = (layerSource == 'projectSource');
+                var region = features[0].properties.region;
+                if (typeof region !== 'undefined') {
+                    $('#mapInfo').append('<h4>' + region + '</h4>' + '<hr>');
+                }
             } catch(exc) {
-                // isDataFromIrmt remains false
+                // do not show info
             }
-            if (isDataFromIrmt) {
-                for(var i in features[0].properties) {
-                    $('#mapInfo').append(i+': '+features[0].properties[i]+'</br>');
+            if (typeof features[0] !== 'undefined' && typeof features[0].properties !== 'undefined') {
+                for (var field in features[0].properties) {
+                    var name;
+                    try {
+                        name = findNameInProjDef(field, sessionProjectDef);
+                    } catch (exc) {
+                        // do not show fields that are not in the project definition
+                    }
+                    if (typeof name !== 'undefined') {
+                        var value = features[0].properties[field];
+                        $('#mapInfo').append(name + ': ' + value + '</br>');
+                    }
                 }
             } else {
                 $('#mapInfo').append('No data available');
