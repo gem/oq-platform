@@ -1034,6 +1034,8 @@ function mapboxGlLayerCreation() {
                 // if the name is undefined, but the field was found, then return the field
                 return field;
             }
+        } else if (treeNode.name !== 'undefined' && treeNode.name == field) {
+            return field;
         } else if (typeof treeNode.children !== 'undefined') {
             for (var i = 0; i < treeNode.children.length; i++) {
                 var child = treeNode.children[i];
@@ -1061,14 +1063,11 @@ function mapboxGlLayerCreation() {
                 // do not show info
             }
             if (typeof features[0] !== 'undefined' && typeof features[0].properties !== 'undefined') {
-                console.log(features[0].properties);
                 for (var field in features[0].properties) {
                     var name = findNameInProjDef(field, sessionProjectDef);
                     if (name) {
                         var value = features[0].properties[field];
                         $('#mapInfo').append(name + ': ' + value + '</br>');
-                    } else {
-                        console.log(field);
                     }
                 }
             } else {
