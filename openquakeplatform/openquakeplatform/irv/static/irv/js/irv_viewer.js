@@ -1112,14 +1112,16 @@ function mapboxGlLayerCreation() {
                 }
             }
             if (isDataAvailable) {
-                for (var key in structuredInfo) {
-                    $('#mapInfo').append('<hr>');
+                $.each(['compositeIndices', 'riskIndicators', 'svThemes', 'svIndicators'], function(ind, key) {
+                    if (structuredInfo[key].length) {
+                        $('#mapInfo').append('<hr>');
+                    }
                     for (var i = 0; i < structuredInfo[key].length; i++) {
                         var name = structuredInfo[key][i].name;
                         var value = structuredInfo[key][i].value;
                         $('#mapInfo').append(name + ': ' + value + '</br>');
                     }
-                }
+                });
             } else {
                 $('#mapInfo').append('No data available');
             }
