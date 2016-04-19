@@ -75,6 +75,15 @@ var namesToOperators = {
     'Geometric mean (ignore weights)':        operators.GEOM_MEAN
 };
 
+var nodeTypes = {
+    'IRI': 'Integrated Risk Index',
+    'RI': 'Risk Index',
+    'RISK_INDICATOR': 'Risk Indicator',
+    'SVI': 'Social Vulnerability Index',
+    'SV_THEME': 'Social Vulnerability Theme',
+    'SV_INDICATOR': 'Social Vulnerability Indicator',
+};
+
 $(document).ready(function() {
     $('#cover').remove();
     $('.alert-unscaled-data').hide();
@@ -1063,23 +1072,55 @@ function mapboxGlLayerCreation() {
             try {
                 var region = features[0].properties.region;
                 if (typeof region !== 'undefined') {
-                    $('#mapInfo').append('<h4>' + region + '</h4>' + '<hr>');
+                    $('#mapInfo').append('<h4>' + region + '</h4>');
                 }
             } catch(exc) {
                 // do not show info
             }
+            var structuredInfo = {
+                'compositeIndices': [],
+                'svThemes': [],
+                'svIndicators': [],
+                'riskIndicators': []
+            };
             var isDataAvailable = false;
             if (typeof features[0] !== 'undefined' && typeof features[0].properties !== 'undefined') {
                 for (var field in features[0].properties) {
                     var nameAndType = findNameAndTypeInProjDef(field, sessionProjectDef);
                     if ('name' in nameAndType) {
                         isDataAvailable = true;
-                        var value = features[0].properties[field];
-                        $('#mapInfo').append(nameAndType.name + ': ' + value + '</br>');
+                        var nameAndValue = {
+                            'name': nameAndType.name,
+                            'value': features[0].properties[field]
+                        };
+                        switch (nameAndType.type) {
+                            case nodeTypes.IRI:
+                            case nodeTypes.RI:
+                            case nodeTypes.SVI:
+                                structuredInfo.compositeIndices.push(nameAndValue);
+                                break;
+                            case nodeTypes.SV_THEME:
+                                structuredInfo.svThemes.push(nameAndValue);
+                                break;
+                            case nodeTypes.SV_INDICATOR:
+                                structuredInfo.svIndicators.push(nameAndValue);
+                                break;
+                            case nodeTypes.RISK_INDICATOR:
+                                structuredInfo.riskIndicators.push(nameAndValue);
+                        }
                     }
                 }
             }
-            if (!isDataAvailable) {
+            if (isDataAvailable) {
+                for (var key in structuredInfo) {
+                    $('#mapInfo').append('<hr>');
+                    for (var i = 0; i < structuredInfo[key].length; i++) {
+                        var name = structuredInfo[key][i].name;
+                        var value = structuredInfo[key][i].value;
+                        $('#mapInfo').append(name + ': ' + value + '</br>');
+                    }
+                }
+            } else {
                 $('#mapInfo').append('No data available');
             }
         });
