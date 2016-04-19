@@ -1019,33 +1019,39 @@ function mapboxGlLayerCreation() {
         '<div id="mapInfo"></div>'
     );
 
-    function findNameInProjDef(field, treeNode) {
+    function findNameAndTypeInProjDef(field, treeNode) {
         // NOTE: in the project definition,
         //       'name' is the extended name of a variable
         //       'field' is the variable reference in the layer
         //       (we are inspecting the project definition
         //       to find the given field and to return the
         //       corresponding extended name)
+        retDict = {'type': treeNode.type};
         if (typeof treeNode.field !== 'undefined' && treeNode.field == field) {
             try {
-                var name = treeNode.name;
-                return name;
+                retDict.name = treeNode.name;
+                return retDict;
             } catch(exc) {
                 // if the name is undefined, but the field was found, then return the field
-                return field;
+                retDict.name = field;
+                return retDict;
             }
         } else if (treeNode.name !== 'undefined' && treeNode.name == field) {
-            return field;
+            retDict.name = field;
+            return retDict;
         } else if (typeof treeNode.children !== 'undefined') {
             for (var i = 0; i < treeNode.children.length; i++) {
                 var child = treeNode.children[i];
-                var name = findNameInProjDef(field, child);
-                if (name) {
-                    return name;
+                var nameAndType = findNameAndTypeInProjDef(field, child);
+                if ('name' in nameAndType) {
+                    retDict.name = nameAndType.name;
+                    retDict.type = nameAndType.type;
+                    return retDict;
                 }
             }
+            return {};
         } else {
-            return false;
+            return {};
         }
     }
 
@@ -1062,15 +1068,18 @@ function mapboxGlLayerCreation() {
             } catch(exc) {
                 // do not show info
             }
+            var isDataAvailable = false;
             if (typeof features[0] !== 'undefined' && typeof features[0].properties !== 'undefined') {
                 for (var field in features[0].properties) {
-                    var name = findNameInProjDef(field, sessionProjectDef);
-                    if (name) {
+                    var nameAndType = findNameAndTypeInProjDef(field, sessionProjectDef);
+                    if ('name' in nameAndType) {
+                        isDataAvailable = true;
                         var value = features[0].properties[field];
-                        $('#mapInfo').append(name + ': ' + value + '</br>');
+                        $('#mapInfo').append(nameAndType.name + ': ' + value + '</br>');
                     }
                 }
-            } else {
+            }
+            if (!isDataAvailable) {
                 $('#mapInfo').append('No data available');
             }
         });
