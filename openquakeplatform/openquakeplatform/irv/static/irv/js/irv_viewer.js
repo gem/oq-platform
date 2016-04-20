@@ -578,10 +578,11 @@ function processIndicators(layerAttributes, projectDef) {
             if (key == la[i].properties[selectedRegion]) {
                 try {
                     tmpVal = (IRI[key]).toFixed(5);
+                    tmpVal = parseFloat(tmpVal);
                 } catch (exc) {
                     tmpVal = null;
                 }
-                la[i].newProperties.IRI = parseFloat(tmpVal);
+                la[i].newProperties.IRI = tmpVal;
             }
         }
         if (svThemes) {
@@ -589,10 +590,11 @@ function processIndicators(layerAttributes, projectDef) {
                 if (key == la[i].properties[selectedRegion]) {
                     try {
                         tmpVal = (SVI[key]).toFixed(5);
+                        tmpVal = parseFloat(tmpVal);
                     } catch (exc) {
                         tmpVal = null;
                     }
-                    la[i].newProperties.SVI = parseFloat(tmpVal);
+                    la[i].newProperties.SVI = tmpVal;
                 }
             }
         }
@@ -602,10 +604,11 @@ function processIndicators(layerAttributes, projectDef) {
                 if (key == la[i].properties[selectedRegion]) {
                     try {
                         tmpVal = (RI[key]).toFixed(5);
+                        tmpVal = parseFloat(tmpVal);
                     } catch (exc) {
                         tmpVal = null;
                     }
-                    la[i].newProperties.RI = parseFloat(tmpVal);
+                    la[i].newProperties.RI = tmpVal;
                 }
             }
 
