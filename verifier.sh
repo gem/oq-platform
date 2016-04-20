@@ -408,6 +408,11 @@ cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
+# make documentation
+pip install sphinx
+cd openquakeplatform/irv/help
+make html
+# TODO: tar with rename; save as artifact for CI
 fab stop
 "
 
