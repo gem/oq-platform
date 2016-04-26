@@ -371,7 +371,9 @@ if BING_KEY['bing_key']:
 # authentication.
 AUTH_EXEMPT_URLS = ('/$',
                     '/account/signup/',
-                    '/icebox/calculation/(\d+)',
+                    '/calculate/',
+                    '/share/',
+                    '/explore/',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
                     '/vulnerability/engineering_demand_csc?.*',
