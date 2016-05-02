@@ -1107,6 +1107,10 @@ function mapboxGlLayerCreation() {
                                 break;
                             case nodeTypes.RISK_INDICATOR:
                                 structuredInfo.riskIndicators.push(nameAndValue);
+                                break;
+                            default:
+                                // This should never happen, unless the project definition is wrong
+                                alert('Wrong project definition: unknown node type [' + nameAndType.type + ']');
                         }
                     }
                 }
