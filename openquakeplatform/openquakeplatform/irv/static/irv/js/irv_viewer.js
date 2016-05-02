@@ -119,8 +119,11 @@ function setWidgetsToDefault(){
     $('#regionSelectionDialog').empty();
     $('#projectDef-tree').empty();
     $('#iri-chart').empty();
+    $('#iri-chart-swap').empty();
     $('#cat-chart').empty();
+    $('#cat-chart-swap').empty();
     $('#primary-chart').empty();
+    $('#primary-chart-swap').empty();
 }
 
 function scaleTheData() {
@@ -461,6 +464,7 @@ function processIndicators(layerAttributes, projectDef) {
 
     Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
+    Theme_PCP_Chart_Swap(themeData);
 
     /////////////////////////
     //// Compute the SVI ////
@@ -714,6 +718,7 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     IRI_PCP_Chart(iriPcpData);
+    IRI_PCP_Chart_Swap(iriPcpData);
 
 
 } // End processIndicators
@@ -1363,10 +1368,11 @@ var startApp = function() {
         widget.draggable({
             stack: "div",  // put on top of the others when dragging
             distance: 0,   // do it even if it's not actually moved
-            cancel: "#project-def, #primary-tab, #cat-chart, #iri-chart"
+            cancel: "#project-def, #primary-tab, #primary-swap, #cat-chart, #cat-chart-swap, #iri-chart, #iri-chart-swap, #themeSelector"
         });
         widget.css({
             'display': 'none',
+            // perhaps we should not set width and height here, and let things automatically resize
             'width': '700px',
             'height': '600px',
             'overflow': 'hidden',
@@ -1379,7 +1385,7 @@ var startApp = function() {
     $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
-    $('#primary_indicator').hide();
+    $('#themeSelector').hide();
     $('#saveBtn').prop('disabled', true);
     $('#saveBtn').addClass('btn-disabled');
 

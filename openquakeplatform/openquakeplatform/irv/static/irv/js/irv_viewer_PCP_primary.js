@@ -42,25 +42,25 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         $(widgetsAndButtons.indicators.button).prop('disabled', false);
     }
 
-    $('#primary_indicator').empty();
-    $('#primary_indicator').append('<option value="">Select a Theme</option>');
+    $('#themeSelector').empty();
+    $('#themeSelector').append('<option value="">Select a Theme</option>');
 
     for (var l = 0; l < themesWithChildren.length; l++) {
         var theme = themesWithChildren[l];
-        $('#primary_indicator').append('<option value="'+ theme +'">' + theme + '</option>');
+        $('#themeSelector').append('<option value="'+ theme +'">' + theme + '</option>');
     }
-    $('#primary_indicator').show();
+    $('#themeSelector').show();
 
     // select the first indicator
-    var menuOption = $('#primary_indicator');
+    var menuOption = $('#themeSelector');
     menuOption[0].selectedIndex = 1;
     // trigger first indicator
     setTimeout(function() {
-        $('#primary_indicator').trigger('change');
+        $('#themeSelector').trigger('change');
     }, 100);
 
-    $('#primary_indicator').change(function() {
-        var selectedTheme = $('#primary_indicator').val();
+    $('#themeSelector').change(function() {
+        var selectedTheme = $('#themeSelector').val();
         // Find the children of selected theme
         var selectedThemeChildren = [];
         for (var i = 0; i < projectDef.children.length; i++) {
@@ -102,6 +102,27 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         $('#primary-tab').css({'height': '100%'});
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
+        $("#primary-swap").empty();
+        // $("#primary-swap").width("600px").height("400px");
+
+        var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-swap")
+            .width(600)
+            .height(300)
+            .data(data)
+            // .hideAxis(["plotElement"])  // if we want to use a legend instead
+            .alpha(0.3)
+            .margin({
+                top: 30,
+                left: 100,
+                right: 0,
+                bottom: 20
+            })
+            .composite("darker")
+            .render()
+            .shadows()
+            .createAxes()
+            .reorderable()
+            .brushMode("1D-axes");
 
 
         ////////////////
