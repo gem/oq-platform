@@ -438,16 +438,8 @@ function processIndicators(layerAttributes, projectDef) {
     //// Check for scaled values ///
     ////////////////////////////////
 
-    Array.prototype.max = function() {
-        return Math.max.apply(null, this);
-    };
-
-    Array.prototype.min = function() {
-        return Math.min.apply(null, this);
-    };
-
-    var maxValue = laValuesArray.max();
-    var minValue = laValuesArray.min();
+    var maxValue = Math.max.apply(null, laValuesArray);
+    var minValue = Math.min.apply(null, laValuesArray);
 
     if (minValue === 0 && maxValue === 1) {
         $('.alert-unscaled-data').hide();
