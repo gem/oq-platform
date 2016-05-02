@@ -95,7 +95,11 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
                 var field = data[n].plotElement;
                 var value = layerAttributes.features[o].properties[field];
                 var region = layerAttributes.features[o].properties[selectedRegion];
-                data[n][region] = value;
+                if (value === null) {
+                    delete data[n][region];
+                } else {
+                    data[n][region] = value;
+                }
             }
         }
 

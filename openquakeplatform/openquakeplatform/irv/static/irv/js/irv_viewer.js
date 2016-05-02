@@ -342,7 +342,11 @@ function processIndicators(layerAttributes, projectDef) {
         // add the theme and value to each theme data object
         for (var i = 0; i < themeData.length; i++) {
             if (themeData[i].region == region) {
-                themeData[i][theme] = value;
+                if (value === null) {
+                    delete themeData[i][theme];
+                } else {
+                    themeData[i][theme] = value;
+                }
             }
         }
     }
@@ -699,22 +703,52 @@ function processIndicators(layerAttributes, projectDef) {
 
     var iriPcpData = [];
 
+    function removeNulls(initial) {
+        var purged = {};
+        for (var key in initial) {
+            var value = initial[key];
+            if (value !== null && !isNaN(value)) {
+                purged[key] = value; 
+            } 
+        }
+        return purged;
+    }
+
+    var purgedIRI, purgedSVI, purgedRI;
     if (IRI) {
-        IRI.plotElement = "IRI"; // Label within the object
-        iriPcpData.push(IRI);
+        purgedIRI = removeNulls(IRI);
+        if (purgedIRI) {
+            purgedIRI.plotElement = "IRI"; // Label within the object
+            iriPcpData.push(purgedIRI);
+        }
     }
 
     if (svThemes) {
-        SVI.plotElement = "SVI"; // Label within the object
-        iriPcpData.push(SVI);
+        purgedSVI = removeNulls(SVI);
+        if (purgedSVI) {
+            purgedSVI.plotElement = "SVI"; // Label within the object
+            iriPcpData.push(purgedSVI);
+        } else {
+            disableWidget(widgetsAndButtons.svi);
+            disableWidget(widgetsAndButtons.indicators);
+        }
     } else {
         disableWidget(widgetsAndButtons.svi);
         disableWidget(widgetsAndButtons.indicators);
     }
 
     if (riskIndicators !== undefined) {
-        RI.plotElement = "RI"; // Label within the object
-        iriPcpData.push(RI);
+        purgedRI = removeNulls(RI);
+        if (purgedRI) {
+            purgedRI.plotElement = "RI"; // Label within the object
+            iriPcpData.push(purgedRI);
+        }
+    }
+    
+    if (!purgedRI && !purgedSVI && !purgedIRI) {
+        disableWidget(widgetsAndButtons.iri);
+        disableWidget(widgetsAndButtons.svi);
+        disableWidget(widgetsAndButtons.indicators);
     }
 
     IRI_PCP_Chart(iriPcpData);
