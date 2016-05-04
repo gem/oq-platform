@@ -20,14 +20,14 @@
 ////////////////////////////////////////////
 
 function Theme_PCP_Chart(themeData) {
-    $("#cat-chart-swap").empty();
-    // $("#cat-chart-swap").width("600px").height("400px");
+    $("#cat-chart").empty();
+    // $("#cat-chart").width("600px").height("400px");
 
     themeMeanArray = calculateMeanValues(themeData);
     themeMeanArray[0].region = "Mean";
     themeData = themeData.concat(themeMeanArray);
 
-    var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart-swap")
+    var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
         .width(600)
         .height(300)
         .data(themeData)
