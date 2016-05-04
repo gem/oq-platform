@@ -460,7 +460,6 @@ function processIndicators(layerAttributes, projectDef) {
 
     Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
-    Theme_PCP_Chart_Swap(themeData);
 
     /////////////////////////
     //// Compute the SVI ////
@@ -744,8 +743,6 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     IRI_PCP_Chart(iriPcpData);
-    IRI_PCP_Chart_Swap(iriPcpData);
-
 
 } // End processIndicators
 
