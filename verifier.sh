@@ -538,7 +538,7 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
-echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host oq-platform.localdomain
+echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --hostname oq-platform.localdomain
 
 cd oq-platform/openquakeplatform
 
