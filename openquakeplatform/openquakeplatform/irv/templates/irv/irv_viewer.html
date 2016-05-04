@@ -86,12 +86,8 @@ IRV - {{block.super}}
 
   <div id="iri-chart-widget">
     <ul>
-      <li id="2"><a href="#iri-chart">IRI Chart</a></li>
-      <li id="5"><a href="#iri-chart-swap-tab">IRI Chart Swap</a></li>
+      <li id="2"><a href="#iri-chart-swap-tab">IRI Chart</a></li>
     </ul>
-    <div id="iri-chart">
-      <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
-    </div>
     <div id="iri-chart-swap-tab">
       <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
       <div id="iri-chart-swap" class="parcoords"></div>
@@ -102,10 +98,8 @@ IRV - {{block.super}}
 
   <div id="cat-chart-widget">
     <ul>
-      <li id="3"><a href="#cat-chart">SVI Theme Chart</a></li>
-      <li id="6"><a href="#cat-chart-swap-tab">SVI Theme Chart Swap</a></li>
+      <li id="3"><a href="#cat-chart-swap-tab">SVI Theme Chart</a></li>
     </ul>
-    <div id="cat-chart"></div>
     <div id="cat-chart-swap-tab">
       <div id="cat-chart-swap" class="parcoords"></div>
       <!-- NOTE: uncomment this to add a button to reset brushes -->
@@ -115,20 +109,18 @@ IRV - {{block.super}}
 
   <div id="primary-tab-widget">
     <ul>
-      <li id="4"><a href="#primary-tab">Composite Indicator Chart</a></li>
-      <li id="7"><a href="#primary-swap-tab">Composite Indicator Chart Swap</a></li>
+      <li id="4"><a href="#primary-swap-tab">Composite Indicator Chart</a></li>
     </ul>
-    <div id="primary-tab">
-      <div id="mainContainer">
-        <div class="alert-unscaled-data">
-          <div class="alert alert-danger" role="alert">
-            The data in this project appears to not have been scaled and may not render well in this chart because values of the indicators appear non-commensurate.
-            <button type="button" class="btn btn-danger scaleTheData">Scale the Data</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div id="primary-swap-tab">
+      <!-- This doesn't look necessary now that charts are displayed nicely without scaling data -->
+      <!-- <div id="mainContainer"> -->
+      <!--   <div class="alert-unscaled-data"> -->
+      <!--     <div class="alert alert-danger" role="alert"> -->
+      <!--       The data in this project appears to not have been scaled and may not render well in this chart because values of the indicators appear non-commensurate. -->
+      <!--       <button type="button" class="btn btn-danger scaleTheData">Scale the Data</button> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
       <p>
         <select id="themeSelector" name="themeSelector"></select>
       </p>
