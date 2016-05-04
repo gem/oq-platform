@@ -1391,7 +1391,7 @@ var startApp = function() {
         widget.draggable({
             stack: "div",  // put on top of the others when dragging
             distance: 0,   // do it even if it's not actually moved
-            cancel: "#project-def, #primary-tab, #primary-swap, #cat-chart, #cat-chart-swap, #iri-chart, #iri-chart-swap, #themeSelector"
+            cancel: "#project-def, #primary-tab, #primary-chart, #cat-chart, #cat-chart-swap, #iri-chart, #iri-chart-swap, #themeSelector"
         });
         widget.css({
             'display': 'none',

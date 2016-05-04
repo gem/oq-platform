@@ -106,14 +106,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         $('#primary-tab').css({'height': '100%'});
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
-        $("#primary-swap").empty();
-        // $("#primary-swap").width("600px").height("400px");
+        $("#primary-chart").empty();
+        // $("#primary-chart").width("600px").height("400px");
 
         // sumMeanArray = calculateMeanValues(data);
         // sumMeanArray[0].plotElement = "Mean";
         // data = data.concat(sumMeanArray);
 
-        var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-swap")
+        var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
             .width(600)
             .height(300)
             .data(data)
