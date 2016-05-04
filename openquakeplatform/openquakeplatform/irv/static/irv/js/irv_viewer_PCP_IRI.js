@@ -20,10 +20,10 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
-    $("#iri-chart-swap").empty();
-    // $("#iri-chart-swap").width("600px").height("300px");
+    $("#iri-chart").empty();
+    // $("#iri-chart").width("600px").height("300px");
 
-    var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#iri-chart-swap")
+    var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#iri-chart")
         .width(600)
         .height(300)
         .data(iriPcpData)
