@@ -76,7 +76,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         }
 
         // Get the data for each selected theme child
-        var data = [];
+        var plotData = [];
         // first setup an object with all regions and the plot element and 0 for each value
         var la = layerAttributes.features;
         for (var ia = 0; ia < selectedThemeChildren.length; ia++) {
@@ -86,19 +86,19 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
                 var eachReagion = la[s].properties[selectedRegion];
                 temp[eachReagion] = 0;
             }
-            data.push(temp);
+            plotData.push(temp);
         }
 
         // Poipulate the object created above with values
-        for (var n = 0; n < data.length; n++) {
+        for (var n = 0; n < plotData.length; n++) {
             for (var o = 0; o < layerAttributes.features.length; o++) {
-                var field = data[n].plotElement;
+                var field = plotData[n].plotElement;
                 var value = layerAttributes.features[o].properties[field];
                 var region = layerAttributes.features[o].properties[selectedRegion];
                 if (value === null) {
-                    delete data[n][region];
+                    delete plotData[n][region];
                 } else {
-                    data[n][region] = value;
+                    plotData[n][region] = value;
                 }
             }
         }
@@ -109,14 +109,19 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         $("#primary-chart").empty();
         // $("#primary-chart").width("600px").height("400px");
 
-        // sumMeanArray = calculateMeanValues(data);
+        // sumMeanArray = calculateMeanValues(plotData);
         // sumMeanArray[0].plotElement = "Mean";
-        // data = data.concat(sumMeanArray);
+        // plotData = plotData.concat(sumMeanArray);
+
+        // var verticalSpacer = 10 * plotData.length;
+        // var horizontalSpacer = 100 * Object.keys(plotData[0]).length;
 
         var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
+            // .width(600 + horizontalSpacer)
+            // .height(300 + verticalSpacer)
             .width(600)
             .height(300)
-            .data(data)
+            .data(plotData)
             // .hideAxis(["plotElement"])  // if we want to use a legend instead
             .alpha(0.3)
             .margin({
@@ -125,6 +130,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
                 right: 0,
                 bottom: 20
             })
+            // .mode("queue")
             .composite("darker")
             .render()
             .shadows()
