@@ -739,7 +739,26 @@ function processIndicators(layerAttributes, projectDef) {
         disableWidget(widgetsAndButtons.indicators);
     }
 
-    IRI_PCP_Chart(iriPcpData);
+    // TODO: rename iriPcpDataNew and remove the old version
+    var iriPcpDataNew = [];
+    for (var region_idx in regions) {
+        var regionName = regions[region_idx];
+        var regionData = {"Region": regionName};
+        if (!isNaN(IRI[regionName]) && IRI[regionName] !== null) {
+            regionData["IRI"] = IRI[regionName];
+        }
+        if (!isNaN(SVI[regionName]) && SVI[regionName] !== null) {
+            regionData["SVI"] = SVI[regionName];
+        }
+        if (!isNaN(RI[regionName]) && RI[regionName] !== null) {
+            regionData["RI"] = RI[regionName];
+        }
+        iriPcpDataNew.push(regionData);
+    }
+    if (!iriPcpDataNew) {
+        disableWidget(widgetsAndButtons.iri);
+    }
+    IRI_PCP_Chart(iriPcpDataNew);
 
 } // End processIndicators
 
