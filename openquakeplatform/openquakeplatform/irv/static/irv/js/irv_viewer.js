@@ -1379,8 +1379,8 @@ var startApp = function() {
             // perhaps we should not set width and height here, and let things automatically resize
             'width': '700px',
             'height': '600px',
-            // 'overflow': 'hidden',
-            'overflow': 'auto',
+            'overflow': 'hidden',
+            // 'overflow': 'auto',  // to add scrollbars (but they should be added to the chart, not to the widget)
             'position': 'fixed',
             'left': (10 + i * 40) + 'px',
             'top': (110 + i * 40) + 'px'
