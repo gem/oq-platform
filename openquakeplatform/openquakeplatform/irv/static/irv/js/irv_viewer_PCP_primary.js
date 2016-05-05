@@ -76,8 +76,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         }
 
         var dataToPlot = [];
+        var regionNames = [];
         for (var regionIdx = 0; regionIdx < layerAttributes.features.length; regionIdx++) {
             var regionName = layerAttributes.features[regionIdx].properties[zoneLabelField];
+            regionNames.push(regionName);
             var regionData = {"Region": regionName};
             for (var indicatorIdx = 0; indicatorIdx < selectedThemeChildren.length; indicatorIdx++) {
                 var indicatorField = selectedThemeChildren[indicatorIdx].field;
@@ -110,6 +112,8 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         // var verticalSpacer = 10 * plotData.length;
         // var horizontalSpacer = 100 * Object.keys(plotData[0]).length;
 
+        var leftMargin = calculateLeftMargin(regionNames);
+
         var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
             // .width(600 + horizontalSpacer)
             // .height(300 + verticalSpacer)
@@ -120,7 +124,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             .alpha(0.3)
             .margin({
                 top: 30,
-                left: 100,
+                left: leftMargin,
                 right: 0,
                 bottom: 20
             })

@@ -19,13 +19,14 @@
 ////// IRI Parallel Coordinates Chart //////
 ////////////////////////////////////////////
 
-function Theme_PCP_Chart(themeData) {
+function Theme_PCP_Chart(themeData, regionNames) {
     $("#cat-chart").empty();
     // $("#cat-chart").width("600px").height("400px");
 
     themeMeanArray = calculateMeanValues(themeData);
     themeMeanArray[0].Region = "(mean)";
     themeData = themeData.concat(themeMeanArray);
+    leftMargin = calculateLeftMargin(regionNames);
 
     var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
         .width(600)
@@ -33,6 +34,12 @@ function Theme_PCP_Chart(themeData) {
         .data(themeData)
         // .hideAxis(["plotElement"])  // if we want to use a legend instead
         .alpha(0.3)
+        .margin({
+            top: 30,
+            left: leftMargin,
+            right: 0,
+            bottom: 20
+        })
         .composite("darker")
         .render()
         .shadows()

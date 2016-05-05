@@ -164,7 +164,16 @@ function scaleTheData() {
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createRiskIndicator(la, index, selectedRegion) {
+function getRegionNames(la, zoneLabelField) {
+    var regionNames = [];
+    for (var i = 0; i < la.length; i++) {
+        var regionName = la[i].properties[zoneLabelField];
+        regionNames.push(regionName);
+    }
+    return regionNames;
+}
+
+function createRiskIndicator(la, index, zoneLabelField) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var i = 0; i < la.length; i++) {
@@ -455,8 +464,9 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
-    Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
-    Theme_PCP_Chart(themeData);
+    regionNames = getRegionNames(la, zoneLabelField);
+    Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField);
+    Theme_PCP_Chart(themeData, regionNames);
 
     /////////////////////////
     //// Compute the SVI ////
@@ -710,7 +720,7 @@ function processIndicators(layerAttributes, projectDef) {
         iriPcpData = iriPcpData.concat(meanValuesArray);
     }
     if (iriPcpData.length > 0) {
-        IRI_PCP_Chart(iriPcpData);
+        IRI_PCP_Chart(iriPcpData, regionNames);
     } else {
         disableWidget(widgetsAndButtons.iri);
     }
@@ -1726,6 +1736,17 @@ function projDefJSONRequest(selectedLayer) {
 // Trigger first project definition selection
 function triggerPdSelection () {
     $('#pdSelection').trigger('change');
+}
+
+function calculateLeftMargin(regionNames) {
+    var maxLength = 0;
+    for (i=0; i<regionNames.length; i++) {
+        var regionNameLength = regionNames[i].length;
+        if (regionNameLength > maxLength) {
+            maxLength = regionNameLength;
+        }
+    }
+    return maxLength * 4; // 4 is arbitrary (seems fine)
 }
 
 app.initialize(startApp);
