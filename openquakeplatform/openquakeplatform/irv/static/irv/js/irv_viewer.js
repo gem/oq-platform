@@ -84,7 +84,7 @@ $(document).ready(function() {
 
 var layerAttributes;
 var sessionProjectDef = [];
-var selectedRegion;
+var zoneLabelField;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
@@ -104,7 +104,7 @@ var mappingLayerAttributes = {};
 // sessionProjectDef is the project definition as it was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
 var projectLayerAttributes;
-var regions = [];
+var regionNames = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
@@ -137,7 +137,7 @@ function scaleTheData() {
     // Populate the list with values
     for (var key in indicatorsToBeScaled) {
         for (var i = 0; i < layerAttributes.features.length; i++) {
-            var tempRegion = layerAttributes.features[i].properties[selectedRegion];
+            var tempRegion = layerAttributes.features[i].properties[zoneLabelField];
             indicatorsToBeScaled[key][tempRegion] = layerAttributes.features[i].properties[key];
         }
     }
@@ -152,7 +152,7 @@ function scaleTheData() {
             for (var layerAttributesKey in layerAttributes.features[i].properties) {
                 if (key === layerAttributesKey) {
                     for(var indicatorKey in indicatorsToBeScaled[key]) {
-                        if (layerAttributes.features[i].properties[selectedRegion] == indicatorKey) {
+                        if (layerAttributes.features[i].properties[zoneLabelField] == indicatorKey) {
                             layerAttributes.features[i].properties[layerAttributesKey] = indicatorsToBeScaled[key][indicatorKey];
                         }
                     }
@@ -168,14 +168,14 @@ function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var i = 0; i < la.length; i++) {
-        var region = la[i].properties[selectedRegion];
+        var region = la[i].properties[zoneLabelField];
         indicator.push({'Region': region});
-        regions.push(region);
+        regionNames.push(region);
     }
 
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++) {
-            if (indicator[j].Region == la[j].properties[selectedRegion]) {
+            if (indicator[j].Region == la[j].properties[zoneLabelField]) {
                 var tempName = index[i].name;
                 var tempVal = la[j].properties[tempName];
                 indicator[j][tempName] = tempVal;
@@ -290,7 +290,7 @@ function processIndicators(layerAttributes, projectDef) {
     if (arguments[2]) {
         weightChange = arguments[2];
     }
-    regions = [];
+    regionNames = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
     var allRiskIndicators = [];
@@ -352,7 +352,7 @@ function processIndicators(layerAttributes, projectDef) {
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
-        temp.Region = la[s].properties[selectedRegion];
+        temp.Region = la[s].properties[zoneLabelField];
         themeData.push(temp);
     }
 
@@ -373,7 +373,7 @@ function processIndicators(layerAttributes, projectDef) {
             }
 
             for (var o = 0; o < la.length; o++) {
-                var region = la[o].properties[selectedRegion];
+                var region = la[o].properties[zoneLabelField];
                 var theme = name;
                 var primaryInversionFactor;
 
@@ -479,7 +479,7 @@ function processIndicators(layerAttributes, projectDef) {
     var RI = {};
     var riskIndicator;
     if (riskIndicators !== undefined) {
-        riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
+        riskIndicator = createRiskIndicator(la, riskIndicators, zoneLabelField);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
@@ -497,7 +497,7 @@ function processIndicators(layerAttributes, projectDef) {
         // If RI does not have any children the simply compute the RI
         // setup the indicator with all the regions using the layer attributes
         for (var i = 0; i < la.length; i++) {
-            var selRegion = la[i].properties[selectedRegion];
+            var selRegion = la[i].properties[zoneLabelField];
             RI[selRegion] = 1;
         }
     }
@@ -571,7 +571,7 @@ function processIndicators(layerAttributes, projectDef) {
     for (var i = 0; i < la.length; i++) {
         la[i].newProperties = {};
         for (var key in IRI) {
-            if (key == la[i].properties[selectedRegion]) {
+            if (key == la[i].properties[zoneLabelField]) {
                 try {
                     tmpVal = (IRI[key]).toFixed(5);
                     tmpVal = parseFloat(tmpVal);
@@ -583,7 +583,7 @@ function processIndicators(layerAttributes, projectDef) {
         }
         if (svThemes) {
             for (var key in SVI) {
-                if (key == la[i].properties[selectedRegion]) {
+                if (key == la[i].properties[zoneLabelField]) {
                     try {
                         tmpVal = (SVI[key]).toFixed(5);
                         tmpVal = parseFloat(tmpVal);
@@ -597,7 +597,7 @@ function processIndicators(layerAttributes, projectDef) {
 
         if (riskIndicators !== undefined) {
             for (var key in RI) {
-                if (key == la[i].properties[selectedRegion]) {
+                if (key == la[i].properties[zoneLabelField]) {
                     try {
                         tmpVal = (RI[key]).toFixed(5);
                         tmpVal = parseFloat(tmpVal);
@@ -690,8 +690,8 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     var iriPcpData = [];
-    for (var region_idx in regions) {
-        var regionName = regions[region_idx];
+    for (var region_idx in regionNames) {
+        var regionName = regionNames[region_idx];
         var regionData = {"Region": regionName};
         if (!isNaN(IRI[regionName]) && IRI[regionName] !== null) {
             regionData.IRI = IRI[regionName];
@@ -1633,7 +1633,7 @@ function projDefJSONRequest(selectedLayer) {
 
             license = data.license;
             tempProjectDef = data.project_definitions;
-            selectedRegion = data.zone_label_field;
+            zoneLabelField = data.zone_label_field;
             selectedIndicator = undefined;
             projectTitle = data.title;
             $('a#project-def-title').text('Project: ' + projectTitle);
