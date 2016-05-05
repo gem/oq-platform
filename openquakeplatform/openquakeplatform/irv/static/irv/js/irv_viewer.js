@@ -690,78 +690,28 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     var iriPcpData = [];
-
-    function removeNulls(initial) {
-        var purged = {};
-        for (var key in initial) {
-            var value = initial[key];
-            if (value !== null && !isNaN(value)) {
-                purged[key] = value; 
-            } 
-        }
-        return purged;
-    }
-
-    var purgedIRI, purgedSVI, purgedRI;
-    if (IRI) {
-        purgedIRI = removeNulls(IRI);
-        if (purgedIRI) {
-            purgedIRI.plotElement = "IRI"; // Label within the object
-            iriPcpData.push(purgedIRI);
-        }
-    }
-
-    if (svThemes) {
-        purgedSVI = removeNulls(SVI);
-        if (purgedSVI) {
-            purgedSVI.plotElement = "SVI"; // Label within the object
-            iriPcpData.push(purgedSVI);
-        } else {
-            disableWidget(widgetsAndButtons.svi);
-            disableWidget(widgetsAndButtons.indicators);
-        }
-    } else {
-        disableWidget(widgetsAndButtons.svi);
-        disableWidget(widgetsAndButtons.indicators);
-    }
-
-    if (riskIndicators !== undefined) {
-        purgedRI = removeNulls(RI);
-        if (purgedRI) {
-            purgedRI.plotElement = "RI"; // Label within the object
-            iriPcpData.push(purgedRI);
-        }
-    }
-    
-    if (!purgedRI && !purgedSVI && !purgedIRI) {
-        disableWidget(widgetsAndButtons.iri);
-        disableWidget(widgetsAndButtons.svi);
-        disableWidget(widgetsAndButtons.indicators);
-    }
-
-    // TODO: rename iriPcpDataNew and remove the old version
-    var iriPcpDataNew = [];
     for (var region_idx in regions) {
         var regionName = regions[region_idx];
         var regionData = {"Region": regionName};
         if (!isNaN(IRI[regionName]) && IRI[regionName] !== null) {
-            regionData["IRI"] = IRI[regionName];
+            regionData.IRI = IRI[regionName];
         }
         if (!isNaN(SVI[regionName]) && SVI[regionName] !== null) {
-            regionData["SVI"] = SVI[regionName];
+            regionData.SVI = SVI[regionName];
         }
         if (!isNaN(RI[regionName]) && RI[regionName] !== null) {
-            regionData["RI"] = RI[regionName];
+            regionData.RI = RI[regionName];
         }
-        iriPcpDataNew.push(regionData);
+        iriPcpData.push(regionData);
     }
-    if (!iriPcpDataNew) {
+    if (iriPcpData.length > 0) {
+        var meanValuesArray = calculateMeanValues(iriPcpData);
+        meanValuesArray[0].Region = "(mean)";
+        iriPcpData = iriPcpData.concat(meanValuesArray);
+        IRI_PCP_Chart(iriPcpData);
+    } else {
         disableWidget(widgetsAndButtons.iri);
     }
-    var meanValuesArray = calculateMeanValues(iriPcpDataNew);
-    meanValuesArray[0].Region = "(mean)";
-    iriPcpDataNew = iriPcpDataNew.concat(meanValuesArray);
-    IRI_PCP_Chart(iriPcpDataNew);
 
 } // End processIndicators
 
