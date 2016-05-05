@@ -169,13 +169,13 @@ function createRiskIndicator(la, index, selectedRegion) {
     // setup the indicator with all the regions
     for (var i = 0; i < la.length; i++) {
         var region = la[i].properties[selectedRegion];
-        indicator.push({'region': region});
+        indicator.push({'Region': region});
         regions.push(region);
     }
 
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++) {
-            if (indicator[j].region == la[j].properties[selectedRegion]) {
+            if (indicator[j].Region == la[j].properties[selectedRegion]) {
                 var tempName = index[i].name;
                 var tempVal = la[j].properties[tempName];
                 indicator[j][tempName] = tempVal;
@@ -215,7 +215,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
     // first create an object with all of the district names
     for (var i = 0; i < themeObj.length; i++) {
-        var tempRegion = themeObj[i].region;
+        var tempRegion = themeObj[i].Region;
         subIndex[tempRegion] = 0;
     }
 
@@ -245,7 +245,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         } else {
             tempElementValue = 0;
         }
-        var themeObjRegion = themeObj[idx].region;
+        var themeObjRegion = themeObj[idx].Region;
         var nullWasFound = false;
         // NOTE: themeKeys contains the list of names of all items to combine
         // compute the themes
@@ -333,12 +333,12 @@ function processIndicators(layerAttributes, projectDef) {
     var laValuesArray = [];
 
     function generateThemeObject(indicatorObj) {
-        var region = indicatorObj.region;
+        var region = indicatorObj.Region;
         var theme = indicatorObj.theme;
         var value = indicatorObj.value;
         // add the theme and value to each theme data object
         for (var i = 0; i < themeData.length; i++) {
-            if (themeData[i].region == region) {
+            if (themeData[i].Region == region) {
                 if (value === null) {
                     delete themeData[i][theme];
                 } else {
@@ -352,7 +352,7 @@ function processIndicators(layerAttributes, projectDef) {
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
-        temp.region = la[s].properties[selectedRegion];
+        temp.Region = la[s].properties[selectedRegion];
         themeData.push(temp);
     }
 
@@ -426,7 +426,7 @@ function processIndicators(layerAttributes, projectDef) {
                         tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
                     }
                 }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                indicatorInfo.push({'Region':region, 'theme':theme, 'value':tempValue});
             }
         }
     }
@@ -483,7 +483,7 @@ function processIndicators(layerAttributes, projectDef) {
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
-            if (key != 'region') {
+            if (key != 'Region') {
                 allRiskIndicators.push(key);
             }
         }
@@ -609,7 +609,7 @@ function processIndicators(layerAttributes, projectDef) {
             }
 
             for (var key in riskIndicator[i]) {
-                if (riskIndicator[i] != 'region') {
+                if (riskIndicator[i] != 'Region') {
                     tempThemeName = riskIndicator[i][key];
                     la[i].newProperties[key] = tempThemeName;
                 }
@@ -617,10 +617,10 @@ function processIndicators(layerAttributes, projectDef) {
         }
 
         for (var key in themeData[i]) {
-            if (key != 'region') {
+            if (key != 'Region') {
                 tempThemeName = themeData[i][key];
                 la[i].newProperties[key] = tempThemeName;
-            } else if (key == 'region') {
+            } else if (key == 'Region') {
                 la[i].newProperties.region = themeData[i][key];
             }
         }

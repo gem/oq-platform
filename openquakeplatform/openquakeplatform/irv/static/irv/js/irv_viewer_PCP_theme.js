@@ -24,7 +24,7 @@ function Theme_PCP_Chart(themeData) {
     // $("#cat-chart").width("600px").height("400px");
 
     themeMeanArray = calculateMeanValues(themeData);
-    themeMeanArray[0].region = "Mean";
+    themeMeanArray[0].Region = "(mean)";
     themeData = themeData.concat(themeMeanArray);
 
     var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
