@@ -758,6 +758,9 @@ function processIndicators(layerAttributes, projectDef) {
     if (!iriPcpDataNew) {
         disableWidget(widgetsAndButtons.iri);
     }
+    var meanValuesArray = calculateMeanValues(iriPcpDataNew);
+    meanValuesArray[0].Region = "(mean)";
+    iriPcpDataNew = iriPcpDataNew.concat(meanValuesArray);
     IRI_PCP_Chart(iriPcpDataNew);
 
 } // End processIndicators
