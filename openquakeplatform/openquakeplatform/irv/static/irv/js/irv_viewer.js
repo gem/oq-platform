@@ -704,10 +704,12 @@ function processIndicators(layerAttributes, projectDef) {
         }
         iriPcpData.push(regionData);
     }
-    if (iriPcpData.length > 0) {
+    if (iriPcpData.length > 1) {
         var meanValuesArray = calculateMeanValues(iriPcpData);
         meanValuesArray[0].Region = "(mean)";
         iriPcpData = iriPcpData.concat(meanValuesArray);
+    }
+    if (iriPcpData.length > 0) {
         IRI_PCP_Chart(iriPcpData);
     } else {
         disableWidget(widgetsAndButtons.iri);

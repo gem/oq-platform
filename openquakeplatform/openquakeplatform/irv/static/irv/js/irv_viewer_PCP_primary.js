@@ -20,7 +20,7 @@
 ////// Category Parallel Coordinates Chart //////
 /////////////////////////////////////////////////
 
-function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
+function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
     // Find the theme data and create selection dropdown menu
     var themesWithChildren = [];
     var sum = {};
@@ -75,32 +75,26 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             }
         }
 
-        // Get the data for each selected theme child
-        var plotData = [];
-        // first setup an object with all regions and the plot element and 0 for each value
-        var la = layerAttributes.features;
-        for (var ia = 0; ia < selectedThemeChildren.length; ia++) {
-            var temp = {};
-            temp.plotElement = selectedThemeChildren[ia].field;
-            for (var s = 0; s < la.length; s++) {
-                var eachReagion = la[s].properties[selectedRegion];
-                temp[eachReagion] = 0;
-            }
-            plotData.push(temp);
-        }
-
-        // Poipulate the object created above with values
-        for (var n = 0; n < plotData.length; n++) {
-            for (var o = 0; o < layerAttributes.features.length; o++) {
-                var field = plotData[n].plotElement;
-                var value = layerAttributes.features[o].properties[field];
-                var region = layerAttributes.features[o].properties[selectedRegion];
-                if (value === null) {
-                    delete plotData[n][region];
-                } else {
-                    plotData[n][region] = value;
+        var dataToPlot = [];
+        for (var regionIdx = 0; regionIdx < layerAttributes.features.length; regionIdx++) {
+            var regionName = layerAttributes.features[regionIdx].properties[zoneLabelField];
+            var regionData = {"Region": regionName};
+            for (var indicatorIdx = 0; indicatorIdx < selectedThemeChildren.length; indicatorIdx++) {
+                var indicatorField = selectedThemeChildren[indicatorIdx].field;
+                var indicatorValue = layerAttributes.features[regionIdx].properties[indicatorField];
+                if (typeof indicatorValue !== 'undefined' && !isNaN(indicatorValue) && indicatorValue !== null) {
+                    regionData[indicatorField] = indicatorValue;
                 }
             }
+            dataToPlot.push(regionData);
+        }
+        if (dataToPlot.length < 1) {
+            return;
+        }
+        if (dataToPlot.length > 1) {
+            var meanValuesArray = calculateMeanValues(dataToPlot);
+            meanValuesArray[0].Region = "(mean)";
+            dataToPlot = dataToPlot.concat(meanValuesArray);
         }
 
         $('#primary-tab').css({'height': '100%'});
@@ -121,7 +115,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             // .height(300 + verticalSpacer)
             .width(600)
             .height(300)
-            .data(plotData)
+            .data(dataToPlot)
             // .hideAxis(["plotElement"])  // if we want to use a legend instead
             .alpha(0.3)
             .margin({
