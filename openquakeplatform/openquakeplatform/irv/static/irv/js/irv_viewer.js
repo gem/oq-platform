@@ -503,13 +503,6 @@ function processIndicators(layerAttributes, projectDef) {
         var riJSONthemes = riskIndicators;
         RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
         scale(RI);
-    } else {
-        // If RI does not have any children the simply compute the RI
-        // setup the indicator with all the regions using the layer attributes
-        for (var i = 0; i < la.length; i++) {
-            var selRegion = la[i].properties[zoneLabelField];
-            RI[selRegion] = 1;
-        }
     }
 
     ///////////////////////////////
