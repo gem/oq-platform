@@ -114,7 +114,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
 
         var color = d3.scale.category20();
 
-        var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
+        var graph = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
             // .width(600 + horizontalSpacer)
             // .height(300 + verticalSpacer)
             .width(600)
@@ -136,6 +136,11 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             .createAxes()
             .reorderable()
             .brushMode("1D-axes");
+
+        graph.on("brushend", function(d) {
+            console.log(graph.brushed());
+        });
+
     });
 }
 
