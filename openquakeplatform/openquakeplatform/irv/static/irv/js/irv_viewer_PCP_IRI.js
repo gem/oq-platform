@@ -25,6 +25,8 @@ function IRI_PCP_Chart(iriPcpData, regionNames) {
 
     leftMargin = calculateLeftMargin(regionNames);
 
+    var color = d3.scale.category20();
+
     var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#iri-chart")
         .width(600)
         .height(300)
@@ -37,6 +39,7 @@ function IRI_PCP_Chart(iriPcpData, regionNames) {
             right: 0,
             bottom: 20
         })
+        .color(function(d) {return color(d.Region);})
         .composite("darker")
         .render()
         .shadows()
