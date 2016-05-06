@@ -19,23 +19,21 @@
 ////// IRI Parallel Coordinates Chart //////
 ////////////////////////////////////////////
 
-function IRI_PCP_Chart(iriPcpData, regionNames) {
+function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
     // $("#iri-chart").width("600px").height("300px");
-
-    leftMargin = calculateLeftMargin(regionNames);
 
     var color = d3.scale.category20();
 
     var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#iri-chart")
         .width(600)
-        .height(300)
+        .height(400)
         .data(iriPcpData)
         // .hideAxis(["plotElement"])  // if we want to use a legend instead
         .alpha(0.3)
         .margin({
             top: 30,
-            left: leftMargin,
+            left: calculateLeftMargin(iriPcpData),
             right: 0,
             bottom: 20
         })

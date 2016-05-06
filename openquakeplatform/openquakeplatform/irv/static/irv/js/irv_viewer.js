@@ -466,7 +466,7 @@ function processIndicators(layerAttributes, projectDef) {
 
     regionNames = getRegionNames(la, zoneLabelField);
     Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField);
-    Theme_PCP_Chart(themeData, regionNames);
+    Theme_PCP_Chart(themeData);
 
     /////////////////////////
     //// Compute the SVI ////
@@ -720,7 +720,7 @@ function processIndicators(layerAttributes, projectDef) {
         iriPcpData = iriPcpData.concat(meanValuesArray);
     }
     if (iriPcpData.length > 0) {
-        IRI_PCP_Chart(iriPcpData, regionNames);
+        IRI_PCP_Chart(iriPcpData);
     } else {
         disableWidget(widgetsAndButtons.iri);
     }
@@ -1736,17 +1736,6 @@ function projDefJSONRequest(selectedLayer) {
 // Trigger first project definition selection
 function triggerPdSelection () {
     $('#pdSelection').trigger('change');
-}
-
-function calculateLeftMargin(regionNames) {
-    var maxLength = 0;
-    for (i=0; i<regionNames.length; i++) {
-        var regionNameLength = regionNames[i].length;
-        if (regionNameLength > maxLength) {
-            maxLength = regionNameLength;
-        }
-    }
-    return maxLength * 4; // 4 is arbitrary (seems fine)
 }
 
 app.initialize(startApp);

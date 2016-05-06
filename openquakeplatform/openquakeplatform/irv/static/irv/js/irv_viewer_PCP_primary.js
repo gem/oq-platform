@@ -112,21 +112,19 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         // var verticalSpacer = 10 * plotData.length;
         // var horizontalSpacer = 100 * Object.keys(plotData[0]).length;
 
-        var leftMargin = calculateLeftMargin(regionNames);
-
         var color = d3.scale.category20();
 
         var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
             // .width(600 + horizontalSpacer)
             // .height(300 + verticalSpacer)
             .width(600)
-            .height(300)
+            .height(400)
             .data(dataToPlot)
             // .hideAxis(["plotElement"])  // if we want to use a legend instead
             .alpha(0.3)
             .margin({
                 top: 30,
-                left: leftMargin,
+                left: calculateLeftMargin(dataToPlot),
                 right: 0,
                 bottom: 20
             })
