@@ -179,7 +179,6 @@ function createRiskIndicator(la, index, zoneLabelField) {
     for (var i = 0; i < la.length; i++) {
         var region = la[i].properties[zoneLabelField];
         indicator.push({'Region': region});
-        regionNames.push(region);
     }
 
     for (var i = 0; i < index.length; i++) {
