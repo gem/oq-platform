@@ -1,31 +1,21 @@
-/* html, body { */
-/*     background: #f7f7f7; */
-/*     height: 100%; */
-/*     margin: 0; */
-/*     padding: 0; */
-/*     color: #111; */
-/*     font-family: Ubuntu, Helvetica, sans-serif; */
-/*     font-size: 10px; */
-/*     line-height: 1.35em; */
-/* } */
-/* a { */
-/*     color: #6be; */
-/*     text-decoration: none; */
-/* } */
-.row, .header, .cell {
+.divgrid {
+    font-family: Ubuntu, Helvetica, sans-serif;
+    font-size: 11px;
+}
+.divgrid-row, .divgrid-header, .divgrid-cell {
     height: 18px;
 }
-.row, .header {
+.divgrid-row, .divgrid-header {
     clear: left;
 }
-.header {
+.divgrid-header {
     font-weight: bold;
 }
-.cell {
+.divgrid-cell {
     float: left;
     overflow: hidden;
     white-space: nowrap;
     width: 100px; }
-.col-0 {
-    width: 180px;
+.divgrid-col-0 {
+    width: 150px;
 }

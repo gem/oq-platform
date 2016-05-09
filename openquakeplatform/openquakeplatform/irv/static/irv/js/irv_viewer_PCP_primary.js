@@ -103,14 +103,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
         $("#primary-chart").empty();
-        // $("#primary-chart").width("600px").height("400px");
-
-        // sumMeanArray = calculateMeanValues(plotData);
-        // sumMeanArray[0].plotElement = "Mean";
-        // plotData = plotData.concat(sumMeanArray);
-
-        // var verticalSpacer = 10 * plotData.length;
-        // var horizontalSpacer = 100 * Object.keys(plotData[0]).length;
 
         var color = d3.scale.category20();
 
@@ -138,11 +130,12 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             .brushMode("1D-axes");
 
         // create data table, row hover highlighting
+        var maxRowsToDisplay = 5;
         var grid = d3.divgrid();
         d3.select("#primary-grid")
-            .datum(dataToPlot.slice(0,10))
+            .datum(dataToPlot.slice(0,maxRowsToDisplay))
             .call(grid)
-            .selectAll(".row")
+            .selectAll(".divgrid-row")
             .on({
             "mouseover": function(d) {
                 graph.highlight([d]);
@@ -153,9 +146,9 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         // update data table on brush event
         graph.on("brush", function(d) {
             d3.select("#primary-grid")
-            .datum(d.slice(0,10))
+            .datum(d.slice(0,maxRowsToDisplay))
             .call(grid)
-            .selectAll(".row")
+            .selectAll(".divgrid-row")
             .on({
                 "mouseover": function(d) {
                     graph.highlight([d]);

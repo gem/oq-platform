@@ -29,7 +29,7 @@ function Theme_PCP_Chart(themeData) {
 
     var color = d3.scale.category20();
 
-    var parcoords = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
+    var graph = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
         .width(600)
         .height(400)
         .data(themeData)
@@ -50,9 +50,37 @@ function Theme_PCP_Chart(themeData) {
         .reorderable()
         .brushMode("1D-axes");
 
+    // create data table, row hover highlighting
+    var maxRowsToDisplay = 5;
+    var grid = d3.divgrid();
+    d3.select("#cat-grid")
+        .datum(themeData.slice(0,maxRowsToDisplay))
+        .call(grid)
+        .selectAll(".divgrid-row")
+        .on({
+        "mouseover": function(d) {
+            graph.highlight([d]);
+        },
+        "mouseout": graph.unhighlight
+        });
+
+    // update data table on brush event
+    graph.on("brush", function(d) {
+        d3.select("#cat-grid")
+        .datum(d.slice(0,maxRowsToDisplay))
+        .call(grid)
+        .selectAll(".divgrid-row")
+        .on({
+            "mouseover": function(d) {
+                graph.highlight([d]);
+            },
+            "mouseout": graph.unhighlight
+        });
+    });
+
     // NOTE: a simple click on an axis resets the brush for that axis
     //       The button is just to reset all brushes with a single click
     // d3.select('#btnReset').on('click', function() {
-    //     parcoords.brushReset();
+    //     graph.brushReset();
     // });
 }

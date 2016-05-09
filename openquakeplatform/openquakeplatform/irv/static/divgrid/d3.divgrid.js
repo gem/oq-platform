@@ -7,34 +7,34 @@ d3.divgrid = function(config) {
     }
 
     // header
-    selection.selectAll(".header")
+    selection.selectAll(".divgrid-header")
         .data([true])
       .enter().append("div")
-        .attr("class", "header");
+        .attr("class", "divgrid-header");
 
-    var header = selection.select(".header")
-      .selectAll(".cell")
+    var header = selection.select(".divgrid-header")
+      .selectAll(".divgrid-cell")
       .data(columns);
 
     header.enter().append("div")
-      .attr("class", function(d,i) { return "col-" + i; })
-      .classed("cell", true);
+      .attr("class", function(d,i) { return "divgrid-col-" + i; })
+      .classed("divgrid-cell", true);
 
-    selection.selectAll(".header .cell")
+    selection.selectAll(".divgrid-header .divgrid-cell")
       .text(function(d) { return d; });
 
     header.exit().remove();
 
     // rows
-    var rows = selection.selectAll(".row")
+    var rows = selection.selectAll(".divgrid-row")
         .data(function(d) { return d; });
 
     rows.enter().append("div")
-        .attr("class", "row");
+        .attr("class", "divgrid-row");
 
     rows.exit().remove();
 
-    var cells = selection.selectAll(".row").selectAll(".cell")
+    var cells = selection.selectAll(".divgrid-row").selectAll(".divgrid-cell")
         .data(function(d) {
             return columns.map(function(col){return d[col];
         });
@@ -42,12 +42,12 @@ d3.divgrid = function(config) {
 
     // cells
     cells.enter().append("div")
-      .attr("class", function(d,i) { return "col-" + i; })
-      .classed("cell", true);
+      .attr("class", function(d,i) { return "divgrid-col-" + i; })
+      .classed("divgrid-cell", true);
 
     cells.exit().remove();
 
-    selection.selectAll(".cell")
+    selection.selectAll(".divgrid-cell")
       .text(function(d) { return d; });
 
     return dg;
