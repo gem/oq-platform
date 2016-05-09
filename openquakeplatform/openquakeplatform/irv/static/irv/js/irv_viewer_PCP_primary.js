@@ -137,10 +137,32 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             .reorderable()
             .brushMode("1D-axes");
 
-        graph.on("brushend", function(d) {
-            console.log(graph.brushed());
-        });
+        // create data table, row hover highlighting
+        var grid = d3.divgrid();
+        d3.select("#primary-grid")
+            .datum(dataToPlot.slice(0,10))
+            .call(grid)
+            .selectAll(".row")
+            .on({
+            "mouseover": function(d) {
+                graph.highlight([d]);
+            },
+            "mouseout": graph.unhighlight
+            });
 
+        // update data table on brush event
+        graph.on("brush", function(d) {
+            d3.select("#primary-grid")
+            .datum(d.slice(0,10))
+            .call(grid)
+            .selectAll(".row")
+            .on({
+                "mouseover": function(d) {
+                    graph.highlight([d]);
+                },
+                "mouseout": graph.unhighlight
+            });
+        });
     });
 }
 
