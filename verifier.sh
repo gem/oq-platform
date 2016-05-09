@@ -366,6 +366,12 @@ source platform-env/bin/activate
 if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
     pip install simplejson==2.0.9
 fi
+cd -
+cd oq-platform-ipt
+python setup.py install
+cd -
+cd ~/$GEM_GIT_PACKAGE
+
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
