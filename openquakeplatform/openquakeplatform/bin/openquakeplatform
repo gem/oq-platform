@@ -4,5 +4,3 @@ if hash django-admin 2>/dev/null; then
 else
     django-admin.py $@ --settings=openquakeplatform.settings
 fi
-# FIXME
-sleep 2000000 || true
