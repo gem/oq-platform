@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-from openquakeplatform.common import __version__ as oqp_version
+from openquakeplatform import __version__ as oqp_version
 
 
 def read(*rnames):
