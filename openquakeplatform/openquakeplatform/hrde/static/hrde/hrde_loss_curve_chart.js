@@ -32,7 +32,7 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
         for (i = 0 ; i < length ; i++) {
             curve_valsX[curve_name][i] = Math.log(parseFloat(curve_valsX[curve_name][i]));
             curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
-        };
+        }
     }
 
     for (var k in selectedCurves) {
@@ -71,14 +71,14 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
         return d3.svg.axis()
             .scale(x_scale)
             .orient("bottom")
-            .ticks(5)
+            .ticks(5);
     }
 
     function y_grid() {
         return d3.svg.axis()
             .scale(y_scale)
             .orient("left")
-            .ticks(5)
+            .ticks(5);
     }
 
     function makeCircles(circleData, k, color, curve_name) {
@@ -133,7 +133,7 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
         })
         .y(function(d) {
             return y_scale(d[1]);
-        })
+        });
 
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
