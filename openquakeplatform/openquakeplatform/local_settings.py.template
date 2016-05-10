@@ -1,13 +1,14 @@
 import os
 import geonode
-import openquakeplatform
+import openquakeplatform.common
 
 from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
 
 SITENAME = 'OpenQuake Platform'
 SITEURL = 'http://%(siteurl)s/'
 
-OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
+OQPLATFORM_ROOT = os.path.dirname(os.path.dirname(
+                      openquakeplatform.common.__file__))
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
 ROOT_URLCONF = 'openquakeplatform.urls'
