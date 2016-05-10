@@ -246,6 +246,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             tempElementValue = 0;
         }
         var themeObjRegion = themeObj[idx].region;
+        var nullWasFound = false;
         // NOTE: themeKeys contains the list of names of all items to combine
         // compute the themes
         for (var themeKey = 0; themeKey < themeKeys.length; themeKey++) {
@@ -253,6 +254,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
             var tempThemeName = themeKeys[themeKey];
             var themeWeightVal;
+            var newElementValue = themeObj[idx][tempThemeName];
+            if (newElementValue === null) {
+                tempElementValue = null;
+                nullWasFound = true;
+                break;
+            }
             if (operator.ignoresWeights) {
                 themeWeightVal = 1;
             } else {
@@ -260,16 +267,18 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             }
             if (themeWeightVal > 0) {
                 if (operator.multiplies) {
-                    tempElementValue = tempElementValue * themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                    tempElementValue = tempElementValue * newElementValue * themeWeightVal * themeInversionFactor;
                 } else {
-                    tempElementValue = tempElementValue + themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                    tempElementValue = tempElementValue + newElementValue * themeWeightVal * themeInversionFactor;
                 }
             }
         }
-        if (operator.code == 'AVG') {
-            tempElementValue = tempElementValue / themeKeys.length;
-        } else if (operator.code == 'GEOM_MEAN') {
-            tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
+        if (!nullWasFound) {
+            if (operator.code == 'AVG') {
+                tempElementValue = tempElementValue / themeKeys.length;
+            } else if (operator.code == 'GEOM_MEAN') {
+                tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
+            }
         }
         subIndex[themeObjRegion] = tempElementValue;
     }
@@ -370,10 +379,18 @@ function processIndicators(layerAttributes, projectDef) {
                 } else {
                     tempValue = 0;
                 }
+                var nullWasFound = false;
                 for (var prop in la[o].properties) {
                     // iterate over the indicator child keys
+                    if (nullWasFound) break;
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (prop == tempIndicatorChildrenKeys[r]) {
+                            newValue = la[o].properties[prop];
+                            if (newValue === null) {
+                                tempValue = null;
+                                nullWasFound = true;
+                                break;
+                            }
                             if (tempChildren[r].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
@@ -387,52 +404,27 @@ function processIndicators(layerAttributes, projectDef) {
                                 weight = tempChildren[r].weight;
                             }
                             if (operator.multiplies) {
-                                tempValue = tempValue * la[o].properties[prop] * primaryInversionFactor * weight;
+                                tempValue = tempValue * newValue * primaryInversionFactor * weight;
                             } else {
-                                tempValue = tempValue + la[o].properties[prop] * primaryInversionFactor * weight;
+                                tempValue = tempValue + newValue * primaryInversionFactor * weight;
                             }
                             // NOTE: Ben had the following line only in case of weighted sum,
                             //       but I guess it should be there in all cases
                             // Collect an array of all the values that pass through the loop
-                            laValuesArray.push(la[o].properties[prop]);
+                            laValuesArray.push(newValue);
                         }
                     }
                 }
-                if (operator.code == 'AVG') {
-                    tempValue = tempValue / tempIndicatorChildrenKeys.length;
-                } else if (operator.code == 'GEOM_MEAN') {
-                    tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                if (!nullWasFound) {
+                    if (operator.code == 'AVG') {
+                        tempValue = tempValue / tempIndicatorChildrenKeys.length;
+                    } else if (operator.code == 'GEOM_MEAN') {
+                        tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                    }
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
             }
         }
-    }
-
-    /////////////////////////////////////////////////
-    //// Check for null values primary indicators ///
-    /////////////////////////////////////////////////
-
-    // Try and remove the warning message on each iteration.
-    try {
-        $('.incompleteData').remove();
-    } catch (exc) {
-        // continue
-    }
-
-    if (laValuesArray.indexOf(null) > -1) {
-        var warningMsg =
-            '<div class="alert alert-danger incompleteData" role="alert">'+
-                'The application is not able to render charts or the map layer for this project because the composite indicator data is incomplete.'+
-            '</div>';
-
-        // Provide warning message if the composite indicator data is incomplete
-        $('#iri-chart').prepend(warningMsg);
-        $('#cat-chart').prepend(warningMsg);
-        $('#primary-tab').prepend(warningMsg);
-        $('#project-def').prepend(warningMsg);
-        // Stop the function
-        $('#absoluteSpinner').hide();
-        return;
     }
 
     ////////////////////////////////
@@ -551,19 +543,25 @@ function processIndicators(layerAttributes, projectDef) {
             sviWeight = 1;
         }
         for (var regionName in SVI) {
-            sviComponent = SVI[regionName] * sviWeight * sviInversionFactor;
-            riComponent = RI[regionName] * riWeight * riInversionFactor;
-            if (iriOperator.multiplies) {
-                tempVal = sviComponent * riComponent;
+            var sviValue = SVI[regionName];
+            var riValue = RI[regionName];
+            if (sviValue === null || riValue === null) {
+                IRI[regionName] = null;
             } else {
-                tempVal = sviComponent + riComponent;
+                sviComponent = sviValue * sviWeight * sviInversionFactor;
+                riComponent = riValue * riWeight * riInversionFactor;
+                if (iriOperator.multiplies) {
+                    tempVal = sviComponent * riComponent;
+                } else {
+                    tempVal = sviComponent + riComponent;
+                }
+                if (iriOperator.code == 'AVG') {
+                    tempVal = tempVal / 2;
+                } else if (iriOperator.code == 'GEOM_MEAN') {
+                    tempVal = Math.pow(tempVal, 0.5);
+                }
+                IRI[regionName] = tempVal;
             }
-            if (iriOperator.code == 'AVG') {
-                tempVal = tempVal / 2;
-            } else if (iriOperator.code == 'GEOM_MEAN') {
-                tempVal = Math.pow(tempVal, 0.5);
-            }
-            IRI[regionName] = tempVal;
         }
         scale(IRI);
     }
@@ -578,14 +576,22 @@ function processIndicators(layerAttributes, projectDef) {
         la[i].newProperties = {};
         for (var key in IRI) {
             if (key == la[i].properties[selectedRegion]) {
-                tmpVal = (IRI[key]).toFixed(5);
+                try {
+                    tmpVal = (IRI[key]).toFixed(5);
+                } catch (exc) {
+                    tmpVal = null;
+                }
                 la[i].newProperties.IRI = parseFloat(tmpVal);
             }
         }
         if (svThemes) {
             for (var key in SVI) {
                 if (key == la[i].properties[selectedRegion]) {
-                    tmpVal = (SVI[key]).toFixed(5);
+                    try {
+                        tmpVal = (SVI[key]).toFixed(5);
+                    } catch (exc) {
+                        tmpVal = null;
+                    }
                     la[i].newProperties.SVI = parseFloat(tmpVal);
                 }
             }
@@ -594,7 +600,11 @@ function processIndicators(layerAttributes, projectDef) {
         if (riskIndicators !== undefined) {
             for (var key in RI) {
                 if (key == la[i].properties[selectedRegion]) {
-                    tmpVal = (RI[key]).toFixed(5);
+                    try {
+                        tmpVal = (RI[key]).toFixed(5);
+                    } catch (exc) {
+                        tmpVal = null;
+                    }
                     la[i].newProperties.RI = parseFloat(tmpVal);
                 }
             }
@@ -720,13 +730,20 @@ function scale(IndicatorObj) {
     for (var v in IndicatorObj) {
         ValueArray.push(IndicatorObj[v]);
     }
-    var tempMin = Math.min.apply(null, ValueArray),
-        tempMax = Math.max.apply(null, ValueArray);
+    function isNotNull(n) {
+        return n !== null;
+    }
+    var notNullElements = ValueArray.filter(isNotNull);
+    var tempMin = Math.min.apply(null, notNullElements),
+        tempMax = Math.max.apply(null, notNullElements);
 
     for (var j = 0; j < ValueArray.length; j++) {
+        if (ValueArray[j] === null) {
+            scaledValues.push(null);
+        }
         // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
-        if (tempMax == tempMin) {
+        else if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
             // Not using $.each in this case, just to avoid a syntax warning

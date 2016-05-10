@@ -138,6 +138,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         var line = d3.svg.line(),
             axis = d3.svg.axis().orient("left"),
             foreground;
+        line.defined(function(d) { return !isNaN(d[1]); });
 
         var y_scale = d3.scale.linear().domain([1, 0]).range([0, h]);
 

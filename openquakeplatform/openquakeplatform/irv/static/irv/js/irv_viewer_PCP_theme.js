@@ -83,6 +83,7 @@ function Theme_PCP_Chart(themeData) {
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
         foreground;
+    line.defined(function(d) { return !isNaN(d[1]); });
 
     $('#cat-chart').empty();
     $("#cat-chart").css({'height': '100%'});
