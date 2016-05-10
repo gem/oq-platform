@@ -549,7 +549,7 @@ fi
 
 # install IPT
 cd oq-platform-ipt
-python setup.py install
+sudo python setup.py install
 cd -
 
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --hostname oq-platform.localdomain
