@@ -563,6 +563,8 @@ export PYTHONPATH=\$(pwd)
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
+# FIXME
+sleep 20000
 sleep 3
 cd -
 "
