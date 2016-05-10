@@ -26,6 +26,8 @@ function Theme_PCP_Chart(themeData) {
     themeMeanArray = calculateMeanValues(themeData);
     themeMeanArray[0].Region = "(mean)";
     themeData = themeData.concat(themeMeanArray);
+    var maxRowsToDisplay = 5;
+    updateNumDisplayedRows("#catDisplayedRows", themeData, maxRowsToDisplay);
 
     var color = d3.scale.category20();
 
@@ -51,7 +53,6 @@ function Theme_PCP_Chart(themeData) {
         .brushMode("1D-axes");
 
     // create data table, row hover highlighting
-    var maxRowsToDisplay = 5;
     var grid = d3.divgrid();
     d3.select("#cat-grid")
         .datum(themeData.slice(0,maxRowsToDisplay))
@@ -76,6 +77,7 @@ function Theme_PCP_Chart(themeData) {
             },
             "mouseout": graph.unhighlight
         });
+        updateNumDisplayedRows("#catDisplayedRows", d, maxRowsToDisplay);
     });
 
     // NOTE: a simple click on an axis resets the brush for that axis

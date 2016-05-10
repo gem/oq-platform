@@ -92,6 +92,7 @@ IRV - {{block.super}}
     <div id="iri-chart-tab">
       <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
       <div id="iri-chart" class="parcoords" style="position: relative;"></div>
+      <p id="iriDisplayedRows" style="position: relative;"></p>
       <div id="iri-grid" class="divgrid" style="position: absolute; bottom: 0;"></div>
       <!-- NOTE: uncomment this to add a button to reset brushes -->
       <!-- <button id="btnReset">Reset Brushes</button> -->
@@ -104,6 +105,7 @@ IRV - {{block.super}}
     </ul>
     <div id="cat-chart-tab">
       <div id="cat-chart" class="parcoords" style="position: relative;"></div>
+      <p id="catDisplayedRows" style="position: relative;"></p>
       <div id="cat-grid" class="divgrid" style="position: absolute; bottom: 0;"></div>
       <!-- NOTE: uncomment this to add a button to reset brushes -->
       <!-- <button id="btnReset">Reset Brushes</button> -->
@@ -128,6 +130,7 @@ IRV - {{block.super}}
         <select id="themeSelector" name="themeSelector"></select>
       </p>
       <div id="primary-chart" class="parcoords" style="position: relative;"></div>
+      <p id="primaryDisplayedRows" style="position: relative;"></p>
       <div id="primary-grid" class="divgrid" style="position: absolute; bottom: 0;"></div>
     </div>
   </div>
@@ -141,8 +144,7 @@ IRV - {{block.super}}
     <script src="{{ STATIC_URL }}divgrid/d3.divgrid.js"></script>
     <script src="{{ STATIC_URL }}js/mapbox-gl.min.0.11.1.js"></script>
     <script src="{{ STATIC_URL }}js/leaflet-mapbox-gl.js"></script>
-    <script src="{{ STATIC_URL }}irv/js/calculateMeanValues.js"></script>
-    <script src="{{ STATIC_URL }}irv/js/calculateLeftMargin.js"></script>
+    <script src="{{ STATIC_URL }}irv/js/irv_utils.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer_d3_tree.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer_PCP_IRI.js"></script>

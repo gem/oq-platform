@@ -103,6 +103,8 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
         $("#primary-chart").empty();
+        var maxRowsToDisplay = 5;
+        updateNumDisplayedRows("#primaryDisplayedRows", dataToPlot, maxRowsToDisplay);
 
         var color = d3.scale.category20();
 
@@ -130,7 +132,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             .brushMode("1D-axes");
 
         // create data table, row hover highlighting
-        var maxRowsToDisplay = 5;
         var grid = d3.divgrid();
         d3.select("#primary-grid")
             .datum(dataToPlot.slice(0,maxRowsToDisplay))
@@ -155,8 +156,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
                 },
                 "mouseout": graph.unhighlight
             });
+            updateNumDisplayedRows("#primaryDisplayedRows", d, maxRowsToDisplay);
         });
     });
 }
-
-

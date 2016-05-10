@@ -22,6 +22,8 @@
 function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
     // $("#iri-chart").width("600px").height("300px");
+    var maxRowsToDisplay = 5;
+    updateNumDisplayedRows("#iriDisplayedRows", iriPcpData, maxRowsToDisplay);
 
     var color = d3.scale.category20();
 
@@ -46,7 +48,6 @@ function IRI_PCP_Chart(iriPcpData) {
         .brushMode("1D-axes");
 
     // create data table, row hover highlighting
-    var maxRowsToDisplay = 5;
     var grid = d3.divgrid();
     d3.select("#iri-grid")
         .datum(iriPcpData.slice(0,maxRowsToDisplay))
@@ -71,6 +72,7 @@ function IRI_PCP_Chart(iriPcpData) {
             },
             "mouseout": graph.unhighlight
         });
+        updateNumDisplayedRows("#iriDisplayedRows", d, maxRowsToDisplay);
     });
 
     // NOTE: a simple click on an axis resets the brush for that axis
