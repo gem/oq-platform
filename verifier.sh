@@ -368,7 +368,7 @@ if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
 fi
 cd -
 cd oq-platform-ipt
-pip install . -U --no-deps
+sudo python setup.py install
 cd -
 cd ~/$GEM_GIT_PACKAGE
 
@@ -549,7 +549,7 @@ fi
 
 # install IPT
 cd oq-platform-ipt
-sudo python setup.py install
+pip install . -U --no-deps
 cd -
 
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --hostname oq-platform.localdomain
