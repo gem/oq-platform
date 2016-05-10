@@ -1,6 +1,6 @@
 import os
 import subprocess
-import openquakeplatform.common
+import openquakeplatform
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -31,7 +31,7 @@ def oq_context_processor(request):
     context = {}
 
     context['SITEURL'] = settings.SITEURL
-    context['OQP_VERSION'] = openquakeplatform.common.__version__
+    context['OQP_VERSION'] = openquakeplatform.__version__
     context['third_party_urls'] = settings.THIRD_PARTY_URLS
     # BING API key for their maps
     context['bing_key'] = settings.BING_KEY

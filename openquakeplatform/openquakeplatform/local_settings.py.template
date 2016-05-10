@@ -1,14 +1,13 @@
 import os
 import geonode
-import openquakeplatform.common
+import openquakeplatform
 
 from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
 
 SITENAME = 'OpenQuake Platform'
 SITEURL = 'http://%(siteurl)s/'
 
-OQPLATFORM_ROOT = os.path.dirname(os.path.dirname(
-                      openquakeplatform.common.__file__))
+OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
 ROOT_URLCONF = 'openquakeplatform.urls'
@@ -290,7 +289,7 @@ INSTALLED_APPS = (
     'openquakeplatform.hazus',
     'openquakeplatform.hrde',
     'openquakeplatform.irv',
-    'openquakeplatform.ipt',
+    'openquakeplatform_plugins.ipt',
 
     # gemecd
     'openquakeplatform.weblib',
