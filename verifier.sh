@@ -368,7 +368,7 @@ if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
 fi
 cd -
 cd oq-platform-ipt
-python setup.py install
+pip install . -U --no-deps
 cd -
 cd ~/$GEM_GIT_PACKAGE
 
