@@ -4,7 +4,7 @@ import unittest
 from openquakeplatform.test import pla
 
 
-class RiptTest(unittest.TestCase):
+class IptTest(unittest.TestCase):
     def check_empty_cells_test(self):
         pla.get('/ipt')
 
