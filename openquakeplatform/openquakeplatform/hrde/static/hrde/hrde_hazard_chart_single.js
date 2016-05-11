@@ -15,12 +15,14 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
     width = 580 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
+    var x;
+    var y;
     if (curveType === 'uhs' || curveType === 'spectrum') {
-        var x = d3.scale.linear().range([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
+        x = d3.scale.linear().range([0, width]);
+        y = d3.scale.linear().range([height, 0]);
     } else {
-        var x = d3.scale.log().range([0, width]);
-        var y = d3.scale.log().range([height, 0]);
+        x = d3.scale.log().range([0, width]);
+        y = d3.scale.log().range([height, 0]);
     }
 
     var xAxis = d3.svg.axis()
