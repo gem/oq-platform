@@ -73,14 +73,24 @@ if [ "$GEM_EPHEM_NAME" = "" ]; then
     GEM_EPHEM_NAME="ubuntu-x11-lxc-eph"
 fi
 
-if command -v lxc-shutdown &> /dev/null; then
-    # Older lxc (< 1.0.0) with lxc-shutdown
-    LXC_TERM="lxc-shutdown -t 10 -w"
-    LXC_KILL="lxc-stop"
-else
-    # Newer lxc (>= 1.0.0) with lxc-stop only
-    LXC_TERM="lxc-stop -t 10"
-    LXC_KILL="lxc-stop -k"
+LXC_VER=$(lxc-ls --version | cut -d '.' -f 1)
+
+if [ $LXC_VER -lt 1 ]; then
+    echo "lxc >= 1.0.0 is required." >&2
+    exit 1
+fi
+
+LXC_TERM="lxc-stop -t 10"
+LXC_KILL="lxc-stop -k"
+
+if [ "$GEM_EPHEM_EXE" = "" ]; then
+    if command -v lxc-copy &> /dev/null; then
+        # New lxc (>= 2.0.0) with lxc-copy
+        GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -n ${GEM_EPHEM_NAME} -e"
+    else
+        # Old lxc (< 2.0.0) with lxc-start-ephimeral
+        GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -o ${GEM_EPHEM_NAME} -d"
+    fi
 fi
 
 ACTION="none"
@@ -458,7 +468,7 @@ devtest_run () {
     local deps old_ifs branch_id="$1"
 
     sudo echo
-    sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
+    sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
     rm /tmp/packager.eph.$$.log
 
@@ -567,7 +577,7 @@ prodtest_run () {
     local deps old_ifs branch_id="$1"
 
     sudo echo
-    sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
+    sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
     rm /tmp/packager.eph.$$.log
 
