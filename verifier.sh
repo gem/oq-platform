@@ -43,7 +43,7 @@
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
 
-# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
+export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 if [ $GEM_SET_DEBUG ]; then
     set -x
 fi
@@ -83,14 +83,18 @@ fi
 LXC_TERM="lxc-stop -t 10"
 LXC_KILL="lxc-stop -k"
 
-if [ "$GEM_EPHEM_EXE" = "" ]; then
-    if command -v lxc-copy &> /dev/null; then
-        # New lxc (>= 2.0.0) with lxc-copy
-        GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -n ${GEM_EPHEM_NAME} -e"
-    else
-        # Old lxc (< 2.0.0) with lxc-start-ephimeral
-        GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -o ${GEM_EPHEM_NAME} -d"
-    fi
+if command -v lxc-copy &> /dev/null; then
+    # New lxc (>= 2.0.0) with lxc-copy
+    GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -n ${GEM_EPHEM_NAME} -e"
+else
+    # Old lxc (< 2.0.0) with lxc-start-ephimeral
+    GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -o ${GEM_EPHEM_NAME} -d"
+fi
+
+if [ "$GEM_EPHEM_DESTROY" != "" ]; then
+    LXC_DESTROY="$GEM_EPHEM_DESTROY"
+else
+    LXC_DESTROY="lxc-destroy"
 fi
 
 ACTION="none"
@@ -190,25 +194,27 @@ sig_hand () {
         copy_prod
 
         echo "Destroying [$lxc_name] lxc"
-        upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
-        if [ -f "${upper}.dsk" ]; then
-            loop_dev="$(sudo losetup -a | grep "(${upper}.dsk)$" | cut -d ':' -f1)"
-        fi
-        sudo $LXC_KILL -n $lxc_name
-        sudo umount /var/lib/lxc/$lxc_name/rootfs
-        sudo umount /var/lib/lxc/$lxc_name/ephemeralbind
-        echo "$upper" | grep -q '^/tmp/'
-        if [ $? -eq 0 ]; then
-            sudo umount "$upper"
-            sudo rm -r "$upper"
-            if [ "$loop_dev" != "" ]; then
-                sudo losetup -d "$loop_dev"
-                if [ -f "${upper}.dsk" ]; then
-                    sudo rm -f "${upper}.dsk"
+        if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+            upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
+            if [ -f "${upper}.dsk" ]; then
+                loop_dev="$(sudo losetup -a | grep "(${upper}.dsk)$" | cut -d ':' -f1)"
+            fi
+            sudo $LXC_KILL -n $lxc_name
+            sudo umount /var/lib/lxc/$lxc_name/rootfs
+            sudo umount /var/lib/lxc/$lxc_name/ephemeralbind
+            echo "$upper" | grep -q '^/tmp/'
+            if [ $? -eq 0 ]; then
+                sudo umount "$upper"
+                sudo rm -r "$upper"
+                if [ "$loop_dev" != "" ]; then
+                    sudo losetup -d "$loop_dev"
+                    if [ -f "${upper}.dsk" ]; then
+                        sudo rm -f "${upper}.dsk"
+                    fi
                 fi
             fi
         fi
-        sudo lxc-destroy -n $lxc_name
+        sudo $LXC_DESTROY -n $lxc_name
     fi
     if [ -f /tmp/packager.eph.$$.log ]; then
         rm /tmp/packager.eph.$$.log
@@ -434,30 +440,41 @@ fab stop
 #
 _lxc_name_and_ip_get()
 {
-    local filename="$1" i e
+    if [ "$GEM_EPHEM_IP_GET" = "" ]; then
+        local filename="$1" i e
 
-    i=-1
-    e=-1
-    for i in $(seq 1 40); do
-        sleep 2
-        if grep -q "sudo lxc-console -n $GEM_EPHEM_NAME" $filename 2>&1 ; then
-            lxc_name="$(grep "sudo lxc-console -n $GEM_EPHEM_NAME" $filename | sed "s/.*sudo lxc-console -n \($GEM_EPHEM_NAME\)/\1/g")"
-            for e in $(seq 1 40); do
-                sleep 2
-                if grep -q "$lxc_name" /var/lib/misc/dnsmasq*.leases ; then
-                    lxc_ip="$(grep " $lxc_name " /var/lib/misc/dnsmasq*.leases | tail -n 1 | cut -d ' ' -f 3)"
-                    break
-                fi
-            done
-            break
+        i=-1
+        e=-1
+        for i in $(seq 1 40); do
+            sleep 2
+            if grep -q "sudo lxc-console -n $GEM_EPHEM_NAME" $filename 2>&1 ; then
+                lxc_name="$(grep "sudo lxc-console -n $GEM_EPHEM_NAME" $filename | sed "s/.*sudo lxc-console -n \($GEM_EPHEM_NAME\)/\1/g")"
+                for e in $(seq 1 40); do
+                    sleep 2
+                    if grep -q "$lxc_name" /var/lib/misc/dnsmasq*.leases ; then
+                        lxc_ip="$(grep " $lxc_name " /var/lib/misc/dnsmasq*.leases | tail -n 1 | cut -d ' ' -f 3)"
+                        break
+                    fi
+                done
+                break
+            fi
+        done
+        if [ $i -eq 40 -o $e -eq 40 ]; then
+            return 1
         fi
-    done
-    if [ $i -eq 40 -o $e -eq 40 ]; then
-        return 1
-    fi
-    echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
+        echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
 
-    return 0
+        return 0
+    else
+        lxc_ip="$(sudo $GEM_EPHEM_IP_GET "$GEM_EPHEM_NAME")"
+        lxc_name="$GEM_EPHEM_NAME"
+        if [ $? -ne 0 ]; then
+            return 1
+        fi
+        echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
+
+        return 0
+    fi
 }
 
 #
@@ -484,7 +501,9 @@ devtest_run () {
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
     fi
 
-    sudo $LXC_TERM -n $lxc_name
+    if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+        sudo $LXC_TERM -n $lxc_name
+    fi
 
     set -e
 
@@ -594,7 +613,9 @@ prodtest_run () {
         :
     fi
 
-    sudo $LXC_TERM -n $lxc_name
+    if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+        sudo $LXC_TERM -n $lxc_name
+    fi
 
     set -e
 
