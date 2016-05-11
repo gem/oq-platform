@@ -1,3 +1,5 @@
+// From https://gist.github.com/syntagmatic/3687826#file-divgrid-js
+
 d3.divgrid = function(config) {
   var columns = [];
 

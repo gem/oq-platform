@@ -16,6 +16,8 @@
 */
 
 function calculateMeanValues(inputData) {
+    // return an array containing, for each indicator (or composite indicator) the
+    // mean value with respect to the whole set of regions
     var sum = {};
     var sumMean = {};
     var sumMeanArray = [];
@@ -46,6 +48,9 @@ function calculateMeanValues(inputData) {
 }
 
 function calculateLeftMargin(dataToPlot) {
+    // depending on the length of region names, we need to adjust the left margin of charts,
+    // in order to display labels entirely
+
     // collect text for first column to adjust left margin
     var firstCell = dataToPlot.map(function(d){
         return d3.values(d)[0];
@@ -60,6 +65,8 @@ function calculateLeftMargin(dataToPlot) {
 }
 
 function updateNumDisplayedRows(paragraphId, dataToPlot, maxRowsToDisplay) {
+    // Update the text of paragraphId html element, displaying how many rows are being displayed with
+    // respect to the total amount of rows filtered from the whole data set dataToPlot.
     var numDisplayedRows = Math.min(maxRowsToDisplay, dataToPlot.length);
     $(paragraphId).text("Displaying " + numDisplayedRows + " of " + dataToPlot.length + " rows");
 }
