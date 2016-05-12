@@ -1,3 +1,6 @@
+  [Daniele Viganò]
+  * Get rid of icebox
+
   [Paolo Tormene]
   * vulnerability and irv: only authenticated superusers can run jasmine tests
   * irv: display the project's title on top of the project definition widget
