@@ -7,8 +7,7 @@
 -- maps = map_layers.order_by('map').distinct('map')
 -- 
 -- for map in maps:
---     map_obj = Map.objects.filter(id=map.map_id)
---     map_obj.delete()
+--     Map.objects.filter(id=map.map_id).delete()
 -- 
 -- Layer.objects.filter(name__contains="icebox").delete()
 -- 
