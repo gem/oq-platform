@@ -301,7 +301,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'pagination.middleware.PaginationMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # irv needs csrf to be disabled to work
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # geonode.security is enabled to lockdown the website
     'geonode.security.middleware.LoginRequiredMiddleware',
