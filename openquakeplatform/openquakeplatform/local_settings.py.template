@@ -289,7 +289,8 @@ INSTALLED_APPS = (
     'openquakeplatform.hazus',
     'openquakeplatform.hrde',
     'openquakeplatform.irv',
-    'openquakeplatform_plugins.ipt',
+
+    'openquakeplatform_ipt',
 
     # gemecd
     'openquakeplatform.weblib',
