@@ -157,11 +157,6 @@ urlpatterns = patterns('',
 
     )
 
-if 'openquakeplatform.icebox' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^icebox/', include('openquakeplatform.icebox.urls')),
-    )
-
 # Example of an experimental application
 # if settings.GEM_EXPERIMENTAL:
 #     urlpatterns += patterns('',
