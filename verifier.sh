@@ -33,6 +33,23 @@
 # file system (in-memory or disk)
 #
 
+# INSTALL A PLATFORM ON A BAREBONES UBUNTU MACHINE
+# you can use verifier.sh to install a permanent LXC machine
+#
+# to do it:
+#
+# - copy openquakeplatform/bin/lxc-* to your /usr/local/sbin
+#
+# - set these env variables (change <lxc-machine-name> with your m. name)
+#
+# export GEM_EPHEM_IP_GET=lxc-ip-get-gem
+# export GEM_EPHEM_NAME=<lxc-machine-name>
+# export GEM_EPHEM_DESTROY=echo lxc-destroy-fake
+# export GEM_EPHEM_CMD=lxc-start-gem
+#
+# run ./verifier.sh prodtest <your-branch-name>
+
+
 
 # MAYBE GOOD FOR PRODUCTION TEST PART
 # sudo apt-get install git
@@ -43,7 +60,7 @@
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
 
-export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
+# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 if [ $GEM_SET_DEBUG ]; then
     set -x
 fi
