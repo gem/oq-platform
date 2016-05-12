@@ -1683,6 +1683,19 @@ function projDefJSONRequest(selectedLayer) {
                 [data.bounding_box.minx,data.bounding_box.miny],
                 [data.bounding_box.maxx, data.bounding_box.maxy]
             ];
+            if (data.bounding_box.minx < -180 || data.bounding_box.minx > 180 ||
+                    data.bounding_box.maxx < -180 || data.bounding_box.maxx > 180 ||
+                    data.bounding_box.miny < -90  || data.bounding_box.miny > 90  ||
+                    data.bounding_box.maxy < -90  || data.bounding_box.maxy > 90) {
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>The project you are trying to load has a bounding box that can not be correctly loaded by this application. Please check the projection.</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#projectDef-spinner').hide();
+                $('#absoluteSpinner').hide();
+                return;
+            }
 
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();

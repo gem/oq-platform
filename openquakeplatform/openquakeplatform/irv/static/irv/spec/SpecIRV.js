@@ -162,59 +162,68 @@ describe("Get All Layers From GeoServer", function() {
             var tempZone;
             var tempProjDefMeta = SVIRPairs[i].projDefMetaData;
 
-                // Test SVIR plugin major version
-                var tempVertion = null;
-                if (tempProjDefMeta.hasOwnProperty('svir_plugin_version')) {
-                    tempVertion = tempProjDefMeta.svir_plugin_version;
-                } else if (tempProjDefMeta.hasOwnProperty('irmt_plugin_version')) {
-                    tempVertion = tempProjDefMeta.irmt_plugin_version;
-                }
+            // Test SVIR plugin major version
+            var tempVersion = null;
+            if (tempProjDefMeta.hasOwnProperty('svir_plugin_version')) {
+                tempVersion = tempProjDefMeta.svir_plugin_version;
+            } else if (tempProjDefMeta.hasOwnProperty('irmt_plugin_version')) {
+                tempVersion = tempProjDefMeta.irmt_plugin_version;
+            }
 
-                var tempVertionMajor = tempVertion.charAt(0);
-                expect(tempVertionMajor).toEqual('1');
+            var tempVersionMajor = tempVersion.charAt(0);
+            expect(tempVersionMajor).toEqual('1');
 
-                // Test abstract
-                var tempDescription = tempProjDefMeta.abstract;
-                expect(tempDescription).toBeDefined();
+            // Test abstract
+            var tempDescription = tempProjDefMeta.abstract;
+            expect(tempDescription).toBeDefined();
 
-                // Test license
-                var tempLicense = tempProjDefMeta.license;
-                var licenseOptions = [
-                    'CC0 (http://creativecommons.org/about/cc0)',
-                    'CC BY 3.0  (http://creativecommons.org/licenses/by/3.0/)',
-                    'CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/)',
-                    'CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)'
-                ];
-                expect(licenseOptions).toContain(tempLicense);
+            // Test license
+            var tempLicense = tempProjDefMeta.license;
+            var licenseOptions = [
+                'CC0 (http://creativecommons.org/about/cc0)',
+                'CC BY 3.0  (http://creativecommons.org/licenses/by/3.0/)',
+                'CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/)',
+                'CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)'
+            ];
+            expect(licenseOptions).toContain(tempLicense);
 
-                // Test the tile
-                var tempTitle = tempProjDefMeta.title;
-                expect(tempTitle).toBeDefined();
+            // Test the tile
+            var layerTitle = tempProjDefMeta.title;
+            expect(layerTitle).toBeDefined();
 
-                // Test zone field
-                tempZone = tempProjDefMeta.zone_label_field;
-                expect(tempZone).toBeDefined();
+            // Test zone field
+            tempZone = tempProjDefMeta.zone_label_field;
+            expect(tempZone).toBeDefined();
 
-                // Test bounding box field exists
-                var boundingBox = tempProjDefMeta.bounding_box;
-                expect(boundingBox).toBeDefined();
+            // Test bounding box field exists
+            var boundingBox = tempProjDefMeta.bounding_box;
+            expect(boundingBox).toBeDefined();
 
-                // Test bounding box contains valid coordinates
-                minXCoordinate = tempProjDefMeta.bounding_box.minx;
-                expect(minXCoordinate >= -180 ).toBeTruthy();
-                expect(minXCoordinate <= 180 ).toBeTruthy();
+            var errMsgBase = "Layer [" + layerTitle + "]";
+            var errMsg;
 
-                maxXCoordinate = tempProjDefMeta.bounding_box.maxx;
-                expect(maxXCoordinate >= -180 ).toBeTruthy();
-                expect(maxXCoordinate <= 180 ).toBeTruthy();
+            // Test projection
+            var projectionCode = SVIRPairs[i].attribute.crs.properties.code;
+            errMsg = errMsgBase + " has projection code [" + projectionCode + "] that is incompatible with this application.";
+            expect(projectionCode == "4326").toBeTruthy(errMsg);
 
-                minYCoordinate = tempProjDefMeta.bounding_box.miny;
-                expect(minYCoordinate >= -90 ).toBeTruthy();
-                expect(minYCoordinate <= 90 ).toBeTruthy();
+            // Test bounding box contains valid coordinates
+            errMsg = errMsgBase + " has invalid bounding box coordinates";
+            minXCoordinate = tempProjDefMeta.bounding_box.minx;
+            expect(minXCoordinate >= -180 ).toBeTruthy(errMsg);
+            expect(minXCoordinate <= 180 ).toBeTruthy(errMsg);
 
-                maxYCoordinate = tempProjDefMeta.bounding_box.maxy;
-                expect(maxYCoordinate >= -90 ).toBeTruthy();
-                expect(maxYCoordinate <= 90 ).toBeTruthy();
+            maxXCoordinate = tempProjDefMeta.bounding_box.maxx;
+            expect(maxXCoordinate >= -180 ).toBeTruthy(errMsg);
+            expect(maxXCoordinate <= 180 ).toBeTruthy(errMsg);
+
+            minYCoordinate = tempProjDefMeta.bounding_box.miny;
+            expect(minYCoordinate >= -90 ).toBeTruthy(errMsg);
+            expect(minYCoordinate <= 90 ).toBeTruthy(errMsg);
+
+            maxYCoordinate = tempProjDefMeta.bounding_box.maxy;
+            expect(maxYCoordinate >= -90 ).toBeTruthy(errMsg);
+            expect(maxYCoordinate <= 90 ).toBeTruthy(errMsg);
         }
     });
 
