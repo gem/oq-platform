@@ -403,7 +403,9 @@ function processIndicators(layerAttributes, projectDef) {
                 var nullWasFound = false;
                 for (var prop in la[o].properties) {
                     // iterate over the indicator child keys
-                    if (nullWasFound) break;
+                    if (nullWasFound) {
+                        break;
+                    }
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (prop == tempIndicatorChildrenKeys[r]) {
                             newValue = la[o].properties[prop];
