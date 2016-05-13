@@ -43,7 +43,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
     }
 
     $('#themeSelector').empty();
-    $('#themeSelector').append('<option value="">Select a Theme</option>');
+    $('#themeSelector').append('<option value="" disabled>Select a Theme</option>');
 
     for (var l = 0; l < themesWithChildren.length; l++) {
         var theme = themesWithChildren[l];
