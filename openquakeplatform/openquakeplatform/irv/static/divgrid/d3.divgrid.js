@@ -19,17 +19,23 @@ d3.divgrid = function(config) {
       .data(columns);
 
     header.enter().append("div")
-      .attr("class", function(d,i) { return "divgrid-col-" + i; })
+      .attr("class", function(d,i) {
+          return "divgrid-col-" + i;
+      })
       .classed("divgrid-cell", true);
 
     selection.selectAll(".divgrid-header .divgrid-cell")
-      .text(function(d) { return d; });
+      .text(function(d) {
+          return d;
+      });
 
     header.exit().remove();
 
     // rows
     var rows = selection.selectAll(".divgrid-row")
-        .data(function(d) { return d; });
+        .data(function(d) {
+            return d;
+        });
 
     rows.enter().append("div")
         .attr("class", "divgrid-row");
@@ -38,25 +44,32 @@ d3.divgrid = function(config) {
 
     var cells = selection.selectAll(".divgrid-row").selectAll(".divgrid-cell")
         .data(function(d) {
-            return columns.map(function(col){return d[col];
+            return columns.map(function(col){
+                return d[col];
+            });
         });
-    });
 
     // cells
     cells.enter().append("div")
-      .attr("class", function(d,i) { return "divgrid-col-" + i; })
+      .attr("class", function(d,i) {
+          return "divgrid-col-" + i;
+      })
       .classed("divgrid-cell", true);
 
     cells.exit().remove();
 
     selection.selectAll(".divgrid-cell")
-      .text(function(d) { return d; });
+      .text(function(d) {
+          return d;
+      });
 
     return dg;
   };
 
   dg.columns = function(_) {
-    if (!arguments.length) return columns;
+    if (!arguments.length) {
+        return columns;
+    }
     columns = _;
     return this;
   };
