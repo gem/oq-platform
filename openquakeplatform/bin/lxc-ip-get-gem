@@ -1,0 +1,9 @@
+#!/bin/bash
+# set -x
+LXC_NAME="$1"
+nam="$(echo "$LXC_NAME" | sed 's/\..*//g')"
+if ( grep -v '^[ 	]*#' /etc/hosts | grep -wq "$nam" ) ; then
+    grep -v '^[ 	]*#' /etc/hosts | grep -w "$nam" | sed 's/[ 	].*//g'
+else
+    sudo grep address /var/lib/lxc/${LXC_NAME}/rootfs/etc/network/interfaces | sed 's/^[ 	]*address[ 	]*//g'
+fi
