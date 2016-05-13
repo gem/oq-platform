@@ -289,7 +289,8 @@ INSTALLED_APPS = (
     'openquakeplatform.hazus',
     'openquakeplatform.hrde',
     'openquakeplatform.irv',
-    'openquakeplatform.ript',
+
+    'openquakeplatform_ipt',
 
     # gemecd
     'openquakeplatform.weblib',
@@ -378,7 +379,7 @@ AUTH_EXEMPT_URLS = ('/$',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*',
                     '/taxtweb/',
-                    '/ript/')
+                    '/ipt/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.
