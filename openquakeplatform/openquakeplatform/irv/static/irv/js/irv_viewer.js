@@ -75,6 +75,15 @@ var namesToOperators = {
     'Geometric mean (ignore weights)':        operators.GEOM_MEAN
 };
 
+var nodeTypes = {
+    'IRI': 'Integrated Risk Index',
+    'RI': 'Risk Index',
+    'RISK_INDICATOR': 'Risk Indicator',
+    'SVI': 'Social Vulnerability Index',
+    'SV_THEME': 'Social Vulnerability Theme',
+    'SV_INDICATOR': 'Social Vulnerability Indicator',
+};
+
 $(document).ready(function() {
     $('#cover').remove();
     $('.alert-unscaled-data').hide();
@@ -1040,22 +1049,104 @@ function mapboxGlLayerCreation() {
         '<div id="mapInfo"></div>'
     );
 
+    function findNameAndTypeInProjDef(field, treeNode) {
+        // NOTE: in the project definition,
+        //       'name' is the extended name of a variable
+        //       'field' is the variable reference in the layer
+        //       (we are inspecting the project definition
+        //       to find the given field and to return the
+        //       corresponding extended name)
+        retDict = {'type': treeNode.type};
+        if (typeof treeNode.field !== 'undefined' && treeNode.field == field) {
+            try {
+                retDict.name = treeNode.name;
+                return retDict;
+            } catch(exc) {
+                // if the name is undefined, but the field was found, then return the field
+                retDict.name = field;
+                return retDict;
+            }
+        } else if (treeNode.name !== 'undefined' && treeNode.name == field) {
+            retDict.name = field;
+            return retDict;
+        } else if (typeof treeNode.children !== 'undefined') {
+            for (var i = 0; i < treeNode.children.length; i++) {
+                var child = treeNode.children[i];
+                var nameAndType = findNameAndTypeInProjDef(field, child);
+                if ('name' in nameAndType) {
+                    retDict.name = nameAndType.name;
+                    retDict.type = nameAndType.type;
+                    return retDict;
+                }
+            }
+            return {};
+        } else {
+            return {};
+        }
+    }
+
     map.on('click', function(e) {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
             $('#mapInfo').css({'visibility': 'visible'});
-            var isDataFromIrmt = false;
             try {
-                var layerSource = features[0].layer.source;
-                isDataFromIrmt = (layerSource == 'projectSource');
-            } catch(exc) {
-                // isDataFromIrmt remains false
-            }
-            if (isDataFromIrmt) {
-                for(var i in features[0].properties) {
-                    $('#mapInfo').append(i+': '+features[0].properties[i]+'</br>');
+                var region = features[0].properties.region;
+                if (typeof region !== 'undefined') {
+                    $('#mapInfo').append('<h4>' + region + '</h4>');
                 }
+            } catch(exc) {
+                // do not show info
+            }
+            var structuredInfo = {
+                'compositeIndices': [],
+                'svThemes': [],
+                'svIndicators': [],
+                'riskIndicators': []
+            };
+            var isDataAvailable = false;
+            if (typeof features[0] !== 'undefined' && typeof features[0].properties !== 'undefined') {
+                for (var field in features[0].properties) {
+                    var nameAndType = findNameAndTypeInProjDef(field, sessionProjectDef);
+                    if ('name' in nameAndType) {
+                        isDataAvailable = true;
+                        var nameAndValue = {
+                            'name': nameAndType.name,
+                            'value': features[0].properties[field]
+                        };
+                        switch (nameAndType.type) {
+                            case nodeTypes.IRI:
+                            case nodeTypes.RI:
+                            case nodeTypes.SVI:
+                                structuredInfo.compositeIndices.push(nameAndValue);
+                                break;
+                            case nodeTypes.SV_THEME:
+                                structuredInfo.svThemes.push(nameAndValue);
+                                break;
+                            case nodeTypes.SV_INDICATOR:
+                                structuredInfo.svIndicators.push(nameAndValue);
+                                break;
+                            case nodeTypes.RISK_INDICATOR:
+                                structuredInfo.riskIndicators.push(nameAndValue);
+                                break;
+                            default:
+                                // This should never happen, unless the project definition is wrong
+                                alert('Wrong project definition: unknown node type [' + nameAndType.type + ']');
+                        }
+                    }
+                }
+            }
+            if (isDataAvailable) {
+                $.each(['compositeIndices', 'riskIndicators', 'svThemes', 'svIndicators'], function(ind, key) {
+                    if (structuredInfo[key].length) {
+                        $('#mapInfo').append('<hr>');
+                    }
+                    for (var i = 0; i < structuredInfo[key].length; i++) {
+                        var name = structuredInfo[key][i].name;
+                        var value = structuredInfo[key][i].value;
+                        $('#mapInfo').append(name + ': ' + value + '</br>');
+                    }
+                });
             } else {
                 $('#mapInfo').append('No data available');
             }
