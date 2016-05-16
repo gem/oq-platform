@@ -1,6 +1,11 @@
   [Daniele Viganò]
   * Get rid of icebox
 
+  [Matteo Nastasi]
+  * move IPT (ex RIPT) app as independent repository to be able to install
+    it as stand-alone django app
+  * add possibility to install test locally on not ephemeral LXC
+
   [Paolo Tormene]
   * vulnerability and irv: only authenticated superusers can run jasmine tests
   * irv: display the project's title on top of the project definition widget

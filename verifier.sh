@@ -33,6 +33,23 @@
 # file system (in-memory or disk)
 #
 
+# INSTALL A PLATFORM ON A BAREBONES UBUNTU MACHINE
+# you can use verifier.sh to install a permanent LXC machine
+#
+# to do it:
+#
+# - copy openquakeplatform/bin/lxc-* to your /usr/local/sbin
+#
+# - set these env variables (change <lxc-machine-name> with your m. name)
+#
+# export GEM_EPHEM_IP_GET=lxc-ip-get-gem
+# export GEM_EPHEM_NAME=<lxc-machine-name>
+# export GEM_EPHEM_DESTROY=echo lxc-destroy-fake
+# export GEM_EPHEM_CMD=lxc-start-gem
+#
+# run ./verifier.sh prodtest <your-branch-name>
+
+
 
 # MAYBE GOOD FOR PRODUCTION TEST PART
 # sudo apt-get install git
@@ -73,14 +90,28 @@ if [ "$GEM_EPHEM_NAME" = "" ]; then
     GEM_EPHEM_NAME="ubuntu-x11-lxc-eph"
 fi
 
-if command -v lxc-shutdown &> /dev/null; then
-    # Older lxc (< 1.0.0) with lxc-shutdown
-    LXC_TERM="lxc-shutdown -t 10 -w"
-    LXC_KILL="lxc-stop"
+LXC_VER=$(lxc-ls --version | cut -d '.' -f 1)
+
+if [ $LXC_VER -lt 1 ]; then
+    echo "lxc >= 1.0.0 is required." >&2
+    exit 1
+fi
+
+LXC_TERM="lxc-stop -t 10"
+LXC_KILL="lxc-stop -k"
+
+if command -v lxc-copy &> /dev/null; then
+    # New lxc (>= 2.0.0) with lxc-copy
+    GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -n ${GEM_EPHEM_NAME} -e"
 else
-    # Newer lxc (>= 1.0.0) with lxc-stop only
-    LXC_TERM="lxc-stop -t 10"
-    LXC_KILL="lxc-stop -k"
+    # Old lxc (< 2.0.0) with lxc-start-ephimeral
+    GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -o ${GEM_EPHEM_NAME} -d"
+fi
+
+if [ "$GEM_EPHEM_DESTROY" != "" ]; then
+    LXC_DESTROY="$GEM_EPHEM_DESTROY"
+else
+    LXC_DESTROY="lxc-destroy"
 fi
 
 ACTION="none"
@@ -180,25 +211,27 @@ sig_hand () {
         copy_prod
 
         echo "Destroying [$lxc_name] lxc"
-        upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
-        if [ -f "${upper}.dsk" ]; then
-            loop_dev="$(sudo losetup -a | grep "(${upper}.dsk)$" | cut -d ':' -f1)"
-        fi
-        sudo $LXC_KILL -n $lxc_name
-        sudo umount /var/lib/lxc/$lxc_name/rootfs
-        sudo umount /var/lib/lxc/$lxc_name/ephemeralbind
-        echo "$upper" | grep -q '^/tmp/'
-        if [ $? -eq 0 ]; then
-            sudo umount "$upper"
-            sudo rm -r "$upper"
-            if [ "$loop_dev" != "" ]; then
-                sudo losetup -d "$loop_dev"
-                if [ -f "${upper}.dsk" ]; then
-                    sudo rm -f "${upper}.dsk"
+        if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+            upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
+            if [ -f "${upper}.dsk" ]; then
+                loop_dev="$(sudo losetup -a | grep "(${upper}.dsk)$" | cut -d ':' -f1)"
+            fi
+            sudo $LXC_KILL -n $lxc_name
+            sudo umount /var/lib/lxc/$lxc_name/rootfs
+            sudo umount /var/lib/lxc/$lxc_name/ephemeralbind
+            echo "$upper" | grep -q '^/tmp/'
+            if [ $? -eq 0 ]; then
+                sudo umount "$upper"
+                sudo rm -r "$upper"
+                if [ "$loop_dev" != "" ]; then
+                    sudo losetup -d "$loop_dev"
+                    if [ -f "${upper}.dsk" ]; then
+                        sudo rm -f "${upper}.dsk"
+                    fi
                 fi
             fi
         fi
-        sudo lxc-destroy -n $lxc_name
+        sudo $LXC_DESTROY -n $lxc_name
     fi
     if [ -f /tmp/packager.eph.$$.log ]; then
         rm /tmp/packager.eph.$$.log
@@ -341,6 +374,7 @@ _devtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -365,6 +399,12 @@ source platform-env/bin/activate
 if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
     pip install simplejson==2.0.9
 fi
+cd -
+cd oq-platform-ipt
+sudo python setup.py install
+cd -
+cd ~/$GEM_GIT_PACKAGE
+
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
@@ -424,30 +464,41 @@ fab stop
 #
 _lxc_name_and_ip_get()
 {
-    local filename="$1" i e
+    if [ "$GEM_EPHEM_IP_GET" = "" ]; then
+        local filename="$1" i e
 
-    i=-1
-    e=-1
-    for i in $(seq 1 40); do
-        sleep 2
-        if grep -q "sudo lxc-console -n $GEM_EPHEM_NAME" $filename 2>&1 ; then
-            lxc_name="$(grep "sudo lxc-console -n $GEM_EPHEM_NAME" $filename | sed "s/.*sudo lxc-console -n \($GEM_EPHEM_NAME\)/\1/g")"
-            for e in $(seq 1 40); do
-                sleep 2
-                if grep -q "$lxc_name" /var/lib/misc/dnsmasq*.leases ; then
-                    lxc_ip="$(grep " $lxc_name " /var/lib/misc/dnsmasq*.leases | tail -n 1 | cut -d ' ' -f 3)"
-                    break
-                fi
-            done
-            break
+        i=-1
+        e=-1
+        for i in $(seq 1 40); do
+            sleep 2
+            if grep -q "sudo lxc-console -n $GEM_EPHEM_NAME" $filename 2>&1 ; then
+                lxc_name="$(grep "sudo lxc-console -n $GEM_EPHEM_NAME" $filename | sed "s/.*sudo lxc-console -n \($GEM_EPHEM_NAME\)/\1/g")"
+                for e in $(seq 1 40); do
+                    sleep 2
+                    if grep -q "$lxc_name" /var/lib/misc/dnsmasq*.leases ; then
+                        lxc_ip="$(grep " $lxc_name " /var/lib/misc/dnsmasq*.leases | tail -n 1 | cut -d ' ' -f 3)"
+                        break
+                    fi
+                done
+                break
+            fi
+        done
+        if [ $i -eq 40 -o $e -eq 40 ]; then
+            return 1
         fi
-    done
-    if [ $i -eq 40 -o $e -eq 40 ]; then
-        return 1
-    fi
-    echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
+        echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
 
-    return 0
+        return 0
+    else
+        lxc_ip="$(sudo $GEM_EPHEM_IP_GET "$GEM_EPHEM_NAME")"
+        lxc_name="$GEM_EPHEM_NAME"
+        if [ $? -ne 0 ]; then
+            return 1
+        fi
+        echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
+
+        return 0
+    fi
 }
 
 #
@@ -458,7 +509,7 @@ devtest_run () {
     local deps old_ifs branch_id="$1"
 
     sudo echo
-    sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
+    sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
     rm /tmp/packager.eph.$$.log
 
@@ -474,7 +525,9 @@ devtest_run () {
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
     fi
 
-    sudo $LXC_TERM -n $lxc_name
+    if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+        sudo $LXC_TERM -n $lxc_name
+    fi
 
     set -e
 
@@ -528,6 +581,7 @@ _prodtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -538,6 +592,12 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
+
+# install IPT
+cd oq-platform-ipt
+sudo pip install . -U --no-deps
+cd -
+
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --hostname oq-platform.localdomain
 
 cd oq-platform/openquakeplatform
@@ -567,7 +627,7 @@ prodtest_run () {
     local deps old_ifs branch_id="$1"
 
     sudo echo
-    sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
+    sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
     rm /tmp/packager.eph.$$.log
 
@@ -584,7 +644,9 @@ prodtest_run () {
         :
     fi
 
-    sudo $LXC_TERM -n $lxc_name
+    if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+        sudo $LXC_TERM -n $lxc_name
+    fi
 
     set -e
 
