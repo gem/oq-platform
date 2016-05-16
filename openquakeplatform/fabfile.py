@@ -437,10 +437,6 @@ def _add_isc_viewer_1(db_name, db_user, db_pass):
           ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
 
 
-def _add_icebox_1(db_name, db_user, db_pass):
-    pass
-
-
 def _add_faulted_earth_1(db_name, db_user, db_pass):
     pass
 

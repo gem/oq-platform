@@ -31,7 +31,6 @@ setup(
               'openquakeplatform.faulted_earth',
               'openquakeplatform.geodetic',
               'openquakeplatform.exposure',
-              'openquakeplatform.icebox',
               'openquakeplatform.world',
               'openquakeplatform.svir',
               'openquakeplatform.vulnerability',
