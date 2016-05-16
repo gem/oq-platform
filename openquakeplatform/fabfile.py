@@ -53,7 +53,7 @@ def _check_risklib_nrmllib():
     except SystemExit:
         print """
 WARNING: 'openquake.commonlib.nrml' from 'oq-risklib' not found,
-'ript' application will not work properly; to add it you can choice one
+'ipt' application will not work properly; to add it you can choose one
 of these solutions:
 
 - install 'oq-hazardlib' and 'oq-risklib' as packages running:

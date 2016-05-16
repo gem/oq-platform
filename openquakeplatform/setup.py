@@ -57,7 +57,6 @@ setup(
               'openquakeplatform.hazus',
               'openquakeplatform.hrde',
               'openquakeplatform.irv',
-              'openquakeplatform.ript',
               'openquakeplatform.test',
               ],
     # NOTE:  django-chained-multi-checkboxes is following the new convention: a floating tag on github v<major>.<minor> only follows

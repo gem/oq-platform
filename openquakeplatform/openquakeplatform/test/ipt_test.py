@@ -4,9 +4,9 @@ import unittest
 from openquakeplatform.test import pla
 
 
-class RiptTest(unittest.TestCase):
+class IptTest(unittest.TestCase):
     def check_empty_cells_test(self):
-        pla.get('/ript')
+        pla.get('/ipt')
 
         # initially, we are in the exposure tab, and the handson table is empty
 
