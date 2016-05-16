@@ -112,11 +112,6 @@ LOCALE_PATHS = (
     os.path.join(GEONODE_ROOT, "locale"),
 )
 
-OQ_ENGINE_SERVER_URLS = {
-    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/run',  # i.e. : 'http://oq-platform:8800'
-    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/run',        # i.e. : 'http://oq-platform:8800'
-}
-
 THIRD_PARTY_URLS = {
     'leaflet_base_map': (
         'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
@@ -282,7 +277,6 @@ INSTALLED_APPS = (
     'openquakeplatform.geodetic',
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
-    # 'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
     'openquakeplatform.grv',
@@ -308,7 +302,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'pagination.middleware.PaginationMiddleware',
-    # icebox need csrf to be disabled to work
+    # irv needs csrf to be disabled to work
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # geonode.security is enabled to lockdown the website
@@ -398,9 +392,6 @@ AUTH_EXEMPT_URLS = ('/$',
 # EMAIL_PORT = 25
 # DEFAULT_FROM_EMAIL = 'info@%(hostname)s'
 # THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(hostname)s'
-
-# this value must be the same of oq-engine-server key settings
-OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
 
 # Max input upload size for Icebox
 ICEBOX_MAX_SIZE_MB = 10
