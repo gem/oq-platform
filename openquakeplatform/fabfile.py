@@ -53,7 +53,7 @@ def _check_risklib_nrmllib():
     except SystemExit:
         print """
 WARNING: 'openquake.commonlib.nrml' from 'oq-risklib' not found,
-'ript' application will not work properly; to add it you can choice one
+'ipt' application will not work properly; to add it you can choose one
 of these solutions:
 
 - install 'oq-hazardlib' and 'oq-risklib' as packages running:
@@ -435,10 +435,6 @@ def _maybe_install_postgis(db_name):
 def _add_isc_viewer_1(db_name, db_user, db_pass):
     local('python manage.py import_isccsv ./openquakeplatform/isc_viewer/dev_data/isc_data.csv'
           ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
-
-
-def _add_icebox_1(db_name, db_user, db_pass):
-    pass
 
 
 def _add_faulted_earth_1(db_name, db_user, db_pass):

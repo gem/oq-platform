@@ -374,6 +374,7 @@ _devtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -398,6 +399,12 @@ source platform-env/bin/activate
 if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
     pip install simplejson==2.0.9
 fi
+cd -
+cd oq-platform-ipt
+sudo python setup.py install
+cd -
+cd ~/$GEM_GIT_PACKAGE
+
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
@@ -574,6 +581,7 @@ _prodtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -584,6 +592,12 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
+
+# install IPT
+cd oq-platform-ipt
+sudo pip install . -U --no-deps
+cd -
+
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --hostname oq-platform.localdomain
 
 cd oq-platform/openquakeplatform
