@@ -61,7 +61,7 @@ d3.divgrid = function(config) {
     selection.selectAll(".divgrid-cell")
       .text(function(d) {
           if (typeof(d) == "number") {
-              return d.toFixed(10);
+              return d.toFixed(6);
           }
           return d;
       });
