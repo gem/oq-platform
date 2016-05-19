@@ -70,5 +70,9 @@ function updateNumDisplayedRows(paragraphId, dataToPlot, maxRowsToDisplay) {
     // Update the text of paragraphId html element, displaying how many rows are being displayed with
     // respect to the total amount of rows filtered from the whole data set dataToPlot.
     var numDisplayedRows = Math.min(maxRowsToDisplay, dataToPlot.length);
-    $(paragraphId).text("Displaying " + numDisplayedRows + " of " + dataToPlot.length + " rows");
+    if (numDisplayedRows < dataToPlot.length) {
+        $(paragraphId).text("(displaying " + numDisplayedRows + " of " + dataToPlot.length + " rows)");
+    } else {
+        $(paragraphId).text("");
+    }
 }
