@@ -745,10 +745,10 @@ function scale(IndicatorObj) {
     for (var v in IndicatorObj) {
         ValueArray.push(IndicatorObj[v]);
     }
-    function isNotNull(n) {
-        return n !== null;
+    function isValidNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
     }
-    var notNullElements = ValueArray.filter(isNotNull);
+    var notNullElements = ValueArray.filter(isValidNumber);
     var tempMin = Math.min.apply(null, notNullElements),
         tempMax = Math.max.apply(null, notNullElements);
 
@@ -760,12 +760,12 @@ function scale(IndicatorObj) {
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
         else if (tempMax == tempMin) {
             scaledValues.push(1);
-            // Disable the chart tabs
+            // FIXME: check if we want to disable the chart tabs here
             // Not using $.each in this case, just to avoid a syntax warning
             // about defining a function within a loop
-            disableWidget(widgetsAndButtons.indicators);
-            disableWidget(widgetsAndButtons.svi);
-            disableWidget(widgetsAndButtons.iri);
+            // disableWidget(widgetsAndButtons.indicators);
+            // disableWidget(widgetsAndButtons.svi);
+            // disableWidget(widgetsAndButtons.iri);
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
