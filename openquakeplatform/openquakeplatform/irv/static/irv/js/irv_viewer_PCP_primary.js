@@ -111,7 +111,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         var graph = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
             // .width(600 + horizontalSpacer)
             // .height(300 + verticalSpacer)
-            .width(600)
+            .width(calculateWidth(dataToPlot))
             .height(400)
             .data(dataToPlot)
             // .hideAxis(["plotElement"])  // if we want to use a legend instead

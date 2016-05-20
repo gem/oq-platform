@@ -28,7 +28,7 @@ function IRI_PCP_Chart(iriPcpData) {
     var color = d3.scale.category20();
 
     var graph = d3.parcoords({nullValueSeparator: "bottom"})("#iri-chart")
-        .width(600)
+        .width(calculateWidth(iriPcpData))
         .height(400)
         .data(iriPcpData)
         // .hideAxis(["plotElement"])  // if we want to use a legend instead

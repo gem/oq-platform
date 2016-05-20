@@ -32,7 +32,7 @@ function Theme_PCP_Chart(themeData) {
     var color = d3.scale.category20();
 
     var graph = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
-        .width(600)
+        .width(calculateWidth(themeData))
         .height(400)
         .data(themeData)
         // .hideAxis(["plotElement"])  // if we want to use a legend instead

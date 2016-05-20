@@ -66,6 +66,13 @@ function calculateLeftMargin(dataToPlot) {
     return 3 * textLength;
 }
 
+function calculateWidth(dataToPlot) {
+    // when we handle many indicators, the chart needs to be wider
+    var numVerticalAxes = Object.keys(dataToPlot[0]).length;
+    var width = 100 * numVerticalAxes;
+    return width;
+}
+
 function updateNumDisplayedRows(paragraphId, dataToPlot, maxRowsToDisplay) {
     // Update the text of paragraphId html element, displaying how many rows are being displayed with
     // respect to the total amount of rows filtered from the whole data set dataToPlot.
