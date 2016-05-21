@@ -272,7 +272,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempThemeName = themeKeys[themeKey];
             var themeWeightVal;
             var newElementValue = themeObj[idx][tempThemeName];
-            if (newElementValue === null) {
+            if (!isValidNumber(newElementValue)) {
                 tempElementValue = null;
                 nullWasFound = true;
                 break;
@@ -356,7 +356,7 @@ function processIndicators(layerAttributes, projectDef) {
         // add the theme and value to each theme data object
         for (var i = 0; i < themeData.length; i++) {
             if (themeData[i].Region == region) {
-                if (value === null) {
+                if (!isValidNumber(value)) {
                     delete themeData[i][theme];
                 } else {
                     themeData[i][theme] = value;
@@ -409,7 +409,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (prop == tempIndicatorChildrenKeys[r]) {
                             newValue = la[o].properties[prop];
-                            if (newValue === null) {
+                            if (!isValidNumber(newValue)) {
                                 tempValue = null;
                                 nullWasFound = true;
                                 break;
@@ -554,7 +554,7 @@ function processIndicators(layerAttributes, projectDef) {
         for (var regionName in SVI) {
             var sviValue = SVI[regionName];
             var riValue = RI[regionName];
-            if (sviValue === null || riValue === null) {
+            if (!isValidNumber(sviValue) || !isValidNumber(riValue)) {
                 IRI[regionName] = null;
             } else {
                 sviComponent = sviValue * sviWeight * sviInversionFactor;
@@ -706,13 +706,13 @@ function processIndicators(layerAttributes, projectDef) {
     for (var region_idx in regionNames) {
         var regionName = regionNames[region_idx];
         var regionData = {"Region": regionName};
-        if (!isNaN(IRI[regionName]) && IRI[regionName] !== null) {
+        if (isValidNumber(IRI[regionName])) {
             regionData.IRI = IRI[regionName];
         }
-        if (!isNaN(SVI[regionName]) && SVI[regionName] !== null) {
+        if (isValidNumber(SVI[regionName])) {
             regionData.SVI = SVI[regionName];
         }
-        if (!isNaN(RI[regionName]) && RI[regionName] !== null) {
+        if (isValidNumber(RI[regionName])) {
             regionData.RI = RI[regionName];
         }
         iriPcpData.push(regionData);
@@ -745,15 +745,12 @@ function scale(IndicatorObj) {
     for (var v in IndicatorObj) {
         ValueArray.push(IndicatorObj[v]);
     }
-    function isValidNumber(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
-    }
     var notNullElements = ValueArray.filter(isValidNumber);
     var tempMin = Math.min.apply(null, notNullElements),
         tempMax = Math.max.apply(null, notNullElements);
 
     for (var j = 0; j < ValueArray.length; j++) {
-        if (ValueArray[j] === null) {
+        if (!isValidNumber(ValueArray[j])) {
             scaledValues.push(null);
         }
         // make sure not to divide by zero

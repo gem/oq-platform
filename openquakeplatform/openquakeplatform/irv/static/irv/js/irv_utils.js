@@ -15,17 +15,17 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+function isValidNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 function calculateMeanValues(inputData) {
     // return an array containing, for each indicator (or composite indicator) the
     // mean value with respect to the whole set of regions
     var sum = {};
+    var validValues = {};
     var sumMean = {};
     var sumMeanArray = [];
-
-    // Build skeleton array
-    for (var t in inputData[0]) {
-        sum[t] = 0;
-    }
 
     // Sum all the paths
     // Access the objects contained in the theme data array
@@ -33,14 +33,30 @@ function calculateMeanValues(inputData) {
         // iterate over the each
         for (var elementName in inputData[region_idx]) {
             // This will sum all the values inside each theme object
-            sum[elementName] += inputData[region_idx][elementName];
+            var value = inputData[region_idx][elementName];
+            if (isValidNumber(value)) {
+                if (elementName in sum) {
+                    sum[elementName] += value;
+                } else {
+                    sum[elementName] = value;
+                }
+                if (elementName in validValues) {
+                    validValues[elementName] += 1;
+                } else {
+                    validValues[elementName] = 1;
+                }
+            }
         }
     }
 
     // Get the mean
     for (var f in sum) {
-        var thisSum = sum[f];
-        sumMean[f] = (thisSum / inputData.length);
+        try {
+            sumMean[f] = sum[f] / validValues[f];
+        } catch (exc) {
+            // division by zero
+            sumMean[f] = null;
+        }
     }
 
     sumMeanArray.push(sumMean);
