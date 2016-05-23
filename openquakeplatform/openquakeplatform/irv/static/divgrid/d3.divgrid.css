@@ -15,7 +15,8 @@
     float: left;
     overflow: hidden;
     white-space: nowrap;
-    width: 100px; }
+    width: 100px;
+}
 .divgrid-col-0 {
     width: 150px;
 }
