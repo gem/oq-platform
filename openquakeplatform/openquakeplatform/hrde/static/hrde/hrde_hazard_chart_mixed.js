@@ -48,16 +48,16 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
 
         xAxisLable = AppVars.layerImt;
         var xAxisLableValue;
-        if (xAxisLable.indexOf('SA-') == 0 ) {
+        if (xAxisLable.indexOf('SA-') === 0 ) {
             xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
             xAxisLable = 'Spectral Acceleration (' + xAxisLableValue + ' s) [g]';
-        } else if (xAxisLable.indexOf('PGA-') == 0) {
+        } else if (xAxisLable.indexOf('PGA-') === 0) {
             xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
             xAxisLable = 'Peak Ground Acceleration [g]';
-        } else if (xAxisLable.indexOf('PGV-') == 0) {
+        } else if (xAxisLable.indexOf('PGV-') === 0) {
             xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
             xAxisLable = 'Peak Ground Velocity [cm/s]';
-        } else if (xAxisLable.indexOf('PGD-') == 0) {
+        } else if (xAxisLable.indexOf('PGD-') === 0) {
             xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
             xAxisLable = 'Peak Ground Displacement [cm]';
         }
@@ -90,7 +90,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
     }
 
     var old_value = -100;
-    for (i = 0 ; i < yAxisVariable.length ; i++) {
+    for (var i = 0 ; i < yAxisVariable.length ; i++) {
         if (yAxisVariable[i] == old_value) {
             yAxisVariable.splice(i, 1);
             i--;
@@ -126,7 +126,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
             continue;
 
         for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-            if (curve_vals[curve_name][i] == 0)
+            if (curve_vals[curve_name][i] === 0)
                 continue;
 
             if (min_cur > curve_vals[curve_name][i])
@@ -192,14 +192,16 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
     var margin = {top: 55, right: 10, bottom: 60, left: 60};
     var width = 450 - margin.left - margin.right;
     var height = 380 - margin.top - margin.bottom;
+    var x_scale;
+    var y_scale;
 
     if (curveType == 'hc') {
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
-        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
     } else if (curveType == 'uhs') {
-        var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
-        var y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
-    };
+        x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
+    }
 
     var xAxis = [], xAxis_n = 1;
     var xAxis_vals = [];
@@ -217,7 +219,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
             xAxis[i] = d3.svg.axis()
                 .scale(x_scale)
                 .ticks(4)
-                .innerTickSize(i == 0 ? 8 : 4)
+                .innerTickSize(i === 0 ? 8 : 4)
                 .outerTickSize(0)
                 .tickValues(xAxis_vals[i])
                 .orient("bottom");
@@ -227,13 +229,13 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
                 .scale(x_scale)
                 .ticks(4)
                 .orient("bottom");
-        };
+        }
 
-        if (i == 0) {
-            xAxis[i].tickFormat(function (d) { return d; })
+        if (i === 0) {
+            xAxis[i].tickFormat(function (d) { return d; });
         }
         else {
-            xAxis[i].tickFormat(function (d) { return ''; })
+            xAxis[i].tickFormat('');
         }
     }
 
@@ -247,7 +249,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
         })
         .y(function(d) {
             return y_scale(d[1]);
-        })
+        });
 
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -312,7 +314,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
 
         var str = selectedCurves[i];
         str = str.replace(/_/g, " ");
-        var curveTitle = capitalize(str)
+        var curveTitle = capitalize(str);
 
         makeCircles(data, i, color, curveTitle);
 
@@ -326,7 +328,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
             .attr("cy", 20*(i+1))
             .attr("cx", 80)
             .attr("r", 3)
-            .style("fill", color)
+            .style("fill", color);
 
         $("."+selectedCurves[i]).css({'stroke':colors[i]});
     }
@@ -334,7 +336,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
     for (i = 0 ; i < xAxis_n ; i++) {
         var g = svg.append("g");
 
-        g.attr("class", "x axis")
+        g.attr("class", "x axis");
 
         g.attr("transform", "translate(0," + height + ")")
         .call(xAxis[i]);
