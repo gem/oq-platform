@@ -586,7 +586,7 @@ function processIndicators(layerAttributes, projectDef) {
         for (var key in IRI) {
             if (key == la[i].properties[zoneLabelField]) {
                 try {
-                    tmpVal = (IRI[key]).toFixed(5);
+                    tmpVal = (IRI[key]).toPrecision(5);
                     tmpVal = parseFloat(tmpVal);
                 } catch (exc) {
                     tmpVal = null;
@@ -598,7 +598,7 @@ function processIndicators(layerAttributes, projectDef) {
             for (var key in SVI) {
                 if (key == la[i].properties[zoneLabelField]) {
                     try {
-                        tmpVal = (SVI[key]).toFixed(5);
+                        tmpVal = (SVI[key]).toPrecision(5);
                         tmpVal = parseFloat(tmpVal);
                     } catch (exc) {
                         tmpVal = null;
@@ -612,7 +612,7 @@ function processIndicators(layerAttributes, projectDef) {
             for (var key in RI) {
                 if (key == la[i].properties[zoneLabelField]) {
                     try {
-                        tmpVal = (RI[key]).toFixed(5);
+                        tmpVal = (RI[key]).toPrecision(5);
                         tmpVal = parseFloat(tmpVal);
                     } catch (exc) {
                         tmpVal = null;
