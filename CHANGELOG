@@ -7,9 +7,14 @@
   * add possibility to install test locally on not ephemeral LXC
 
   [Paolo Tormene]
+  * irv: improved Parallel Coordinates Plots, able to visualize and filter data
+    also for projects taking into account a big number of regions
+  * irv: display meaningful results also for projects containing some missing
+    data
   * vulnerability and irv: only authenticated superusers can run jasmine tests
   * irv: display the project's title on top of the project definition widget
   * hrde: manage supplemental layers through the "Layer Manager" widget
+  * irv: better error messages in case of incompatible projections
 
 python-oq-platform (1.5.0)
 
