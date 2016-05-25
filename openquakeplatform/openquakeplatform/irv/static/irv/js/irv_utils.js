@@ -85,8 +85,7 @@ function calculateLeftMargin(dataToPlot) {
 function calculateWidth(dataToPlot) {
     // when we handle many indicators, the chart needs to be wider
     var numVerticalAxes = Object.keys(dataToPlot[0]).length;
-    var width = 140 * numVerticalAxes;
-    return width;
+    return 140 * numVerticalAxes;
 }
 
 function updateNumDisplayedRows(paragraphId, dataToPlot, maxRowsToDisplay) {
