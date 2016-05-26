@@ -62,6 +62,7 @@ function IRI_PCP_Chart(iriPcpData) {
 
     // update data table on brush event
     graph.on("brush", function(d) {
+        graph.unhighlight();
         d3.select("#iri-grid")
         .datum(d.slice(0,maxRowsToDisplay))
         .call(grid)

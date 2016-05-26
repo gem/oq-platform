@@ -67,6 +67,7 @@ function Theme_PCP_Chart(themeData) {
 
     // update data table on brush event
     graph.on("brush", function(d) {
+        graph.unhighlight();
         d3.select("#cat-grid")
         .datum(d.slice(0,maxRowsToDisplay))
         .call(grid)

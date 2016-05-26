@@ -146,6 +146,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
 
         // update data table on brush event
         graph.on("brush", function(d) {
+            graph.unhighlight();
             d3.select("#primary-grid")
             .datum(d.slice(0,maxRowsToDisplay))
             .call(grid)
