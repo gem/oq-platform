@@ -80,6 +80,8 @@ function Theme_PCP_Chart(themeData) {
         updateNumDisplayedRows("#catDisplayedRows", d, maxRowsToDisplay);
     });
 
+    assignThemeChartToMap(graph);
+
     // NOTE: a simple click on an axis resets the brush for that axis
     //       The button is just to reset all brushes with a single click
     // d3.select('#btnReset').on('click', function() {

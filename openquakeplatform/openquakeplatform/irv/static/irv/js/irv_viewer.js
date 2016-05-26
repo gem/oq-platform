@@ -1092,6 +1092,9 @@ function mapboxGlLayerCreation() {
             try {
                 var region = features[0].properties.region;
                 if (typeof region !== 'undefined') {
+                    map.iriGraph.highlight([features[0].properties]);
+                    map.themeGraph.highlight([features[0].properties]);
+                    map.primaryGraph.highlight([features[0].properties]);
                     $('#mapInfo').append('<h4>' + region + '</h4>');
                 }
             } catch(exc) {
@@ -1163,6 +1166,17 @@ function setupLeafletMap() {
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 }
 
+function assignIRIChartToMap(graph) {
+    map.iriGraph = graph;
+}
+
+function assignThemeChartToMap(graph) {
+    map.themeGraph = graph;
+}
+
+function assignPrimaryChartToMap(graph) {
+    map.primaryGraph = graph;
+}
 
 function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
 

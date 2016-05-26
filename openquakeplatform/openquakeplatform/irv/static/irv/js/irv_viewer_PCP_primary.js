@@ -158,5 +158,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             });
             updateNumDisplayedRows("#primaryDisplayedRows", d, maxRowsToDisplay);
         });
+        assignPrimaryChartToMap(graph);
     });
 }

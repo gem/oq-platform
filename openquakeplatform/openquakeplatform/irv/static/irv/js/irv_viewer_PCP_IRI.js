@@ -75,6 +75,8 @@ function IRI_PCP_Chart(iriPcpData) {
         updateNumDisplayedRows("#iriDisplayedRows", d, maxRowsToDisplay);
     });
 
+    assignIRIChartToMap(graph);
+
     // NOTE: a simple click on an axis resets the brush for that axis
     //       The button is just to reset all brushes with a single click
     // d3.select('#btnReset').on('click', function() {
