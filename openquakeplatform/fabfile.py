@@ -52,26 +52,26 @@ def _check_risklib_nrmllib():
         local('python -c "from openquake.commonlib import nrml" >/dev/null 2>&1')
     except SystemExit:
         print """
-WARNING: 'openquake.commonlib.nrml' from 'oq-risklib' not found,
+WARNING: 'openquake.commonlib.nrml' from 'oq-engine' not found,
 'ipt' application will not work properly; to add it you can choose one
 of these solutions:
 
-- install 'oq-hazardlib' and 'oq-risklib' as packages running:
+- install 'oq-hazardlib' and 'oq-engine' as packages running:
    sudo apt-get install python-software-properties
    sudo add-apt-repository ppa:openquake/ppa
    sudo apt-get update
-   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-risklib
+   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-engine
 
-- install 'oq-hazardlib' and 'oq-risklib' packages with pip directly from git running:
+- install 'oq-hazardlib' and 'oq-engine' packages with pip directly from git running:
    sudo apt-get install python-software-properties
    sudo add-apt-repository ppa:openquake/ppa
    sudo apt-get update
    sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
    # (into virtualenv)
    pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
-   pip install 'http://github.com/gem/oq-risklib/tarball/master'
+   pip install 'http://github.com/gem/oq-engine/tarball/master'
 
-- download 'oq-hazardlib' and 'oq-risklib' manually from github and make available via PYTHONPATH
+- download 'oq-hazardlib' and 'oq-engine' manually from github and make available via PYTHONPATH
   before run any python applications
 """
 

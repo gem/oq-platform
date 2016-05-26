@@ -16,7 +16,7 @@ sudo apt-get install build-essential python-dev python-mock python-imaging pytho
 sudo apt-get install python-software-properties
 sudo add-apt-repository ppa:openquake/ppa
 sudo apt-get update
-sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-risklib
+sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-engine
 
 # OR install it from github using pip
 sudo apt-get install python-software-properties
@@ -25,9 +25,9 @@ sudo apt-get update
 sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
 # (into virtualenv)
 pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
-pip install 'http://github.com/gem/oq-risklib/tarball/master'
+pip install 'http://github.com/gem/oq-engine/tarball/master'
 
-# OR download 'oq-hazardlib' and 'oq-risklib' manually from github and make available via PYTHONPATH
+# OR download 'oq-hazardlib' and 'oq-engine' manually from github and make available via PYTHONPATH
 # before run any python applications
 
 # ---- else if your virtual environment HASN'T ACCESS to system-wide packages ----
@@ -41,7 +41,7 @@ pip install h5py
 pip install selenium
 pip install nose
 pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
-pip install 'http://github.com/gem/oq-risklib/tarball/master'
+pip install 'http://github.com/gem/oq-engine/tarball/master'
 
 ```
 
