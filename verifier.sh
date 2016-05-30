@@ -362,7 +362,7 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
     ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
-    ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake/ppa"
+    ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get install -y python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-engine"
 
