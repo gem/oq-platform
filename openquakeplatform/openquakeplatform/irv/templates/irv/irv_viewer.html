@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2014, GEM Foundation.
+Copyright (c) 2014-2016, GEM Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -31,6 +31,8 @@ IRV - {{block.super}}
 {{block.super}}
 <link rel="stylesheet" href="{{ STATIC_URL }}irv/css/irv_viewer.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}irv/css/irv_legend.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}parcoords/d3.parcoords.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}divgrid/d3.divgrid.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/mapbox-gl.0.11.1.css" />
 {% endblock %}
@@ -48,7 +50,7 @@ IRV - {{block.super}}
     <div id="inputName"></div>
     <div id="licenseName"></div>
     <br><br>
-    <input id="checkboxPD" type="checkbox" name="license">&nbsp I confirm that I have read and agree to the license conditions.<br><br>
+    <input id="checkboxPD" type="checkbox" name="license">&nbsp; I confirm that I have read and agree to the license conditions.<br><br>
     <button id="submitPD" type="button" class="btn btn-primary">Save</button>
     <div id="saveState-spinner" >Saving ...<img src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
   </div>
@@ -85,18 +87,31 @@ IRV - {{block.super}}
 
   <div id="iri-chart-widget">
     <ul>
-      <li id="2"><a href="#iri-chart">IRI Chart</a></li>
+      <li id="2"><a href="#iri-chart-tab">IRI Chart</a></li>
     </ul>
-    <div id="iri-chart">
+    <div id="iri-chart-tab">
       <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+      <div id="iri-chart" class="parcoords" style="position: relative;"></div>
+      <div id="iri-grid" class="divgrid" style="position: absolute; bottom: 0;">
+        <div id="iriDisplayedRows" style="position: relative;"></div>
+      </div>
+      <!-- NOTE: uncomment this to add a button to reset brushes -->
+      <!-- <button id="btnReset">Reset Brushes</button> -->
     </div>
   </div>
 
   <div id="cat-chart-widget">
     <ul>
-      <li id="3"><a href="#cat-chart">SVI Theme Chart</a></li>
+      <li id="3"><a href="#cat-chart-tab">SVI Theme Chart</a></li>
     </ul>
-    <div id="cat-chart"></div>
+    <div id="cat-chart-tab">
+      <div id="cat-chart" class="parcoords" style="position: relative;"></div>
+      <div id="cat-grid" class="divgrid" style="position: absolute; bottom: 0;">
+        <div id="catDisplayedRows" style="position: relative;"></div>
+      </div>
+      <!-- NOTE: uncomment this to add a button to reset brushes -->
+      <!-- <button id="btnReset">Reset Brushes</button> -->
+    </div>
   </div>
 
   <div id="primary-tab-widget">
@@ -104,16 +119,21 @@ IRV - {{block.super}}
       <li id="4"><a href="#primary-tab">Composite Indicator Chart</a></li>
     </ul>
     <div id="primary-tab">
-      <div id="mainContainer">
-        <div class="alert-unscaled-data">
-          <div class="alert alert-danger" role="alert">
-            The data in this project appears to not have been scaled and may not render well in this chart because values of the indicators appear non-commensurate.
-            <button type="button" class="btn btn-danger scaleTheData">Scale the Data</button>
-          </div>
-        </div>
-        <p>
-          <select id="primary_indicator" name="primary_indicator"></select>
-        </p>
+      <!-- This doesn't look necessary now that charts are displayed nicely without scaling data -->
+      <!-- <div id="mainContainer"> -->
+      <!--   <div class="alert-unscaled-data"> -->
+      <!--     <div class="alert alert-danger" role="alert"> -->
+      <!--       The data in this project appears to not have been scaled and may not render well in this chart because values of the indicators appear non-commensurate. -->
+      <!--       <button type="button" class="btn btn-danger scaleTheData">Scale the Data</button> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
+      <p>
+        <select id="themeSelector" name="themeSelector"></select>
+      </p>
+      <div id="primary-chart" class="parcoords" style="position: relative;"></div>
+      <div id="primary-grid" class="divgrid" style="position: absolute; bottom: 0;">
+        <div id="primaryDisplayedRows" style="position: relative;"></div>
       </div>
     </div>
   </div>
@@ -123,14 +143,17 @@ IRV - {{block.super}}
 {% endblock middle %}
 {% block extra_script %}
     {{block.super}}
+    <script src="{{ STATIC_URL }}parcoords/d3.parcoords.js"></script>
+    <script src="{{ STATIC_URL }}divgrid/d3.divgrid.js"></script>
+    <script src="{{ STATIC_URL }}js/mapbox-gl.min.0.11.1.js"></script>
+    <script src="{{ STATIC_URL }}js/leaflet-mapbox-gl.js"></script>
+    <script src="{{ STATIC_URL }}irv/js/irv_utils.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer_d3_tree.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer_PCP_IRI.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer_PCP_theme.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irv_viewer_PCP_primary.js"></script>
     <script src="{{ STATIC_URL }}irv/js/irvController.js"></script>
-    <script src="{{ STATIC_URL }}js/mapbox-gl.min.0.11.1.js"></script>
-    <script src="{{ STATIC_URL }}js/leaflet-mapbox-gl.js"></script>
     <script>
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/irv/'; }

@@ -1,0 +1,22 @@
+.divgrid {
+    font-family: Ubuntu, Helvetica, sans-serif;
+    font-size: 11px;
+}
+.divgrid-row, .divgrid-header, .divgrid-cell {
+    height: 18px;
+}
+.divgrid-row, .divgrid-header {
+    clear: left;
+}
+.divgrid-header {
+    font-weight: bold;
+}
+.divgrid-cell {
+    float: left;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100px;
+}
+.divgrid-col-0 {
+    width: 150px;
+}

@@ -527,7 +527,7 @@ oq_platform_install () {
     apt-get install -y --force-yes geonode python-geonode-user-accounts
 
     # add dependencies to use nrml validation as library
-    apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-risklib
+    apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-engine
 
     # FIXME this code will be used in the future
     ## check for oq-platform packaged dependencies

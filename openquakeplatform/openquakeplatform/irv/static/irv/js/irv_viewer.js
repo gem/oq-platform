@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2015, GEM Foundation.
+   Copyright (c) 2014-2016, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -93,7 +93,7 @@ $(document).ready(function() {
 
 var layerAttributes;
 var sessionProjectDef = [];
-var selectedRegion;
+var zoneLabelField;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
@@ -113,7 +113,7 @@ var mappingLayerAttributes = {};
 // sessionProjectDef is the project definition as it was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
 var projectLayerAttributes;
-var regions = [];
+var regionNames = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
@@ -146,7 +146,7 @@ function scaleTheData() {
     // Populate the list with values
     for (var key in indicatorsToBeScaled) {
         for (var i = 0; i < layerAttributes.features.length; i++) {
-            var tempRegion = layerAttributes.features[i].properties[selectedRegion];
+            var tempRegion = layerAttributes.features[i].properties[zoneLabelField];
             indicatorsToBeScaled[key][tempRegion] = layerAttributes.features[i].properties[key];
         }
     }
@@ -161,7 +161,7 @@ function scaleTheData() {
             for (var layerAttributesKey in layerAttributes.features[i].properties) {
                 if (key === layerAttributesKey) {
                     for(var indicatorKey in indicatorsToBeScaled[key]) {
-                        if (layerAttributes.features[i].properties[selectedRegion] == indicatorKey) {
+                        if (layerAttributes.features[i].properties[zoneLabelField] == indicatorKey) {
                             layerAttributes.features[i].properties[layerAttributesKey] = indicatorsToBeScaled[key][indicatorKey];
                         }
                     }
@@ -173,18 +173,26 @@ function scaleTheData() {
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createRiskIndicator(la, index, selectedRegion) {
+function getRegionNames(la, zoneLabelField) {
+    var regionNames = [];
+    for (var i = 0; i < la.length; i++) {
+        var regionName = la[i].properties[zoneLabelField];
+        regionNames.push(regionName);
+    }
+    return regionNames;
+}
+
+function createRiskIndicator(la, index, zoneLabelField) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var i = 0; i < la.length; i++) {
-        var region = la[i].properties[selectedRegion];
-        indicator.push({'region': region});
-        regions.push(region);
+        var region = la[i].properties[zoneLabelField];
+        indicator.push({'Region': region});
     }
 
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++) {
-            if (indicator[j].region == la[j].properties[selectedRegion]) {
+            if (indicator[j].Region == la[j].properties[zoneLabelField]) {
                 var tempName = index[i].name;
                 var tempVal = la[j].properties[tempName];
                 indicator[j][tempName] = tempVal;
@@ -224,7 +232,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
     // first create an object with all of the district names
     for (var i = 0; i < themeObj.length; i++) {
-        var tempRegion = themeObj[i].region;
+        var tempRegion = themeObj[i].Region;
         subIndex[tempRegion] = 0;
     }
 
@@ -254,7 +262,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         } else {
             tempElementValue = 0;
         }
-        var themeObjRegion = themeObj[idx].region;
+        var themeObjRegion = themeObj[idx].Region;
+        var nullWasFound = false;
         // NOTE: themeKeys contains the list of names of all items to combine
         // compute the themes
         for (var themeKey = 0; themeKey < themeKeys.length; themeKey++) {
@@ -262,6 +271,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
             var tempThemeName = themeKeys[themeKey];
             var themeWeightVal;
+            var newElementValue = themeObj[idx][tempThemeName];
+            if (!isValidNumber(newElementValue)) {
+                tempElementValue = null;
+                nullWasFound = true;
+                break;
+            }
             if (operator.ignoresWeights) {
                 themeWeightVal = 1;
             } else {
@@ -269,16 +284,18 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             }
             if (themeWeightVal > 0) {
                 if (operator.multiplies) {
-                    tempElementValue = tempElementValue * themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                    tempElementValue = tempElementValue * newElementValue * themeWeightVal * themeInversionFactor;
                 } else {
-                    tempElementValue = tempElementValue + themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                    tempElementValue = tempElementValue + newElementValue * themeWeightVal * themeInversionFactor;
                 }
             }
         }
-        if (operator.code == 'AVG') {
-            tempElementValue = tempElementValue / themeKeys.length;
-        } else if (operator.code == 'GEOM_MEAN') {
-            tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
+        if (!nullWasFound) {
+            if (operator.code == 'AVG') {
+                tempElementValue = tempElementValue / themeKeys.length;
+            } else if (operator.code == 'GEOM_MEAN') {
+                tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
+            }
         }
         subIndex[themeObjRegion] = tempElementValue;
     }
@@ -290,7 +307,7 @@ function processIndicators(layerAttributes, projectDef) {
     if (arguments[2]) {
         weightChange = arguments[2];
     }
-    regions = [];
+    regionNames = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
     var allRiskIndicators = [];
@@ -333,13 +350,17 @@ function processIndicators(layerAttributes, projectDef) {
     var laValuesArray = [];
 
     function generateThemeObject(indicatorObj) {
-        var region = indicatorObj.region;
+        var region = indicatorObj.Region;
         var theme = indicatorObj.theme;
         var value = indicatorObj.value;
         // add the theme and value to each theme data object
         for (var i = 0; i < themeData.length; i++) {
-            if (themeData[i].region == region) {
-                themeData[i][theme] = value;
+            if (themeData[i].Region == region) {
+                if (!isValidNumber(value)) {
+                    delete themeData[i][theme];
+                } else {
+                    themeData[i][theme] = value;
+                }
             }
         }
     }
@@ -348,7 +369,7 @@ function processIndicators(layerAttributes, projectDef) {
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
-        temp.region = la[s].properties[selectedRegion];
+        temp.Region = la[s].properties[zoneLabelField];
         themeData.push(temp);
     }
 
@@ -369,7 +390,7 @@ function processIndicators(layerAttributes, projectDef) {
             }
 
             for (var o = 0; o < la.length; o++) {
-                var region = la[o].properties[selectedRegion];
+                var region = la[o].properties[zoneLabelField];
                 var theme = name;
                 var primaryInversionFactor;
 
@@ -379,10 +400,20 @@ function processIndicators(layerAttributes, projectDef) {
                 } else {
                     tempValue = 0;
                 }
+                var nullWasFound = false;
                 for (var prop in la[o].properties) {
                     // iterate over the indicator child keys
+                    if (nullWasFound) {
+                        break;
+                    }
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (prop == tempIndicatorChildrenKeys[r]) {
+                            newValue = la[o].properties[prop];
+                            if (!isValidNumber(newValue)) {
+                                tempValue = null;
+                                nullWasFound = true;
+                                break;
+                            }
                             if (tempChildren[r].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
@@ -396,68 +427,35 @@ function processIndicators(layerAttributes, projectDef) {
                                 weight = tempChildren[r].weight;
                             }
                             if (operator.multiplies) {
-                                tempValue = tempValue * la[o].properties[prop] * primaryInversionFactor * weight;
+                                tempValue = tempValue * newValue * primaryInversionFactor * weight;
                             } else {
-                                tempValue = tempValue + la[o].properties[prop] * primaryInversionFactor * weight;
+                                tempValue = tempValue + newValue * primaryInversionFactor * weight;
                             }
                             // NOTE: Ben had the following line only in case of weighted sum,
                             //       but I guess it should be there in all cases
                             // Collect an array of all the values that pass through the loop
-                            laValuesArray.push(la[o].properties[prop]);
+                            laValuesArray.push(newValue);
                         }
                     }
                 }
-                if (operator.code == 'AVG') {
-                    tempValue = tempValue / tempIndicatorChildrenKeys.length;
-                } else if (operator.code == 'GEOM_MEAN') {
-                    tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                if (!nullWasFound) {
+                    if (operator.code == 'AVG') {
+                        tempValue = tempValue / tempIndicatorChildrenKeys.length;
+                    } else if (operator.code == 'GEOM_MEAN') {
+                        tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                    }
                 }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                indicatorInfo.push({'Region':region, 'theme':theme, 'value':tempValue});
             }
         }
-    }
-
-    /////////////////////////////////////////////////
-    //// Check for null values primary indicators ///
-    /////////////////////////////////////////////////
-
-    // Try and remove the warning message on each iteration.
-    try {
-        $('.incompleteData').remove();
-    } catch (exc) {
-        // continue
-    }
-
-    if (laValuesArray.indexOf(null) > -1) {
-        var warningMsg =
-            '<div class="alert alert-danger incompleteData" role="alert">'+
-                'The application is not able to render charts or the map layer for this project because the composite indicator data is incomplete.'+
-            '</div>';
-
-        // Provide warning message if the composite indicator data is incomplete
-        $('#iri-chart').prepend(warningMsg);
-        $('#cat-chart').prepend(warningMsg);
-        $('#primary-tab').prepend(warningMsg);
-        $('#project-def').prepend(warningMsg);
-        // Stop the function
-        $('#absoluteSpinner').hide();
-        return;
     }
 
     ////////////////////////////////
     //// Check for scaled values ///
     ////////////////////////////////
 
-    Array.prototype.max = function() {
-        return Math.max.apply(null, this);
-    };
-
-    Array.prototype.min = function() {
-        return Math.min.apply(null, this);
-    };
-
-    var maxValue = laValuesArray.max();
-    var minValue = laValuesArray.min();
+    var maxValue = Math.max.apply(null, laValuesArray);
+    var minValue = Math.min.apply(null, laValuesArray);
 
     if (minValue === 0 && maxValue === 1) {
         $('.alert-unscaled-data').hide();
@@ -476,7 +474,8 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
-    Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
+    regionNames = getRegionNames(la, zoneLabelField);
+    Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField);
     Theme_PCP_Chart(themeData);
 
     /////////////////////////
@@ -500,11 +499,11 @@ function processIndicators(layerAttributes, projectDef) {
     var RI = {};
     var riskIndicator;
     if (riskIndicators !== undefined) {
-        riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
+        riskIndicator = createRiskIndicator(la, riskIndicators, zoneLabelField);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
-            if (key != 'region') {
+            if (key != 'Region') {
                 allRiskIndicators.push(key);
             }
         }
@@ -514,13 +513,6 @@ function processIndicators(layerAttributes, projectDef) {
         var riJSONthemes = riskIndicators;
         RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
         scale(RI);
-    } else {
-        // If RI does not have any children the simply compute the RI
-        // setup the indicator with all the regions using the layer attributes
-        for (var i = 0; i < la.length; i++) {
-            var selRegion = la[i].properties[selectedRegion];
-            RI[selRegion] = 1;
-        }
     }
 
     ///////////////////////////////
@@ -560,19 +552,25 @@ function processIndicators(layerAttributes, projectDef) {
             sviWeight = 1;
         }
         for (var regionName in SVI) {
-            sviComponent = SVI[regionName] * sviWeight * sviInversionFactor;
-            riComponent = RI[regionName] * riWeight * riInversionFactor;
-            if (iriOperator.multiplies) {
-                tempVal = sviComponent * riComponent;
+            var sviValue = SVI[regionName];
+            var riValue = RI[regionName];
+            if (!isValidNumber(sviValue) || !isValidNumber(riValue)) {
+                IRI[regionName] = null;
             } else {
-                tempVal = sviComponent + riComponent;
+                sviComponent = sviValue * sviWeight * sviInversionFactor;
+                riComponent = riValue * riWeight * riInversionFactor;
+                if (iriOperator.multiplies) {
+                    tempVal = sviComponent * riComponent;
+                } else {
+                    tempVal = sviComponent + riComponent;
+                }
+                if (iriOperator.code == 'AVG') {
+                    tempVal = tempVal / 2;
+                } else if (iriOperator.code == 'GEOM_MEAN') {
+                    tempVal = Math.pow(tempVal, 0.5);
+                }
+                IRI[regionName] = tempVal;
             }
-            if (iriOperator.code == 'AVG') {
-                tempVal = tempVal / 2;
-            } else if (iriOperator.code == 'GEOM_MEAN') {
-                tempVal = Math.pow(tempVal, 0.5);
-            }
-            IRI[regionName] = tempVal;
         }
         scale(IRI);
     }
@@ -586,30 +584,45 @@ function processIndicators(layerAttributes, projectDef) {
     for (var i = 0; i < la.length; i++) {
         la[i].newProperties = {};
         for (var key in IRI) {
-            if (key == la[i].properties[selectedRegion]) {
-                tmpVal = (IRI[key]).toFixed(5);
-                la[i].newProperties.IRI = parseFloat(tmpVal);
+            if (key == la[i].properties[zoneLabelField]) {
+                try {
+                    tmpVal = (IRI[key]).toPrecision(5);
+                    tmpVal = parseFloat(tmpVal);
+                } catch (exc) {
+                    tmpVal = null;
+                }
+                la[i].newProperties.IRI = tmpVal;
             }
         }
         if (svThemes) {
             for (var key in SVI) {
-                if (key == la[i].properties[selectedRegion]) {
-                    tmpVal = (SVI[key]).toFixed(5);
-                    la[i].newProperties.SVI = parseFloat(tmpVal);
+                if (key == la[i].properties[zoneLabelField]) {
+                    try {
+                        tmpVal = (SVI[key]).toPrecision(5);
+                        tmpVal = parseFloat(tmpVal);
+                    } catch (exc) {
+                        tmpVal = null;
+                    }
+                    la[i].newProperties.SVI = tmpVal;
                 }
             }
         }
 
         if (riskIndicators !== undefined) {
             for (var key in RI) {
-                if (key == la[i].properties[selectedRegion]) {
-                    tmpVal = (RI[key]).toFixed(5);
-                    la[i].newProperties.RI = parseFloat(tmpVal);
+                if (key == la[i].properties[zoneLabelField]) {
+                    try {
+                        tmpVal = (RI[key]).toPrecision(5);
+                        tmpVal = parseFloat(tmpVal);
+                    } catch (exc) {
+                        tmpVal = null;
+                    }
+                    la[i].newProperties.RI = tmpVal;
                 }
             }
 
             for (var key in riskIndicator[i]) {
-                if (riskIndicator[i] != 'region') {
+                if (riskIndicator[i] != 'Region') {
                     tempThemeName = riskIndicator[i][key];
                     la[i].newProperties[key] = tempThemeName;
                 }
@@ -617,10 +630,10 @@ function processIndicators(layerAttributes, projectDef) {
         }
 
         for (var key in themeData[i]) {
-            if (key != 'region') {
+            if (key != 'Region') {
                 tempThemeName = themeData[i][key];
                 la[i].newProperties[key] = tempThemeName;
-            } else if (key == 'region') {
+            } else if (key == 'Region') {
                 la[i].newProperties.region = themeData[i][key];
             }
         }
@@ -690,27 +703,30 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     var iriPcpData = [];
-
-    if (IRI) {
-        IRI.plotElement = "IRI"; // Label within the object
-        iriPcpData.push(IRI);
+    for (var region_idx in regionNames) {
+        var regionName = regionNames[region_idx];
+        var regionData = {"Region": regionName};
+        if (isValidNumber(IRI[regionName])) {
+            regionData.IRI = IRI[regionName];
+        }
+        if (isValidNumber(SVI[regionName])) {
+            regionData.SVI = SVI[regionName];
+        }
+        if (isValidNumber(RI[regionName])) {
+            regionData.RI = RI[regionName];
+        }
+        iriPcpData.push(regionData);
     }
-
-    if (svThemes) {
-        SVI.plotElement = "SVI"; // Label within the object
-        iriPcpData.push(SVI);
+    if (iriPcpData.length > 1) {
+        var meanValuesArray = calculateMeanValues(iriPcpData);
+        meanValuesArray[0].Region = "(mean)";
+        iriPcpData = iriPcpData.concat(meanValuesArray);
+    }
+    if (iriPcpData.length > 0) {
+        IRI_PCP_Chart(iriPcpData);
     } else {
-        disableWidget(widgetsAndButtons.svi);
-        disableWidget(widgetsAndButtons.indicators);
+        disableWidget(widgetsAndButtons.iri);
     }
-
-    if (riskIndicators !== undefined) {
-        RI.plotElement = "RI"; // Label within the object
-        iriPcpData.push(RI);
-    }
-
-    IRI_PCP_Chart(iriPcpData);
-
 
 } // End processIndicators
 
@@ -729,20 +745,24 @@ function scale(IndicatorObj) {
     for (var v in IndicatorObj) {
         ValueArray.push(IndicatorObj[v]);
     }
-    var tempMin = Math.min.apply(null, ValueArray),
-        tempMax = Math.max.apply(null, ValueArray);
+    var notNullElements = ValueArray.filter(isValidNumber);
+    var tempMin = Math.min.apply(null, notNullElements),
+        tempMax = Math.max.apply(null, notNullElements);
 
     for (var j = 0; j < ValueArray.length; j++) {
+        if (!isValidNumber(ValueArray[j])) {
+            scaledValues.push(null);
+        }
         // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
-        if (tempMax == tempMin) {
-            scaledValues = [1];
-            // Disable the chart tabs
+        else if (tempMax == tempMin) {
+            scaledValues.push(1);
+            // FIXME: check if we want to disable the chart tabs here
             // Not using $.each in this case, just to avoid a syntax warning
             // about defining a function within a loop
-            disableWidget(widgetsAndButtons.indicators);
-            disableWidget(widgetsAndButtons.svi);
-            disableWidget(widgetsAndButtons.iri);
+            // disableWidget(widgetsAndButtons.indicators);
+            // disableWidget(widgetsAndButtons.svi);
+            // disableWidget(widgetsAndButtons.iri);
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
@@ -1434,13 +1454,15 @@ var startApp = function() {
         widget.draggable({
             stack: "div",  // put on top of the others when dragging
             distance: 0,   // do it even if it's not actually moved
-            cancel: "#project-def, #primary-tab, #cat-chart, #iri-chart"
+            cancel: "#project-def, #primary-chart, #cat-chart, #iri-chart, #iri-chart, #themeSelector"
         });
         widget.css({
             'display': 'none',
+            // perhaps we should not set width and height here, and let things automatically resize
             'width': '700px',
             'height': '600px',
             'overflow': 'hidden',
+            // 'overflow': 'auto',  // to add scrollbars (but they should be added to the chart, not to the widget)
             'position': 'fixed',
             'left': (10 + i * 40) + 'px',
             'top': (110 + i * 40) + 'px'
@@ -1450,7 +1472,7 @@ var startApp = function() {
     $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
-    $('#primary_indicator').hide();
+    $('#themeSelector').hide();
     $('#saveBtn').prop('disabled', true);
     $('#saveBtn').addClass('btn-disabled');
 
@@ -1703,7 +1725,7 @@ function projDefJSONRequest(selectedLayer) {
 
             license = data.license;
             tempProjectDef = data.project_definitions;
-            selectedRegion = data.zone_label_field;
+            zoneLabelField = data.zone_label_field;
             selectedIndicator = undefined;
             projectTitle = data.title;
             $('a#project-def-title').text('Project: ' + projectTitle);
@@ -1751,6 +1773,19 @@ function projDefJSONRequest(selectedLayer) {
                 [data.bounding_box.minx,data.bounding_box.miny],
                 [data.bounding_box.maxx, data.bounding_box.maxy]
             ];
+            if (data.bounding_box.minx < -180 || data.bounding_box.minx > 180 ||
+                    data.bounding_box.maxx < -180 || data.bounding_box.maxx > 180 ||
+                    data.bounding_box.miny < -90  || data.bounding_box.miny > 90  ||
+                    data.bounding_box.maxy < -90  || data.bounding_box.maxy > 90) {
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>The project you are trying to load has a bounding box that can not be correctly loaded by this application. Please check the projection.</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#projectDef-spinner').hide();
+                $('#absoluteSpinner').hide();
+                return;
+            }
 
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();
