@@ -24,6 +24,6 @@ rows, the corresponding line is highlighted in the chart.
 
 .. _fig-charts:
 
-.. figure:: ./images/webGL-thematic-charts.gif
+.. figure:: ./images/IRV_the_charts.gif
     :align: center
     :scale: 60%
