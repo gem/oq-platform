@@ -1107,22 +1107,22 @@ function mapboxGlLayerCreation() {
                 var region = features[0].properties.region;
                 if (typeof region !== 'undefined') {
                     $.each(chartElems, function(key, elem){
-                        var valuesOfSelected;  // move inside the each
+                        var valuesOfSelected = [];
                         var allGraphData = map[elem.graph].data();
                         for (var i=0; i<allGraphData.length; i++) {
                             var regionData = allGraphData[i];
                             if (region == regionData.Region) {
-                                valuesOfSelected = regionData;
+                                valuesOfSelected.push(regionData);
                             }
                         }
-                        if (valuesOfSelected) {
+                        if (valuesOfSelected.length) {
                             map[elem.graph].brushReset();
-                            map[elem.graph].highlight([valuesOfSelected]);
+                            map[elem.graph].highlight(valuesOfSelected);
                             d3.select(elem.gridId)
-                                .datum([valuesOfSelected])
+                                .datum(valuesOfSelected)
                                 .call(map[elem.grid])
                                 .selectAll(".divgrid-row");
-                            updateNumDisplayedRows(elem.dispRowsId, [valuesOfSelected]);
+                            updateNumDisplayedRows(elem.dispRowsId, valuesOfSelected);
                         }
                     });
                     $('#mapInfo').append('<h4>' + region + '</h4>');
