@@ -81,7 +81,7 @@ function Theme_PCP_Chart(themeData) {
         updateNumDisplayedRows("#catDisplayedRows", d, maxRowsToDisplay);
     });
 
-    assignThemeChartToMap(graph);
+    assignThemeChartAndGridToMap(graph, grid);
 
     // NOTE: a simple click on an axis resets the brush for that axis
     //       The button is just to reset all brushes with a single click

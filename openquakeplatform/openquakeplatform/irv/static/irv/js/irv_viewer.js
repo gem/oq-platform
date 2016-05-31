@@ -1084,6 +1084,11 @@ function mapboxGlLayerCreation() {
         }
     }
 
+    var iriChartElems = {"graph": "iriGraph", "grid": "iriGrid", "gridId": "#iri-grid"};
+    var themeChartElems = {"graph": "themeGraph", "grid": "themeGrid", "gridId": "#cat-grid"};
+    var primaryChartElems = {"graph": "primaryGraph", "grid": "primaryGrid", "gridId": "#primary-grid"};
+    var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
+
     map.on('click', function(e) {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
@@ -1092,9 +1097,24 @@ function mapboxGlLayerCreation() {
             try {
                 var region = features[0].properties.region;
                 if (typeof region !== 'undefined') {
-                    map.iriGraph.highlight([features[0].properties]);
-                    map.themeGraph.highlight([features[0].properties]);
-                    map.primaryGraph.highlight([features[0].properties]);
+                    $.each(chartElems, function(key, elem){
+                        var valuesOfSelected;  // move inside the each
+                        var allGraphData = map[elem.graph].data();
+                        for (var i=0; i<allGraphData.length; i++) {
+                            var regionData = allGraphData[i];
+                            if (region == regionData.Region) {
+                                valuesOfSelected = regionData;
+                            }
+                        }
+                        if (valuesOfSelected) {
+                            map[elem.graph].brushReset();
+                            map[elem.graph].highlight([valuesOfSelected]);
+                            d3.select(elem.gridId)
+                                .datum([valuesOfSelected])
+                                .call(map[elem.grid])
+                                .selectAll(".divgrid-row");
+                        }
+                    });
                     $('#mapInfo').append('<h4>' + region + '</h4>');
                 }
             } catch(exc) {
@@ -1166,16 +1186,19 @@ function setupLeafletMap() {
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 }
 
-function assignIRIChartToMap(graph) {
+function assignIRIChartAndGridToMap(graph, grid) {
     map.iriGraph = graph;
+    map.iriGrid = grid;
 }
 
-function assignThemeChartToMap(graph) {
+function assignThemeChartAndGridToMap(graph, grid) {
     map.themeGraph = graph;
+    map.themeGrid = grid;
 }
 
-function assignPrimaryChartToMap(graph) {
+function assignPrimaryChartAndGridToMap(graph, grid) {
     map.primaryGraph = graph;
+    map.primaryGrid = grid;
 }
 
 function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {

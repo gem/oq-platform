@@ -64,19 +64,19 @@ function IRI_PCP_Chart(iriPcpData) {
     graph.on("brush", function(d) {
         graph.unhighlight();
         d3.select("#iri-grid")
-        .datum(d.slice(0,maxRowsToDisplay))
-        .call(grid)
-        .selectAll(".divgrid-row")
-        .on({
-            "mouseover": function(d) {
-                graph.highlight([d]);
-            },
-            "mouseout": graph.unhighlight
-        });
+            .datum(d.slice(0,maxRowsToDisplay))
+            .call(grid)
+            .selectAll(".divgrid-row")
+            .on({
+                "mouseover": function(d) {
+                    graph.highlight([d]);
+                },
+                "mouseout": graph.unhighlight
+            });
         updateNumDisplayedRows("#iriDisplayedRows", d, maxRowsToDisplay);
     });
 
-    assignIRIChartToMap(graph);
+    assignIRIChartAndGridToMap(graph, grid);
 
     // NOTE: a simple click on an axis resets the brush for that axis
     //       The button is just to reset all brushes with a single click
