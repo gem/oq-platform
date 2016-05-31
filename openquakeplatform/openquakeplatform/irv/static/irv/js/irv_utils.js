@@ -15,6 +15,8 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var MAX_ROWS_TO_DISPLAY = 5;
+
 function isValidNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
@@ -88,10 +90,10 @@ function calculateWidth(dataToPlot) {
     return 140 * numVerticalAxes;
 }
 
-function updateNumDisplayedRows(paragraphId, dataToPlot, maxRowsToDisplay) {
+function updateNumDisplayedRows(paragraphId, dataToPlot) {
     // Update the text of paragraphId html element, displaying how many rows are being displayed with
     // respect to the total amount of rows filtered from the whole data set dataToPlot.
-    var numDisplayedRows = Math.min(maxRowsToDisplay, dataToPlot.length);
+    var numDisplayedRows = Math.min(MAX_ROWS_TO_DISPLAY, dataToPlot.length);
     if (numDisplayedRows < dataToPlot.length) {
         $(paragraphId).text("(displaying " + numDisplayedRows + " of " + dataToPlot.length + " rows)");
     } else {

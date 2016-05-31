@@ -22,8 +22,7 @@
 function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
     // $("#iri-chart").width("600px").height("300px");
-    var maxRowsToDisplay = 5;
-    updateNumDisplayedRows("#iriDisplayedRows", iriPcpData, maxRowsToDisplay);
+    updateNumDisplayedRows("#iriDisplayedRows", iriPcpData);
 
     var color = d3.scale.category20();
 
@@ -50,7 +49,7 @@ function IRI_PCP_Chart(iriPcpData) {
     // create data table, row hover highlighting
     var grid = d3.divgrid();
     d3.select("#iri-grid")
-        .datum(iriPcpData.slice(0,maxRowsToDisplay))
+        .datum(iriPcpData.slice(0,MAX_ROWS_TO_DISPLAY))
         .call(grid)
         .selectAll(".divgrid-row")
         .on({
@@ -64,7 +63,7 @@ function IRI_PCP_Chart(iriPcpData) {
     graph.on("brush", function(d) {
         graph.unhighlight();
         d3.select("#iri-grid")
-            .datum(d.slice(0,maxRowsToDisplay))
+            .datum(d.slice(0,MAX_ROWS_TO_DISPLAY))
             .call(grid)
             .selectAll(".divgrid-row")
             .on({
@@ -73,7 +72,7 @@ function IRI_PCP_Chart(iriPcpData) {
                 },
                 "mouseout": graph.unhighlight
             });
-        updateNumDisplayedRows("#iriDisplayedRows", d, maxRowsToDisplay);
+        updateNumDisplayedRows("#iriDisplayedRows", d);
     });
 
     assignIRIChartAndGridToMap(graph, grid);

@@ -26,8 +26,7 @@ function Theme_PCP_Chart(themeData) {
     themeMeanArray = calculateMeanValues(themeData);
     themeMeanArray[0].Region = "(mean)";
     themeData = themeData.concat(themeMeanArray);
-    var maxRowsToDisplay = 5;
-    updateNumDisplayedRows("#catDisplayedRows", themeData, maxRowsToDisplay);
+    updateNumDisplayedRows("#catDisplayedRows", themeData);
 
     var color = d3.scale.category20();
 
@@ -55,7 +54,7 @@ function Theme_PCP_Chart(themeData) {
     // create data table, row hover highlighting
     var grid = d3.divgrid();
     d3.select("#cat-grid")
-        .datum(themeData.slice(0,maxRowsToDisplay))
+        .datum(themeData.slice(0,MAX_ROWS_TO_DISPLAY))
         .call(grid)
         .selectAll(".divgrid-row")
         .on({
@@ -69,7 +68,7 @@ function Theme_PCP_Chart(themeData) {
     graph.on("brush", function(d) {
         graph.unhighlight();
         d3.select("#cat-grid")
-        .datum(d.slice(0,maxRowsToDisplay))
+        .datum(d.slice(0,MAX_ROWS_TO_DISPLAY))
         .call(grid)
         .selectAll(".divgrid-row")
         .on({
@@ -78,7 +77,7 @@ function Theme_PCP_Chart(themeData) {
             },
             "mouseout": graph.unhighlight
         });
-        updateNumDisplayedRows("#catDisplayedRows", d, maxRowsToDisplay);
+        updateNumDisplayedRows("#catDisplayedRows", d);
     });
 
     assignThemeChartAndGridToMap(graph, grid);

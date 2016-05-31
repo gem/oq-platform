@@ -1084,9 +1084,18 @@ function mapboxGlLayerCreation() {
         }
     }
 
-    var iriChartElems = {"graph": "iriGraph", "grid": "iriGrid", "gridId": "#iri-grid"};
-    var themeChartElems = {"graph": "themeGraph", "grid": "themeGrid", "gridId": "#cat-grid"};
-    var primaryChartElems = {"graph": "primaryGraph", "grid": "primaryGrid", "gridId": "#primary-grid"};
+    var iriChartElems = {"graph": "iriGraph",
+                         "grid": "iriGrid",
+                         "gridId": "#iri-grid",
+                         "dispRowsId": "#iriDisplayedRows"};
+    var themeChartElems = {"graph": "themeGraph",
+                           "grid": "themeGrid",
+                           "gridId": "#cat-grid",
+                           "dispRowsId": "#catDisplayedRows"};
+    var primaryChartElems = {"graph": "primaryGraph",
+                             "grid": "primaryGrid",
+                             "gridId": "#primary-grid",
+                             "dispRowsId": "#primaryDisplayedRows"};
     var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
 
     map.on('click', function(e) {
@@ -1113,6 +1122,7 @@ function mapboxGlLayerCreation() {
                                 .datum([valuesOfSelected])
                                 .call(map[elem.grid])
                                 .selectAll(".divgrid-row");
+                            updateNumDisplayedRows(elem.dispRowsId, [valuesOfSelected]);
                         }
                     });
                     $('#mapInfo').append('<h4>' + region + '</h4>');

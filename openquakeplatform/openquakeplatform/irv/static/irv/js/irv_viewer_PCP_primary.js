@@ -103,8 +103,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
         $("#primary-chart").empty();
-        var maxRowsToDisplay = 5;
-        updateNumDisplayedRows("#primaryDisplayedRows", dataToPlot, maxRowsToDisplay);
+        updateNumDisplayedRows("#primaryDisplayedRows", dataToPlot);
 
         var color = d3.scale.category20();
 
@@ -134,7 +133,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         // create data table, row hover highlighting
         var grid = d3.divgrid();
         d3.select("#primary-grid")
-            .datum(dataToPlot.slice(0,maxRowsToDisplay))
+            .datum(dataToPlot.slice(0,MAX_ROWS_TO_DISPLAY))
             .call(grid)
             .selectAll(".divgrid-row")
             .on({
@@ -148,7 +147,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         graph.on("brush", function(d) {
             graph.unhighlight();
             d3.select("#primary-grid")
-            .datum(d.slice(0,maxRowsToDisplay))
+            .datum(d.slice(0,MAX_ROWS_TO_DISPLAY))
             .call(grid)
             .selectAll(".divgrid-row")
             .on({
@@ -157,7 +156,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
                 },
                 "mouseout": graph.unhighlight
             });
-            updateNumDisplayedRows("#primaryDisplayedRows", d, maxRowsToDisplay);
+            updateNumDisplayedRows("#primaryDisplayedRows", d);
         });
         assignPrimaryChartAndGridToMap(graph, grid);
     });
