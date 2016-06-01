@@ -1136,7 +1136,15 @@ function mapboxGlLayerCreation() {
                         d3.select(elem.gridId)
                             .datum(elem.dataOfSelectedRegions)
                             .call(map[elem.grid])
-                            .selectAll(".divgrid-row");
+                            .selectAll(".divgrid-row")
+                            .on({
+                                "mouseover": function(d) {
+                                    map[elem.graph].highlight([d]);
+                                },
+                                "mouseout": function(d) {
+                                    map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                                }
+                            });
                         updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
                     }
                 });
