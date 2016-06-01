@@ -1116,21 +1116,23 @@ function mapboxGlLayerCreation() {
             if (typeof region !== 'undefined') {
                 $.each(chartElems, function(key, elem){
                     var allGraphData = map[elem.graph].data();
-                    var regionWasAlreadySelected = false;
+                    var deletedSelectedData;
                     for (var i=0; i<allGraphData.length; i++) {
                         var regionData = allGraphData[i];
                         if (region == regionData.Region) {
                             for (var j = 0; j < elem.dataOfSelectedRegions.length; j++) {
                                 if (elem.dataOfSelectedRegions[j].Region == region) {
-                                    regionWasAlreadySelected = true;
+                                    // remove the region data from the array of selected items
+                                    deletedSelectedData = elem.dataOfSelectedRegions.splice(j, 1);
+                                    break;
                                 }
                             }
-                            if (!regionWasAlreadySelected) {
+                            if (typeof deletedSelectedData == "undefined") { // it was not already selected
                                 elem.dataOfSelectedRegions.push(regionData);
                             }
                         }
                     }
-                    if (elem.dataOfSelectedRegions.length && !regionWasAlreadySelected) {
+                    if (elem.dataOfSelectedRegions.length) {
                         map[elem.graph].brushReset();
                         map[elem.graph].highlight(elem.dataOfSelectedRegions);
                         d3.select(elem.gridId)
