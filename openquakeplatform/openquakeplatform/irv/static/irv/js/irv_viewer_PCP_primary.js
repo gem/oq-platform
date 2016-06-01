@@ -157,6 +157,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
                 "mouseout": graph.unhighlight
             });
             updateNumDisplayedRows("#primaryDisplayedRows", d);
+            resetDataOfSelectedRegions();
         });
         assignPrimaryChartAndGridToMap(graph, grid);
     });

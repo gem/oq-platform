@@ -84,6 +84,23 @@ var nodeTypes = {
     'SV_INDICATOR': 'Social Vulnerability Indicator',
 };
 
+var iriChartElems = {"graph": "iriGraph",
+                     "grid": "iriGrid",
+                     "gridId": "#iri-grid",
+                     "dataOfSelectedRegions": [],
+                     "dispRowsId": "#iriDisplayedRows"};
+var themeChartElems = {"graph": "themeGraph",
+                       "grid": "themeGrid",
+                       "gridId": "#cat-grid",
+                       "dataOfSelectedRegions": [],
+                       "dispRowsId": "#catDisplayedRows"};
+var primaryChartElems = {"graph": "primaryGraph",
+                         "grid": "primaryGrid",
+                         "gridId": "#primary-grid",
+                         "dataOfSelectedRegions": [],
+                         "dispRowsId": "#primaryDisplayedRows"};
+var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
+
 $(document).ready(function() {
     $('#cover').remove();
     $('.alert-unscaled-data').hide();
@@ -1084,51 +1101,46 @@ function mapboxGlLayerCreation() {
         }
     }
 
-    var iriChartElems = {"graph": "iriGraph",
-                         "grid": "iriGrid",
-                         "gridId": "#iri-grid",
-                         "dispRowsId": "#iriDisplayedRows"};
-    var themeChartElems = {"graph": "themeGraph",
-                           "grid": "themeGrid",
-                           "gridId": "#cat-grid",
-                           "dispRowsId": "#catDisplayedRows"};
-    var primaryChartElems = {"graph": "primaryGraph",
-                             "grid": "primaryGrid",
-                             "gridId": "#primary-grid",
-                             "dispRowsId": "#primaryDisplayedRows"};
-    var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
 
     map.on('click', function(e) {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
             $('#mapInfo').css({'visibility': 'visible'});
+            var region;
             try {
-                var region = features[0].properties.region;
-                if (typeof region !== 'undefined') {
-                    $.each(chartElems, function(key, elem){
-                        var valuesOfSelected = [];
-                        var allGraphData = map[elem.graph].data();
-                        for (var i=0; i<allGraphData.length; i++) {
-                            var regionData = allGraphData[i];
-                            if (region == regionData.Region) {
-                                valuesOfSelected.push(regionData);
-                            }
-                        }
-                        if (valuesOfSelected.length) {
-                            map[elem.graph].brushReset();
-                            map[elem.graph].highlight(valuesOfSelected);
-                            d3.select(elem.gridId)
-                                .datum(valuesOfSelected)
-                                .call(map[elem.grid])
-                                .selectAll(".divgrid-row");
-                            updateNumDisplayedRows(elem.dispRowsId, valuesOfSelected);
-                        }
-                    });
-                    $('#mapInfo').append('<h4>' + region + '</h4>');
-                }
+                region = features[0].properties.region;
             } catch(exc) {
                 // do not show info
+            }
+            if (typeof region !== 'undefined') {
+                $.each(chartElems, function(key, elem){
+                    var allGraphData = map[elem.graph].data();
+                    var regionWasAlreadySelected = false;
+                    for (var i=0; i<allGraphData.length; i++) {
+                        var regionData = allGraphData[i];
+                        if (region == regionData.Region) {
+                            for (var j = 0; j < elem.dataOfSelectedRegions.length; j++) {
+                                if (elem.dataOfSelectedRegions[j].Region == region) {
+                                    regionWasAlreadySelected = true;
+                                }
+                            }
+                            if (!regionWasAlreadySelected) {
+                                elem.dataOfSelectedRegions.push(regionData);
+                            }
+                        }
+                    }
+                    if (elem.dataOfSelectedRegions.length && !regionWasAlreadySelected) {
+                        map[elem.graph].brushReset();
+                        map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                        d3.select(elem.gridId)
+                            .datum(elem.dataOfSelectedRegions)
+                            .call(map[elem.grid])
+                            .selectAll(".divgrid-row");
+                        updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+                    }
+                });
+                $('#mapInfo').append('<h4>' + region + '</h4>');
             }
             var structuredInfo = {
                 'compositeIndices': [],
@@ -1209,6 +1221,12 @@ function assignThemeChartAndGridToMap(graph, grid) {
 function assignPrimaryChartAndGridToMap(graph, grid) {
     map.primaryGraph = graph;
     map.primaryGrid = grid;
+}
+
+function resetDataOfSelectedRegions(){
+    $.each(chartElems, function(key, chartElem) {
+        chartElem.dataOfSelectedRegions = [];
+    });
 }
 
 function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {

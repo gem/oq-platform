@@ -73,6 +73,7 @@ function IRI_PCP_Chart(iriPcpData) {
                 "mouseout": graph.unhighlight
             });
         updateNumDisplayedRows("#iriDisplayedRows", d);
+        resetDataOfSelectedRegions();
     });
 
     assignIRIChartAndGridToMap(graph, grid);

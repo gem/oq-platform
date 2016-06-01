@@ -78,6 +78,7 @@ function Theme_PCP_Chart(themeData) {
             "mouseout": graph.unhighlight
         });
         updateNumDisplayedRows("#catDisplayedRows", d);
+        resetDataOfSelectedRegions();
     });
 
     assignThemeChartAndGridToMap(graph, grid);
