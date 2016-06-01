@@ -60,6 +60,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
     }, 100);
 
     $('#themeSelector').change(function() {
+        resetDataOfSelectedRegions();
         var selectedTheme = $('#themeSelector').val();
         // Find the children of selected theme
         var selectedThemeChildren = [];
