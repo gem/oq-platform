@@ -162,6 +162,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             });
             updateNumDisplayedRows("#primaryDisplayedRows", d);
             resetDataOfSelectedRegions();
+            resetBrushesInOtherCharts("primary");
         });
 
         graph.on("brushend", function(d) {
@@ -171,7 +172,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
                 regions = getRegions(d);
             }
             highlightRegionsInCharts(regions);
-            resetBrushesInOtherCharts("primary");
         });
 
         assignPrimaryChartAndGridToMap(graph, grid);

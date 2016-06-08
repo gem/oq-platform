@@ -77,6 +77,7 @@ function IRI_PCP_Chart(iriPcpData) {
             });
         updateNumDisplayedRows("#iriDisplayedRows", d);
         resetDataOfSelectedRegions();
+        resetBrushesInOtherCharts("iri");
     });
 
     graph.on("brushend", function(d) {
@@ -86,7 +87,6 @@ function IRI_PCP_Chart(iriPcpData) {
             regions = getRegions(d);
         }
         highlightRegionsInCharts(regions);
-        resetBrushesInOtherCharts("iri");
     });
 
     assignIRIChartAndGridToMap(graph, grid);

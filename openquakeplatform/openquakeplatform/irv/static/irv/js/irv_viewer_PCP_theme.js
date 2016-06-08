@@ -82,6 +82,7 @@ function Theme_PCP_Chart(themeData) {
         });
         updateNumDisplayedRows("#catDisplayedRows", d);
         resetDataOfSelectedRegions();
+        resetBrushesInOtherCharts("theme");
     });
 
     graph.on("brushend", function(d) {
@@ -91,7 +92,6 @@ function Theme_PCP_Chart(themeData) {
             regions = getRegions(d);
         }
         highlightRegionsInCharts(regions);
-        resetBrushesInOtherCharts("theme");
     });
 
     assignThemeChartAndGridToMap(graph, grid);
