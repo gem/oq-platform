@@ -30,7 +30,10 @@ function Theme_PCP_Chart(themeData) {
 
     var color = d3.scale.category20();
 
-    var graph = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
+    var graph = d3.parcoords(
+            {nullValueSeparator: "bottom",
+             nullValueSeparatorPadding: { "top": 15, "right": 0, "bottom": 8, "left": 0 }
+            })("#cat-chart")
         .width(calculateWidth(themeData))
         .height(400)
         .data(themeData)

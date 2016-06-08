@@ -108,7 +108,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
 
         var color = d3.scale.category20();
 
-        var graph = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
+        var graph = d3.parcoords(
+                {nullValueSeparator: "bottom",
+                 nullValueSeparatorPadding: { "top": 15, "right": 0, "bottom": 8, "left": 0 }
+                })("#primary-chart")
             // .width(600 + horizontalSpacer)
             // .height(300 + verticalSpacer)
             .width(calculateWidth(dataToPlot))

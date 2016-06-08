@@ -26,7 +26,10 @@ function IRI_PCP_Chart(iriPcpData) {
 
     var color = d3.scale.category20();
 
-    var graph = d3.parcoords({nullValueSeparator: "bottom"})("#iri-chart")
+    var graph = d3.parcoords(
+            {nullValueSeparator: "bottom",
+             nullValueSeparatorPadding: { "top": 15, "right": 0, "bottom": 8, "left": 0 }
+            })("#iri-chart")
         .width(calculateWidth(iriPcpData))
         .height(400)
         .data(iriPcpData)
