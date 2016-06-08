@@ -60,6 +60,15 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
     }, 100);
 
     $('#themeSelector').change(function() {
+        var highlightedRegions = [];
+        try {
+            var highlightedElements = map.primaryGraph.highlighted();
+            for (var i = 0; i < highlightedElements.length; i++) {
+                highlightedRegions.push(highlightedElements[i].Region);
+            }
+        } catch (exc) {
+            // highlightedRegions remains empty
+        }
         resetDataOfSelectedRegions();
         var selectedTheme = $('#themeSelector').val();
         // Find the children of selected theme
@@ -175,5 +184,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         });
 
         assignPrimaryChartAndGridToMap(graph, grid);
+
+        // if something was selected before switching theme, select it again
+        if (highlightedRegions.length) {
+            highlightRegionsInCharts(highlightedRegions);
+        }
     });
 }
