@@ -1205,7 +1205,7 @@ function toggleRegionInCharts(region) {
         map[elem.graph].brushReset();
         map[elem.graph].highlight(elem.dataOfSelectedRegions);
         d3.select(elem.gridId)
-            .datum(elem.dataOfSelectedRegions)
+            .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
             .call(map[elem.grid])
             .selectAll(".divgrid-row")
             .on({
