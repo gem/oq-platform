@@ -79,6 +79,16 @@ function IRI_PCP_Chart(iriPcpData) {
         resetDataOfSelectedRegions();
     });
 
+    graph.on("brushend", function(d) {
+        graph.unhighlight();
+        var regions = [];
+        if (!$.isEmptyObject(graph.brushExtents())) {
+            regions = getRegions(d);
+        }
+        highlightRegionsInCharts(regions);
+        resetBrushesInOtherCharts("iri");
+    });
+
     assignIRIChartAndGridToMap(graph, grid);
 
     // NOTE: a simple click on an axis resets the brush for that axis

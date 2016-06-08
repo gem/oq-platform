@@ -163,6 +163,17 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             updateNumDisplayedRows("#primaryDisplayedRows", d);
             resetDataOfSelectedRegions();
         });
+
+        graph.on("brushend", function(d) {
+            graph.unhighlight();
+            var regions = [];
+            if (!$.isEmptyObject(graph.brushExtents())) {
+                regions = getRegions(d);
+            }
+            highlightRegionsInCharts(regions);
+            resetBrushesInOtherCharts("primary");
+        });
+
         assignPrimaryChartAndGridToMap(graph, grid);
     });
 }

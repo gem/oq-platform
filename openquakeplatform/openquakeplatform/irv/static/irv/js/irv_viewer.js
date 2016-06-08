@@ -1114,42 +1114,7 @@ function mapboxGlLayerCreation() {
                 // do not show info
             }
             if (typeof region !== 'undefined') {
-                $.each(chartElems, function(key, elem){
-                    var allGraphData = map[elem.graph].data();
-                    var deletedSelectedData;
-                    for (var i=0; i<allGraphData.length; i++) {
-                        var regionData = allGraphData[i];
-                        if (region == regionData.Region) {
-                            for (var j = 0; j < elem.dataOfSelectedRegions.length; j++) {
-                                if (elem.dataOfSelectedRegions[j].Region == region) {
-                                    // remove the region data from the array of selected items
-                                    deletedSelectedData = elem.dataOfSelectedRegions.splice(j, 1);
-                                    break;
-                                }
-                            }
-                            if (typeof deletedSelectedData == "undefined") { // it was not already selected
-                                elem.dataOfSelectedRegions.push(regionData);
-                            }
-                        }
-                    }
-                    if (elem.dataOfSelectedRegions.length) {
-                        map[elem.graph].brushReset();
-                        map[elem.graph].highlight(elem.dataOfSelectedRegions);
-                        d3.select(elem.gridId)
-                            .datum(elem.dataOfSelectedRegions)
-                            .call(map[elem.grid])
-                            .selectAll(".divgrid-row")
-                            .on({
-                                "mouseover": function(d) {
-                                    map[elem.graph].highlight([d]);
-                                },
-                                "mouseout": function(d) {
-                                    map[elem.graph].highlight(elem.dataOfSelectedRegions);
-                                }
-                            });
-                        updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
-                    }
-                });
+                toggleRegionInCharts(region);
                 $('#mapInfo').append('<h4>' + region + '</h4>');
             }
             var structuredInfo = {
@@ -1216,6 +1181,99 @@ function setupLeafletMap() {
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+}
+
+function toggleRegionInCharts(region) {
+    $.each(chartElems, function(key, elem){
+        var allGraphData = map[elem.graph].data();
+        var deletedSelectedData;
+        for (var i=0; i<allGraphData.length; i++) {
+            var regionData = allGraphData[i];
+            if (region == regionData.Region) {
+                for (var j = 0; j < elem.dataOfSelectedRegions.length; j++) {
+                    if (elem.dataOfSelectedRegions[j].Region == region) {
+                        // remove the region data from the array of selected items
+                        deletedSelectedData = elem.dataOfSelectedRegions.splice(j, 1);
+                        break;
+                    }
+                }
+                if (typeof deletedSelectedData == "undefined") { // it was not already selected
+                    elem.dataOfSelectedRegions.push(regionData);
+                }
+            }
+        }
+        map[elem.graph].brushReset();
+        map[elem.graph].highlight(elem.dataOfSelectedRegions);
+        d3.select(elem.gridId)
+            .datum(elem.dataOfSelectedRegions)
+            .call(map[elem.grid])
+            .selectAll(".divgrid-row")
+            .on({
+                "mouseover": function(d) {
+                    map[elem.graph].highlight([d]);
+                },
+                "mouseout": function(d) {
+                    map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                }
+            });
+        updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+    });
+}
+
+function highlightRegionsInCharts(regions) {
+    resetDataOfSelectedRegions();
+    if (!regions.length) {
+        $.each(chartElems, function(key, elem){
+            map[elem.graph].unhighlight();
+        });
+    }
+    for (var reg_idx=0; reg_idx<regions.length; reg_idx++) {
+        region = regions[reg_idx];
+        $.each(chartElems, function(key, elem){
+            var allGraphData = map[elem.graph].data();
+            var deletedSelectedData;
+            for (var i=0; i<allGraphData.length; i++) {
+                var regionData = allGraphData[i];
+                if (region == regionData.Region) {
+                    if (typeof deletedSelectedData == "undefined") { // it was not already selected
+                        elem.dataOfSelectedRegions.push(regionData);
+                    }
+                }
+            }
+            if (elem.dataOfSelectedRegions.length) {
+                map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                d3.select(elem.gridId)
+                    .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
+                    .call(map[elem.grid])
+                    .selectAll(".divgrid-row")
+                    .on({
+                        "mouseover": function(d) {
+                            map[elem.graph].highlight([d]);
+                        },
+                        "mouseout": function(d) {
+                            map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                        }
+                    });
+                updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+            }
+        });
+    }
+}
+
+function resetBrushesInOtherCharts(key) {
+    $.each(chartElems, function(chartKey, chartElem) {
+        if (chartKey !== key) {
+            map[chartElem.graph].brushReset();
+        }
+    });
+}
+
+function getRegions(d){
+    var regions = [];
+    for (var i=0; i<d.length; i++) {
+        regions.push(d[i].Region);
+    }
+    return regions;
 }
 
 function assignIRIChartAndGridToMap(graph, grid) {
