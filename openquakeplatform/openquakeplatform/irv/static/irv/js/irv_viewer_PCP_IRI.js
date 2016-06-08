@@ -56,10 +56,10 @@ function IRI_PCP_Chart(iriPcpData) {
         .call(grid)
         .selectAll(".divgrid-row")
         .on({
-        "mouseover": function(d) {
-            graph.highlight([d]);
-        },
-        "mouseout": graph.unhighlight
+            "mouseover": function(d) {
+                graph.highlight([d]);
+            },
+            "mouseout": graph.unhighlight
         });
 
     // update data table on brush event

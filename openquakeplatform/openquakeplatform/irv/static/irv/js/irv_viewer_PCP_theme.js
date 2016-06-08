@@ -61,10 +61,10 @@ function Theme_PCP_Chart(themeData) {
         .call(grid)
         .selectAll(".divgrid-row")
         .on({
-        "mouseover": function(d) {
-            graph.highlight([d]);
-        },
-        "mouseout": graph.unhighlight
+            "mouseover": function(d) {
+                graph.highlight([d]);
+            },
+            "mouseout": graph.unhighlight
         });
 
     // update data table on brush event

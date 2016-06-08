@@ -141,10 +141,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
             .call(grid)
             .selectAll(".divgrid-row")
             .on({
-            "mouseover": function(d) {
-                graph.highlight([d]);
-            },
-            "mouseout": graph.unhighlight
+                "mouseover": function(d) {
+                    graph.highlight([d]);
+                },
+                "mouseout": graph.unhighlight
             });
 
         // update data table on brush event
