@@ -1229,35 +1229,39 @@ function highlightRegionsInCharts(regions) {
     }
     for (var reg_idx=0; reg_idx<regions.length; reg_idx++) {
         region = regions[reg_idx];
-        $.each(chartElems, function(key, elem){
-            var allGraphData = map[elem.graph].data();
-            var deletedSelectedData;
-            for (var i=0; i<allGraphData.length; i++) {
-                var regionData = allGraphData[i];
-                if (region == regionData.Region) {
-                    if (typeof deletedSelectedData == "undefined") { // it was not already selected
-                        elem.dataOfSelectedRegions.push(regionData);
-                    }
+        highlightRegionInCharts(region);
+    }
+}
+
+function highlightRegionInCharts(region) {
+    $.each(chartElems, function(key, elem){
+        var allGraphData = map[elem.graph].data();
+        var deletedSelectedData;
+        for (var i=0; i<allGraphData.length; i++) {
+            var regionData = allGraphData[i];
+            if (region == regionData.Region) {
+                if (typeof deletedSelectedData == "undefined") { // it was not already selected
+                    elem.dataOfSelectedRegions.push(regionData);
                 }
             }
-            if (elem.dataOfSelectedRegions.length) {
-                map[elem.graph].highlight(elem.dataOfSelectedRegions);
-                d3.select(elem.gridId)
-                    .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
-                    .call(map[elem.grid])
-                    .selectAll(".divgrid-row")
-                    .on({
-                        "mouseover": function(d) {
-                            map[elem.graph].highlight([d]);
-                        },
-                        "mouseout": function(d) {
-                            map[elem.graph].highlight(elem.dataOfSelectedRegions);
-                        }
-                    });
-                updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
-            }
-        });
-    }
+        }
+        if (elem.dataOfSelectedRegions.length) {
+            map[elem.graph].highlight(elem.dataOfSelectedRegions);
+            d3.select(elem.gridId)
+                .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
+                .call(map[elem.grid])
+                .selectAll(".divgrid-row")
+                .on({
+                    "mouseover": function(d) {
+                        map[elem.graph].highlight([d]);
+                    },
+                    "mouseout": function(d) {
+                        map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                    }
+                });
+            updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+        }
+    });
 }
 
 function resetBrushesInOtherCharts(key) {
