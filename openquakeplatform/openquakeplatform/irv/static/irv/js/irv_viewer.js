@@ -1102,7 +1102,13 @@ function mapboxGlLayerCreation() {
         }
     }
 
-
+    // NOTE: It would be better to define the click event handler somewhere else,
+    //       but it is not so obvious, so for now I am removing the handler and
+    //       redefining it.
+    //       Without removing the handler, after switching projects, clicking a
+    //       zone in the map would cause the handler to be called multiple times,
+    //       causing issues in toggling the highlighting of the clicked zone.
+    map.off('click');
     map.on('click', function(e) {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
