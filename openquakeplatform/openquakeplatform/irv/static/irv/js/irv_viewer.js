@@ -1236,7 +1236,7 @@ function highlightRegionsInCharts(regions) {
                         map[elem.graph].highlight([d]);
                     },
                     "mouseout": function(d) {
-                        map[elem.graph].highlight(allGraphData);
+                        highlightRegionsInCharts(regions);
                     }
                 });
             updateNumDisplayedRows(elem.dispRowsId, allGraphData);
