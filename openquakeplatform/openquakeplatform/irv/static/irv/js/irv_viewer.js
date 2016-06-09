@@ -147,6 +147,7 @@ function setWidgetsToDefault(){
     $('#iri-chart').empty();
     $('#cat-chart').empty();
     $('#primary-chart').empty();
+    resetDataOfSelectedRegions();
 }
 
 function scaleTheData() {
@@ -1203,25 +1204,28 @@ function toggleRegionInCharts(region) {
             }
         }
         map[elem.graph].brushReset();
-        map[elem.graph].highlight(elem.dataOfSelectedRegions);
-        d3.select(elem.gridId)
-            .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
-            .call(map[elem.grid])
-            .selectAll(".divgrid-row")
-            .on({
-                "mouseover": function(d) {
-                    map[elem.graph].highlight([d]);
-                },
-                "mouseout": function(d) {
-                    map[elem.graph].highlight(elem.dataOfSelectedRegions);
-                }
-            });
-        updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+        if (elem.dataOfSelectedRegions.length) {
+            map[elem.graph].highlight(elem.dataOfSelectedRegions);
+            d3.select(elem.gridId)
+                .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
+                .call(map[elem.grid])
+                .selectAll(".divgrid-row")
+                .on({
+                    "mouseover": function(d) {
+                        map[elem.graph].highlight([d]);
+                    },
+                    "mouseout": function(d) {
+                        map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                    }
+                });
+            updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+        } else {
+            highlightRegionsInCharts([]);
+        }
     });
 }
 
 function highlightRegionsInCharts(regions) {
-    resetDataOfSelectedRegions();
     if (!regions.length) {
         // if nothing is selected, unhighlight all and display all rows in the tables
         $.each(chartElems, function(key, elem){
