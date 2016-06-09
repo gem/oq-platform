@@ -187,7 +187,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
 
         // if something was selected before switching theme, select it again
         if (highlightedRegions.length) {
-            highlightRegionsInCharts(highlightedRegions);
+            // NOTE: ugly, but otherwise it messes up with colors
+            setTimeout(function() {
+                highlightRegionsInCharts(highlightedRegions);
+            }, 100);
         }
     });
 }
