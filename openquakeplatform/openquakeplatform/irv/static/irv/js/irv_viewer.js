@@ -1316,6 +1316,7 @@ function assignPrimaryChartAndGridToMap(graph, grid) {
 }
 
 function resetDataOfSelectedRegions(){
+    chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
     $.each(chartElems, function(key, chartElem) {
         chartElem.dataOfSelectedRegions = [];
     });
