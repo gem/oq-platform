@@ -51,7 +51,6 @@ setup(
               'openquakeplatform.gemecdwebsite.lookup',
               'openquakeplatform.weblib',
               'openquakeplatform.weblib.baseclasses',
-              'openquakeplatform.taxtweb',
               'openquakeplatform.grv',
               'openquakeplatform.hazus',
               'openquakeplatform.hrde',
