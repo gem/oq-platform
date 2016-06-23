@@ -411,3 +411,6 @@ AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png
 # Enable Google Analytics tracking code
 # You must provide a valid UA code
 # GOOGLE_UA = 'UA-********-*'
+
+# For IPT we need a path where store temporary files
+FILE_PATH_FIELD_DIRECTORY = 'data/'
