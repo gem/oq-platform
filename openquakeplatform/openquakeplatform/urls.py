@@ -92,14 +92,14 @@ urlpatterns = patterns('',
         template_name="hrde/hrde.html"), name='hrde'),
     url(r'^irv/', include('openquakeplatform.irv.urls')),
 
-    url(r'^ipt/', include('openquakeplatform_ipt.urls')),
+    url(r'^ipt/', include('openquakeplatform_ipt.urls', namespace='ipt')),
  
     (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
-    (r'^taxtweb/', include('openquakeplatform_taxtweb.urls')),
+    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls', namespace='taxtweb')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
