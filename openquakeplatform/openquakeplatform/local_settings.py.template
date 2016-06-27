@@ -285,13 +285,12 @@ INSTALLED_APPS = (
     'openquakeplatform.irv',
 
     'openquakeplatform_ipt',
+    'openquakeplatform_taxtweb',
 
     # gemecd
     'openquakeplatform.weblib',
     'openquakeplatform.econd',
     'openquakeplatform.gemecdwebsite',
-
-    'openquakeplatform.taxtweb',
 
 )
 
