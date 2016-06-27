@@ -90,16 +90,16 @@ urlpatterns = patterns('',
         template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde/hrde.html"), name='hrde'),
-    url(r'^irv/', include('openquakeplatform.irv.urls', app_name='irv')),
+    url(r'^irv/', include('openquakeplatform.irv.urls', namespace='irv')),
 
-    url(r'^ipt/', include('openquakeplatform_ipt.urls', app_name='ipt')),
+    url(r'^ipt/', include('openquakeplatform_ipt.urls', namespace='ipt')),
  
-    (r'^world/', include('openquakeplatform.world.urls', app_name='world')),
-    (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls', app_name='faulted_earth')),
-    (r'^exposure/', include('openquakeplatform.exposure.urls', app_name='exposure')),
-    (r'^svir/', include('openquakeplatform.svir.urls', app_name='svir')),
-    (r'^vulnerability/', include('openquakeplatform.vulnerability.urls', app_name='vulnerability')),
-    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls', app_name='taxtweb')),
+    (r'^world/', include('openquakeplatform.world.urls', namespace='world')),
+    (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls', namespace='faulted_earth')),
+    (r'^exposure/', include('openquakeplatform.exposure.urls', namespace='exposure')),
+    (r'^svir/', include('openquakeplatform.svir.urls', namespace='svir')),
+    (r'^vulnerability/', include('openquakeplatform.vulnerability.urls', namespace='vulnerability')),
+    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls', namespace='taxtweb')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
