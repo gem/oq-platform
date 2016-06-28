@@ -99,7 +99,7 @@ urlpatterns = patterns('',
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
-    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls', namespace='taxtweb')),
+    (r'^taxtweb/', include('openquakeplatform_taxtweb.urls', namespace='taxtweb')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
