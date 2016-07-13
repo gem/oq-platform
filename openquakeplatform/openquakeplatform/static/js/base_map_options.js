@@ -62,9 +62,7 @@ $('#base-map-menu').change(function() {
             baseMapUrl = new L.BingLayer(bing_key, {type: 'AerialWithLabels'});
             break;
     }
-
     map.addLayer(baseMapUrl);
-    }
 });
 
 $('#base-map-menu').css({ 'margin-bottom' : 0 });
