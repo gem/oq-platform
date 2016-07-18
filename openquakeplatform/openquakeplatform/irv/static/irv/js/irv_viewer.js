@@ -1122,7 +1122,7 @@ function mapboxGlLayerCreation() {
             }
             if (typeof region !== 'undefined') {
                 toggleRegionInCharts(region);
-                $('#mapInfo').append('<h4>' + region + '</h4>');
+                $('#mapInfo').append($('<h4/>').html(region));
             }
             var structuredInfo = {
                 'compositeIndices': [],
