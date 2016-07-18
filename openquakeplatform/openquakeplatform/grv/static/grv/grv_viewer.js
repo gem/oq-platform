@@ -59,7 +59,7 @@ var obj3 = {};
 var obj4 = {};
 var obj5 = {};
 var chart;
-var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 

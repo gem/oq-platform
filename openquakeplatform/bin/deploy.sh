@@ -357,6 +357,7 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    mediaroot='/var/www/openquake/platform/uploaded',
                                    staticroot='/var/www/openquake/platform/static/',
                                    is_gem_experimental=False,
+                                   datadir='/var/www/openquake/platform/data/',
                                    ))"
 }
 

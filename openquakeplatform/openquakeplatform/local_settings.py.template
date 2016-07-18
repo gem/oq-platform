@@ -285,13 +285,12 @@ INSTALLED_APPS = (
     'openquakeplatform.irv',
 
     'openquakeplatform_ipt',
+    'openquakeplatform_taxtweb',
 
     # gemecd
     'openquakeplatform.weblib',
     'openquakeplatform.econd',
     'openquakeplatform.gemecdwebsite',
-
-    'openquakeplatform.taxtweb',
 
 )
 
@@ -317,6 +316,13 @@ MAP_BASELAYERS = [{
      },
     "name":"geoserver"
   },{
+    "source": {"ptype": "gxp_osmsource"},
+    "type":"OpenLayers.Layer.OSM",
+    "name":"mapnik",
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
@@ -324,23 +330,6 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "fixed": True,
     "group":"background"
-  }, {
-    "source": {"ptype": "gxp_osmsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "name":"mapnik",
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"osm",
-    "group":"background",
-    "visibility": True
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"naip",
-    "group":"background",
-    "visibility": False
   },{
     "source": {"ptype": "gxp_tilestreamsource" },
     "name":"tilestream"
@@ -411,3 +400,7 @@ AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png
 # Enable Google Analytics tracking code
 # You must provide a valid UA code
 # GOOGLE_UA = 'UA-********-*'
+
+# For IPT we need a path where store temporary files
+# FILE_PATH_FIELD_DIRECTORY = 'data/'
+FILE_PATH_FIELD_DIRECTORY = '%(datadir)s'

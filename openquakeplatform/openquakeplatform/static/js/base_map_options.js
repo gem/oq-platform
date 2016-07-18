@@ -54,22 +54,15 @@ function checkBingApi(binz) {
 $('#base-map-menu').change(function() {
     var baseMapSelection = document.getElementById('base-map-menu').value;
     map.removeLayer(baseMapUrl);
-    if (baseMapSelection == 4) {
-        baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-        map.addLayer(baseMapUrl);
-    } else if (baseMapSelection == 3) {
-        baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
-        map.addLayer(baseMapUrl);
-    } else if(baseMapSelection == 1) {
-        baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
-        map.addLayer(baseMapUrl);
-    } else if (baseMapSelection == 2) {
-        baseMapUrl = new L.BingLayer(bing_key, {type: 'AerialWithLabels'});
-        map.addLayer(baseMapUrl);
-    } else if (baseMapSelection == 5) {
-        baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-        map.addLayer(baseMapUrl);
+    switch(baseMapSelection) {
+        case 'osm':
+            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+            break;
+        case 'bing':
+            baseMapUrl = new L.BingLayer(bing_key, {type: 'AerialWithLabels'});
+            break;
     }
+    map.addLayer(baseMapUrl);
 });
 
 $('#base-map-menu').css({ 'margin-bottom' : 0 });
