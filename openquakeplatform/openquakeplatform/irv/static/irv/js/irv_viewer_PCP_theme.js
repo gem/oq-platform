@@ -26,12 +26,14 @@ function Theme_PCP_Chart(themeData) {
     themeMeanArray = calculateMeanValues(themeData);
     themeMeanArray[0].Region = "(mean)";
     themeData = themeData.concat(themeMeanArray);
-    var maxRowsToDisplay = 5;
-    updateNumDisplayedRows("#catDisplayedRows", themeData, maxRowsToDisplay);
+    updateNumDisplayedRows("#catDisplayedRows", themeData);
 
     var color = d3.scale.category20();
 
-    var graph = d3.parcoords({nullValueSeparator: "bottom"})("#cat-chart")
+    var graph = d3.parcoords(
+            {nullValueSeparator: "bottom",
+             nullValueSeparatorPadding: { "top": 15, "right": 0, "bottom": 8, "left": 0 }
+            })("#cat-chart")
         .width(calculateWidth(themeData))
         .height(400)
         .data(themeData)
@@ -55,20 +57,7 @@ function Theme_PCP_Chart(themeData) {
     // create data table, row hover highlighting
     var grid = d3.divgrid();
     d3.select("#cat-grid")
-        .datum(themeData.slice(0,maxRowsToDisplay))
-        .call(grid)
-        .selectAll(".divgrid-row")
-        .on({
-        "mouseover": function(d) {
-            graph.highlight([d]);
-        },
-        "mouseout": graph.unhighlight
-        });
-
-    // update data table on brush event
-    graph.on("brush", function(d) {
-        d3.select("#cat-grid")
-        .datum(d.slice(0,maxRowsToDisplay))
+        .datum(themeData.slice(0,MAX_ROWS_TO_DISPLAY))
         .call(grid)
         .selectAll(".divgrid-row")
         .on({
@@ -77,8 +66,35 @@ function Theme_PCP_Chart(themeData) {
             },
             "mouseout": graph.unhighlight
         });
-        updateNumDisplayedRows("#catDisplayedRows", d, maxRowsToDisplay);
+
+    // update data table on brush event
+    graph.on("brush", function(d) {
+        graph.unhighlight();
+        d3.select("#cat-grid")
+        .datum(d.slice(0,MAX_ROWS_TO_DISPLAY))
+        .call(grid)
+        .selectAll(".divgrid-row")
+        .on({
+            "mouseover": function(d) {
+                graph.highlight([d]);
+            },
+            "mouseout": graph.unhighlight
+        });
+        updateNumDisplayedRows("#catDisplayedRows", d);
+        resetDataOfSelectedRegions();
+        resetBrushesInOtherCharts("theme");
     });
+
+    graph.on("brushend", function(d) {
+        graph.unhighlight();
+        var regions = [];
+        if (!$.isEmptyObject(graph.brushExtents())) {
+            regions = getRegions(d);
+        }
+        highlightRegionsInCharts(regions);
+    });
+
+    assignThemeChartAndGridToMap(graph, grid);
 
     // NOTE: a simple click on an axis resets the brush for that axis
     //       The button is just to reset all brushes with a single click

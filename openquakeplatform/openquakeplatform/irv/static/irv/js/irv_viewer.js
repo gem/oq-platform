@@ -84,6 +84,23 @@ var nodeTypes = {
     'SV_INDICATOR': 'Social Vulnerability Indicator',
 };
 
+var iriChartElems = {"graph": "iriGraph",
+                     "grid": "iriGrid",
+                     "gridId": "#iri-grid",
+                     "dataOfSelectedRegions": [],
+                     "dispRowsId": "#iriDisplayedRows"};
+var themeChartElems = {"graph": "themeGraph",
+                       "grid": "themeGrid",
+                       "gridId": "#cat-grid",
+                       "dataOfSelectedRegions": [],
+                       "dispRowsId": "#catDisplayedRows"};
+var primaryChartElems = {"graph": "primaryGraph",
+                         "grid": "primaryGrid",
+                         "gridId": "#primary-grid",
+                         "dataOfSelectedRegions": [],
+                         "dispRowsId": "#primaryDisplayedRows"};
+var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
+
 $(document).ready(function() {
     $('#cover').remove();
     $('.alert-unscaled-data').hide();
@@ -130,6 +147,7 @@ function setWidgetsToDefault(){
     $('#iri-chart').empty();
     $('#cat-chart').empty();
     $('#primary-chart').empty();
+    resetDataOfSelectedRegions();
 }
 
 function scaleTheData() {
@@ -1084,18 +1102,27 @@ function mapboxGlLayerCreation() {
         }
     }
 
+    // NOTE: It would be better to define the click event handler somewhere else,
+    //       but it is not so obvious, so for now I am removing the handler and
+    //       redefining it.
+    //       Without removing the handler, after switching projects, clicking a
+    //       zone in the map would cause the handler to be called multiple times,
+    //       causing issues in toggling the highlighting of the clicked zone.
+    map.off('click');
     map.on('click', function(e) {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
             $('#mapInfo').css({'visibility': 'visible'});
+            var region;
             try {
-                var region = features[0].properties.region;
-                if (typeof region !== 'undefined') {
-                    $('#mapInfo').append('<h4>' + region + '</h4>');
-                }
+                region = features[0].properties.region;
             } catch(exc) {
                 // do not show info
+            }
+            if (typeof region !== 'undefined') {
+                toggleRegionInCharts(region);
+                $('#mapInfo').append($('<h4/>').html(region));
             }
             var structuredInfo = {
                 'compositeIndices': [],
@@ -1163,6 +1190,137 @@ function setupLeafletMap() {
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 }
 
+function toggleRegionInCharts(region) {
+    $.each(chartElems, function(key, elem){
+        var allGraphData = map[elem.graph].data();
+        var deletedSelectedData;
+        for (var i=0; i<allGraphData.length; i++) {
+            var regionData = allGraphData[i];
+            if (region == regionData.Region) {
+                for (var j = 0; j < elem.dataOfSelectedRegions.length; j++) {
+                    if (elem.dataOfSelectedRegions[j].Region == region) {
+                        // remove the region data from the array of selected items
+                        deletedSelectedData = elem.dataOfSelectedRegions.splice(j, 1);
+                        break;
+                    }
+                }
+                if (typeof deletedSelectedData == "undefined") { // it was not already selected
+                    elem.dataOfSelectedRegions.push(regionData);
+                }
+            }
+        }
+        map[elem.graph].brushReset();
+        if (elem.dataOfSelectedRegions.length) {
+            map[elem.graph].highlight(elem.dataOfSelectedRegions);
+            d3.select(elem.gridId)
+                .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
+                .call(map[elem.grid])
+                .selectAll(".divgrid-row")
+                .on({
+                    "mouseover": function(d) {
+                        map[elem.graph].highlight([d]);
+                    },
+                    "mouseout": function(d) {
+                        map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                    }
+                });
+            updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+        } else {
+            highlightRegionsInCharts([]);
+        }
+    });
+}
+
+function highlightRegionsInCharts(regions) {
+    if (!regions.length) {
+        // if nothing is selected, unhighlight all and display all rows in the tables
+        $.each(chartElems, function(key, elem){
+            map[elem.graph].unhighlight();
+            var allGraphData = map[elem.graph].data();
+            d3.select(elem.gridId)
+                .datum(allGraphData.slice(0,MAX_ROWS_TO_DISPLAY))
+                .call(map[elem.grid])
+                .selectAll(".divgrid-row")
+                .on({
+                    "mouseover": function(d) {
+                        map[elem.graph].highlight([d]);
+                    },
+                    "mouseout": function(d) {
+                        highlightRegionsInCharts(regions);
+                    }
+                });
+            updateNumDisplayedRows(elem.dispRowsId, allGraphData);
+        });
+    }
+    for (var reg_idx=0; reg_idx<regions.length; reg_idx++) {
+        region = regions[reg_idx];
+        highlightRegionInCharts(region);
+    }
+}
+
+function highlightRegionInCharts(region) {
+    $.each(chartElems, function(key, elem){
+        var allGraphData = map[elem.graph].data();
+        for (var i=0; i<allGraphData.length; i++) {
+            var regionData = allGraphData[i];
+            if (region == regionData.Region) {
+                elem.dataOfSelectedRegions.push(regionData);
+            }
+        }
+        map[elem.graph].highlight(elem.dataOfSelectedRegions);
+        d3.select(elem.gridId)
+            .datum(elem.dataOfSelectedRegions.slice(0,MAX_ROWS_TO_DISPLAY))
+            .call(map[elem.grid])
+            .selectAll(".divgrid-row")
+            .on({
+                "mouseover": function(d) {
+                    map[elem.graph].highlight([d]);
+                },
+                "mouseout": function(d) {
+                    map[elem.graph].highlight(elem.dataOfSelectedRegions);
+                }
+            });
+        updateNumDisplayedRows(elem.dispRowsId, elem.dataOfSelectedRegions);
+    });
+}
+
+function resetBrushesInOtherCharts(key) {
+    $.each(chartElems, function(chartKey, chartElem) {
+        if (chartKey !== key) {
+            map[chartElem.graph].brushReset();
+        }
+    });
+}
+
+function getRegions(d){
+    var regions = [];
+    for (var i=0; i<d.length; i++) {
+        regions.push(d[i].Region);
+    }
+    return regions;
+}
+
+function assignIRIChartAndGridToMap(graph, grid) {
+    map.iriGraph = graph;
+    map.iriGrid = grid;
+}
+
+function assignThemeChartAndGridToMap(graph, grid) {
+    map.themeGraph = graph;
+    map.themeGrid = grid;
+}
+
+function assignPrimaryChartAndGridToMap(graph, grid) {
+    map.primaryGraph = graph;
+    map.primaryGrid = grid;
+}
+
+function resetDataOfSelectedRegions(){
+    chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
+    $.each(chartElems, function(key, chartElem) {
+        chartElem.dataOfSelectedRegions = [];
+    });
+}
 
 function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
 

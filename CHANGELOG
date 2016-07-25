@@ -15,6 +15,10 @@
   * irv: display the project's title on top of the project definition widget
   * hrde: manage supplemental layers through the "Layer Manager" widget
   * irv: better error messages in case of incompatible projections
+  * irv: when a region is clicked in the map, the corresponding line in
+    the PCP charts is highlighted
+  * irv: when brushes are used to filter data in one chart, the selected zones
+    are also highlighted in the other charts
   * move Taxtweb app as independent repository to be able to install
     it as stand-alone django app
 

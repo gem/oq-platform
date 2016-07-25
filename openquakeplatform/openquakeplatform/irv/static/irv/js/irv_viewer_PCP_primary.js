@@ -60,6 +60,16 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
     }, 100);
 
     $('#themeSelector').change(function() {
+        var highlightedRegions = [];
+        try {
+            var highlightedElements = map.primaryGraph.highlighted();
+            for (var i = 0; i < highlightedElements.length; i++) {
+                highlightedRegions.push(highlightedElements[i].Region);
+            }
+        } catch (exc) {
+            // highlightedRegions remains empty
+        }
+        resetDataOfSelectedRegions();
         var selectedTheme = $('#themeSelector').val();
         // Find the children of selected theme
         var selectedThemeChildren = [];
@@ -103,12 +113,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
         $("#primary-chart").empty();
-        var maxRowsToDisplay = 5;
-        updateNumDisplayedRows("#primaryDisplayedRows", dataToPlot, maxRowsToDisplay);
+        updateNumDisplayedRows("#primaryDisplayedRows", dataToPlot);
 
         var color = d3.scale.category20();
 
-        var graph = d3.parcoords({nullValueSeparator: "bottom"})("#primary-chart")
+        var graph = d3.parcoords(
+                {nullValueSeparator: "bottom",
+                 nullValueSeparatorPadding: { "top": 15, "right": 0, "bottom": 8, "left": 0 }
+                })("#primary-chart")
             // .width(600 + horizontalSpacer)
             // .height(300 + verticalSpacer)
             .width(calculateWidth(dataToPlot))
@@ -134,20 +146,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
         // create data table, row hover highlighting
         var grid = d3.divgrid();
         d3.select("#primary-grid")
-            .datum(dataToPlot.slice(0,maxRowsToDisplay))
-            .call(grid)
-            .selectAll(".divgrid-row")
-            .on({
-            "mouseover": function(d) {
-                graph.highlight([d]);
-            },
-            "mouseout": graph.unhighlight
-            });
-
-        // update data table on brush event
-        graph.on("brush", function(d) {
-            d3.select("#primary-grid")
-            .datum(d.slice(0,maxRowsToDisplay))
+            .datum(dataToPlot.slice(0,MAX_ROWS_TO_DISPLAY))
             .call(grid)
             .selectAll(".divgrid-row")
             .on({
@@ -156,7 +155,42 @@ function Primary_PCP_Chart(projectDef, layerAttributes, zoneLabelField) {
                 },
                 "mouseout": graph.unhighlight
             });
-            updateNumDisplayedRows("#primaryDisplayedRows", d, maxRowsToDisplay);
+
+        // update data table on brush event
+        graph.on("brush", function(d) {
+            graph.unhighlight();
+            d3.select("#primary-grid")
+            .datum(d.slice(0,MAX_ROWS_TO_DISPLAY))
+            .call(grid)
+            .selectAll(".divgrid-row")
+            .on({
+                "mouseover": function(d) {
+                    graph.highlight([d]);
+                },
+                "mouseout": graph.unhighlight
+            });
+            updateNumDisplayedRows("#primaryDisplayedRows", d);
+            resetDataOfSelectedRegions();
+            resetBrushesInOtherCharts("primary");
         });
+
+        graph.on("brushend", function(d) {
+            graph.unhighlight();
+            var regions = [];
+            if (!$.isEmptyObject(graph.brushExtents())) {
+                regions = getRegions(d);
+            }
+            highlightRegionsInCharts(regions);
+        });
+
+        assignPrimaryChartAndGridToMap(graph, grid);
+
+        // if something was selected before switching theme, select it again
+        if (highlightedRegions.length) {
+            // NOTE: ugly, but otherwise it messes up with colors
+            setTimeout(function() {
+                highlightRegionsInCharts(highlightedRegions);
+            }, 100);
+        }
     });
 }
