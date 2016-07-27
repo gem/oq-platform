@@ -13,8 +13,9 @@ def get_checks(clsname):
          obj = getattr(cls, objname)
          if isclass(obj):
              if issubclass(obj, unittest.TestCase):
-                 newname = "%s_%s" % (clsname.replace('.', '_'), objname)
+                 newname = "%s__%s" % (clsname.replace('.', '__'), objname)
                  globals()[newname] = obj
+                 obj.__name__ = newname
 
 for clsname in ['openquakeplatform_ipt.test', 'openquakeplatform_taxtweb.test']:
     try:
