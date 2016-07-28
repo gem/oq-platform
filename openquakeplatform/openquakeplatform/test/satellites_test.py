@@ -1,24 +1,23 @@
 import unittest
 from inspect import isclass
 
-def import_by_name(clsname):
-    components = clsname.split('.')
+def import_by_name(dotname):
+    components = dotname.split('.')
     leaf = components[-1]
-    mod = __import__(clsname, fromlist=[leaf])
+    mod = __import__(dotname, fromlist=[leaf])
     return mod
 
-def get_checks(clsname):
-    cls = import_by_name(clsname)
+def get_checks(pkgname):
+    cls = import_by_name(pkgname)
     for objname in dir(cls):
          obj = getattr(cls, objname)
-         if isclass(obj):
-             if issubclass(obj, unittest.TestCase):
-                 newname = "%s__%s" % (clsname.replace('.', '__'), objname)
-                 globals()[newname] = obj
-                 obj.__name__ = newname
+         if isclass(obj) and issubclass(obj, unittest.TestCase):
+             newname = "%s__%s" % (pkgname.replace('.', '__'), objname)
+             globals()[newname] = obj
+             obj.__name__ = newname
 
-for clsname in ['openquakeplatform_ipt.test', 'openquakeplatform_taxtweb.test']:
+for pkgname in ['openquakeplatform_ipt.test', 'openquakeplatform_taxtweb.test']:
     try:
-        get_checks(clsname)
+        get_checks(pkgname)
     except:
         pass
