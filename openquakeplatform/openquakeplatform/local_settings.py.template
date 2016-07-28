@@ -382,12 +382,6 @@ AUTH_EXEMPT_URLS = ('/$',
 # DEFAULT_FROM_EMAIL = 'info@%(hostname)s'
 # THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(hostname)s'
 
-# Max input upload size for Icebox
-ICEBOX_MAX_SIZE_MB = 10
-# Send an email with an Icebox job report
-# WARNING: untested feature
-ICEBOX_SEND_EMAIL = False
-
 # These limits define the maximum data that can be retreived
 # from GEM in the Exposure app
 # Max area size in degrees (i.e. 2 * 2)
