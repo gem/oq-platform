@@ -363,8 +363,7 @@ AUTH_EXEMPT_URLS = ('/$',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*',
-                    '/taxtweb/',
-                    '/ipt/')
+                    '/taxtweb/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.
