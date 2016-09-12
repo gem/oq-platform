@@ -2,6 +2,7 @@ import time
 import sys
 from utils import TimeoutError, NotUniqError, wait_for
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class Platform(object):
@@ -115,6 +116,12 @@ class Platform(object):
             return False
         else:
             return True
+
+    def waituntil(self, delay, action):
+        WebDriverWait(self.driver, delay, action)
+
+    def waituntil_js(self, delay, action_js):
+        self.waituntil(delay, self.driver.execute_script(action_js))
 
     @property
     def url(self):
