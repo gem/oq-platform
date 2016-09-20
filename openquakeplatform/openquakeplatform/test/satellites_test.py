@@ -1,3 +1,4 @@
+import re
 import unittest
 from inspect import isclass
 
@@ -10,11 +11,13 @@ def import_by_name(dotname):
 def get_checks(pkgname):
     cls = import_by_name(pkgname)
     for objname in dir(cls):
-         obj = getattr(cls, objname)
-         if isclass(obj) and issubclass(obj, unittest.TestCase):
-             newname = "%s__%s" % (pkgname.replace('.', '__'), objname)
-             globals()[newname] = obj
-             obj.__name__ = newname
+        obj = getattr(cls, objname)
+        if isclass(obj) and issubclass(obj, unittest.TestCase):
+            newname = re.sub('^openquakeplatform_', '',
+                             "%s__%s" % (pkgname.replace('.', '__'), objname))
+            newname = re.sub('__test__', '__', newname, 1)
+            globals()[newname] = obj
+            obj.__name__ = newname
 
 for pkgname in ['openquakeplatform_ipt.test', 'openquakeplatform_taxtweb.test']:
     try:
