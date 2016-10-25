@@ -380,8 +380,6 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
-    # FIXME
-    sleep 5000000
     echo 'signal trapped'
     cd ~/$GEM_GIT_PACKAGE
     if [ -z \"\$VIRTUAL_ENV\" ]; then
