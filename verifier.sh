@@ -365,8 +365,8 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get install -y python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils"
-    ssh -t  $lxc_ip "sudo pip install -y https://github.com/gem/oq-hazardlib/archive/stable.zip"
-    ssh -t  $lxc_ip "sudo pip install -y https://github.com/gem/oq-engine/archive/stable.zip"
+    ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-hazardlib/archive/stable.zip"
+    ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-engine/archive/stable.zip"
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
 
     ssh -t  $lxc_ip "sudo sed -i \"s/\([#        ]*listen_addresses[     ]*=[    ]*\)[^#]*\(#.*\)*/listen_addresses = '*'    \2/g\" /etc/postgresql/9.1/main/postgresql.conf"
