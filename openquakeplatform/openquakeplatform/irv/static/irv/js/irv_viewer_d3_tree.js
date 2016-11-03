@@ -462,7 +462,7 @@
                     if (d.children){
                         var operator = d.operator? d.operator : DEFAULT_OPERATOR;
                         d.operator = operator;
-                        if (operator.indexOf('ignore weights') != -1) {
+                        if (operator.indexOf('ignore weights') != -1 || operator.indexOf('no recalculation') != -1) {
                             parts = operator.split('(');
                             operator = parts[0];
                         }
@@ -486,7 +486,7 @@
                 .text(function(d) {
                     if (d.children){
                         var ignoreWeightsStr = '';
-                         if (d.operator.indexOf('ignore weights') != -1) {
+                         if (d.operator.indexOf('ignore weights') != -1 || d.operator.indexOf('no recalculation') != -1) {
                             parts = d.operator.split('(');
                             ignoreWeightsStr = '(' + parts[1];
                         }

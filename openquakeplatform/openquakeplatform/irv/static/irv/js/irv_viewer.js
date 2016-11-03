@@ -63,6 +63,11 @@ var operators = {
         'code': 'GEOM_MEAN',
         'ignoresWeights': true,
         'multiplies': true
+    },
+    'CUSTOM': {
+        'code': 'CUSTOM',
+        'ignoresWeights': true,
+        'multiplies': false
     }
 };
 
@@ -72,7 +77,8 @@ var namesToOperators = {
     'Average (ignore weights)':               operators.AVG,
     'Simple multiplication (ignore weights)': operators.MUL_S,
     'Weighted multiplication':                operators.MUL_W,
-    'Geometric mean (ignore weights)':        operators.GEOM_MEAN
+    'Geometric mean (ignore weights)':        operators.GEOM_MEAN,
+    'Use a custom field (no recalculation)':  operators.CUSTOM
 };
 
 var nodeTypes = {
@@ -540,6 +546,14 @@ function processIndicators(layerAttributes, projectDef) {
     var IRI = {};
     if (svThemes === undefined || riskIndicators === undefined) {
         //return;
+    } else if (namesToOperators[projectDef.operator].code == 'CUSTOM') {
+        // the IRI operator is set to use a custom field without recalculating
+        var la = layerAttributes.features;
+        for (var s = 0; s < la.length; s++) {
+            var regionName = la[s].properties[zoneLabelField];
+            IRI[regionName] = la[s].properties[projectDef.field];
+        }
+        scale(IRI);
     } else {
         var sviWeight;
         var riWeight;
