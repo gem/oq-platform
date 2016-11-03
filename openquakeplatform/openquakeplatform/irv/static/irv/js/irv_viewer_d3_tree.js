@@ -369,13 +369,16 @@
         d3.select(self.frameElement).style("height", "800px");
 
         function onTreeWeightClick(d) {
+            $('#projectDefWeightDialog').empty();
+            if (!projDefOperatorsAreSupported) {
+                return;
+            }
             pdName = d.name;
             pdData = data;
             pdWeight = d.weight;
             pdLevel = d.level;
             pdTempSpinnerIds = [];
             pdTempIds = [];
-            $('#projectDefWeightDialog').empty();
             findTreeBranchInfo(pdData, [pdName], [pdLevel]);
             updateButton();
         }

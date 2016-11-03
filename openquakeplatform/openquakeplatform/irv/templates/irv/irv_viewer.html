@@ -77,6 +77,13 @@ IRV - {{block.super}}
     </ul>
     <div id="project-def">
         <button id="saveBtn" class="btn btn-blue">Save Project Definition</button>
+        <div id="mainContainer">
+            <div class="alert-unsupported-operators">
+                <div class="alert alert-danger" role="alert">
+                    Custom operators are used in nodes different than IRI, so the modification of weights is not supported.
+                </div>
+            </div>
+        </div>
         <div id="tool-tip"></div>
         <div id="projectDef-tree"></div>
         <div id="projectDefDialog" title="Project Definition">
