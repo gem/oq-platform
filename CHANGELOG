@@ -1,4 +1,8 @@
 python-oq-platform (1.7.1)
+  
+  [Paolo Tormene]
+  * irv: enable visualizing projects in which the IRI was calculated using a custom
+    operator, and do not allow to change weights in case other nodes are custom.
 
   [Daniele Viganò]
   * Add Creative Commons 4 licenses

@@ -63,6 +63,11 @@ var operators = {
         'code': 'GEOM_MEAN',
         'ignoresWeights': true,
         'multiplies': true
+    },
+    'CUSTOM': {
+        'code': 'CUSTOM',
+        'ignoresWeights': true,
+        'multiplies': false
     }
 };
 
@@ -72,7 +77,8 @@ var namesToOperators = {
     'Average (ignore weights)':               operators.AVG,
     'Simple multiplication (ignore weights)': operators.MUL_S,
     'Weighted multiplication':                operators.MUL_W,
-    'Geometric mean (ignore weights)':        operators.GEOM_MEAN
+    'Geometric mean (ignore weights)':        operators.GEOM_MEAN,
+    'Use a custom field (no recalculation)':  operators.CUSTOM
 };
 
 var nodeTypes = {
@@ -103,7 +109,9 @@ var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": pri
 
 $(document).ready(function() {
     $('#cover').remove();
+    // FIXME: We are never showing alert-unscaled-data currently
     $('.alert-unscaled-data').hide();
+    $('.alert-unsupported-operators').hide();
     $('#absoluteSpinner').hide();
     $('#loadProjectBtn').show();
 });
@@ -134,6 +142,7 @@ var regionNames = [];
 var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
+var projDefOperatorsAreSupported = false;
 
 function setWidgetsToDefault(){
     $('#pdSelection').empty();
@@ -321,6 +330,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
+    if (!projDefOperatorsAreSupported) {
+        return;
+    }
     var weightChange = 0;
     if (arguments[2]) {
         weightChange = arguments[2];
@@ -513,7 +525,7 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the risk index ////
     ////////////////////////////////
 
-    // Create the risk indicator only if it has children
+    // Create the risk index only if it has children
     var RI = {};
     var riskIndicator;
     if (riskIndicators !== undefined) {
@@ -540,6 +552,14 @@ function processIndicators(layerAttributes, projectDef) {
     var IRI = {};
     if (svThemes === undefined || riskIndicators === undefined) {
         //return;
+    } else if (namesToOperators[projectDef.operator].code == 'CUSTOM') {
+        // the IRI operator is set to use a custom field without recalculating
+        var la = layerAttributes.features;
+        for (var s = 0; s < la.length; s++) {
+            var regionName = la[s].properties[zoneLabelField];
+            IRI[regionName] = la[s].properties[projectDef.field];
+        }
+        scale(IRI);
     } else {
         var sviWeight;
         var riWeight;
@@ -1457,12 +1477,31 @@ function whenProjDefSelected() {
         if (tempProjectDef[i].title === pdSelection) {
             // Deep copy the temp project definition object
             sessionProjectDef = jQuery.extend(true, {}, tempProjectDef[i]);
+            if (has_non_root_custom_fields(sessionProjectDef)) {
+                projDefOperatorsAreSupported = false;
+                $('.alert-unsupported-operators').show();
+            } else {
+                projDefOperatorsAreSupported = true;
+                $('.alert-unsupported-operators').hide();
+            }
             loadPD(sessionProjectDef);
             $('#iri-spinner').hide();
             $('#project-definition-svg').show();
             processIndicators(layerAttributes, sessionProjectDef);
         }
     }
+}
+
+function has_non_root_custom_fields(projDef) {
+    for (var childIdx in projDef.children) {
+        var child = projDef.children[childIdx];
+        if (typeof(child.operator) !== 'undefined' && namesToOperators[child.operator].code == 'CUSTOM') {
+            return true;
+        } else if (has_non_root_custom_fields(child)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function getGeoServerLayers() {
