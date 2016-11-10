@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# packager.sh  Copyright (c) 2015, GEM Foundation.
+# verifier.sh  Copyright (c) 2015-2016, GEM Foundation.
 #
 # OpenQuake is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Affero General Public License as published
@@ -20,7 +20,7 @@
 #
 # verifier.sh automates procedures to:
 #  - test development environment
-#  - TODO test production environment
+#  - test production environment
 #
 # tests are performed inside linux containers (lxc) to achieve
 # a good compromise between speed and isolation
@@ -37,19 +37,14 @@
 # you can use verifier.sh to install a permanent LXC machine
 #
 # to do it:
+# - create and run a new lxc of the same serie used here
 #
-# - copy openquakeplatform/bin/lxc-* to your /usr/local/sbin
-#
-# - set these env variables (change <lxc-machine-name> with your m. name)
-#
-# export GEM_EPHEM_IP_GET=lxc-ip-get-gem
-# export GEM_EPHEM_NAME=<lxc-machine-name>
-# export GEM_EPHEM_DESTROY=echo lxc-destroy-fake
-# export GEM_EPHEM_CMD=lxc-start-gem
+# - exports:
+# export GEM_EPHEM_NAME='<lxc-machine-name>'
+# export GEM_EPHEM_DESTROY='false'
+# export GEM_EPHEM_EXE='<lxc-machine-name>'
 #
 # run ./verifier.sh prodtest <your-branch-name>
-
-
 
 # MAYBE GOOD FOR PRODUCTION TEST PART
 # sudo apt-get install git
@@ -83,35 +78,30 @@ GEM_MAXLOOP=20
 
 GEM_ALWAYS_YES=false
 
-if [ "$GEM_EPHEM_CMD" = "" ]; then
-    GEM_EPHEM_CMD="lxc-start-ephemeral"
-fi
 if [ "$GEM_EPHEM_NAME" = "" ]; then
     GEM_EPHEM_NAME="ubuntu-x11-lxc-eph"
 fi
 
 LXC_VER=$(lxc-ls --version | cut -d '.' -f 1)
 
-if [ $LXC_VER -lt 1 ]; then
-    echo "lxc >= 1.0.0 is required." >&2
+if [ $LXC_VER -lt 2 ]; then
+    echo "lxc >= 2.0.0 is required." >&2
     exit 1
 fi
 
 LXC_TERM="lxc-stop -t 10"
 LXC_KILL="lxc-stop -k"
 
-if command -v lxc-copy &> /dev/null; then
-    # New lxc (>= 2.0.0) with lxc-copy
-    GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -n ${GEM_EPHEM_NAME} -e"
+if [ "$GEM_EPHEM_EXE" != "" ]; then
+    echo "Using [$GEM_EPHEM_EXE] to run lxc"
 else
-    # Old lxc (< 2.0.0) with lxc-start-ephimeral
-    GEM_EPHEM_EXE="${GEM_EPHEM_CMD} -o ${GEM_EPHEM_NAME} -d"
+    GEM_EPHEM_EXE="lxc-copy -n ${GEM_EPHEM_NAME} -e"
 fi
 
 if [ "$GEM_EPHEM_DESTROY" != "" ]; then
     LXC_DESTROY="$GEM_EPHEM_DESTROY"
 else
-    LXC_DESTROY="lxc-destroy"
+    LXC_DESTROY="true"
 fi
 
 ACTION="none"
@@ -211,27 +201,9 @@ sig_hand () {
         copy_prod
 
         echo "Destroying [$lxc_name] lxc"
-        if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
-            upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
-            if [ -f "${upper}.dsk" ]; then
-                loop_dev="$(sudo losetup -a | grep "(${upper}.dsk)$" | cut -d ':' -f1)"
-            fi
+        if [ "$LXC_DESTROY" = "true" ]; then
             sudo $LXC_KILL -n $lxc_name
-            sudo umount /var/lib/lxc/$lxc_name/rootfs
-            sudo umount /var/lib/lxc/$lxc_name/ephemeralbind
-            echo "$upper" | grep -q '^/tmp/'
-            if [ $? -eq 0 ]; then
-                sudo umount "$upper"
-                sudo rm -r "$upper"
-                if [ "$loop_dev" != "" ]; then
-                    sudo losetup -d "$loop_dev"
-                    if [ -f "${upper}.dsk" ]; then
-                        sudo rm -f "${upper}.dsk"
-                    fi
-                fi
-            fi
         fi
-        sudo $LXC_DESTROY -n $lxc_name
     fi
     if [ -f /tmp/packager.eph.$$.log ]; then
         rm /tmp/packager.eph.$$.log
@@ -475,20 +447,28 @@ _lxc_name_and_ip_get()
         i=-1
         e=-1
         for i in $(seq 1 40); do
+            if [ "$GEM_EPHEM_EXE" = "$GEM_EPHEM_NAME" ]; then
+                lxc_name="$GEM_EPHEM_NAME"
+                break
+            elif grep -q " as clone of $GEM_EPHEM_NAME" $filename 2>&1 ; then
+                lxc_name="$(grep " as clone of $GEM_EPHEM_NAME" $filename | tail -n 1 | sed "s/Created \(.*\) as clone of ${GEM_EPHEM_NAME}/\1/g")"
+                break
+            else
+                sleep 2
+            fi
+        done
+        if [ $i -eq 40 ]; then
+            return 1
+        fi
+
+        for e in $(seq 1 40); do
             sleep 2
-            if grep -q "sudo lxc-console -n $GEM_EPHEM_NAME" $filename 2>&1 ; then
-                lxc_name="$(grep "sudo lxc-console -n $GEM_EPHEM_NAME" $filename | sed "s/.*sudo lxc-console -n \($GEM_EPHEM_NAME\)/\1/g")"
-                for e in $(seq 1 40); do
-                    sleep 2
-                    if grep -q "$lxc_name" /var/lib/misc/dnsmasq*.leases ; then
-                        lxc_ip="$(grep " $lxc_name " /var/lib/misc/dnsmasq*.leases | tail -n 1 | cut -d ' ' -f 3)"
-                        break
-                    fi
-                done
+            lxc_ip="$(sudo lxc-ls -f --filter "^${lxc_name}\$" | tail -n 1 | sed 's/ \+/ /g' | cut -d ' ' -f 5)"
+            if [ "$lxc_ip" ]; then
                 break
             fi
         done
-        if [ $i -eq 40 -o $e -eq 40 ]; then
+        if [ $e -eq 40 ]; then
             return 1
         fi
         echo "SUCCESSFULY RUNNED $lxc_name ($lxc_ip)"
@@ -514,9 +494,13 @@ devtest_run () {
     local deps old_ifs branch_id="$1"
 
     sudo echo
-    sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
-    _lxc_name_and_ip_get /tmp/packager.eph.$$.log
-    rm /tmp/packager.eph.$$.log
+    if [ "$GEM_EPHEM_EXE" = "$GEM_EPHEM_NAME" ]; then
+        _lxc_name_and_ip_get
+    else
+        sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
+        _lxc_name_and_ip_get /tmp/packager.eph.$$.log
+        rm /tmp/packager.eph.$$.log
+    fi
 
     _wait_ssh $lxc_ip
     set +e
@@ -530,7 +514,7 @@ devtest_run () {
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
     fi
 
-    if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+    if [ "$LXC_DESTROY" = "true" ]; then
         sudo $LXC_TERM -n $lxc_name
     fi
 
@@ -637,9 +621,13 @@ prodtest_run () {
     local deps old_ifs branch_id="$1"
 
     sudo echo
-    sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
-    _lxc_name_and_ip_get /tmp/packager.eph.$$.log
-    rm /tmp/packager.eph.$$.log
+    if [ "$GEM_EPHEM_EXE" = "$GEM_EPHEM_NAME" ]; then
+        _lxc_name_and_ip_get
+    else
+        sudo ${GEM_EPHEM_EXE} 2>&1 | tee /tmp/packager.eph.$$.log &
+        _lxc_name_and_ip_get /tmp/packager.eph.$$.log
+        rm /tmp/packager.eph.$$.log
+    fi
 
     _wait_ssh $lxc_ip
     set +e
@@ -654,7 +642,7 @@ prodtest_run () {
         :
     fi
 
-    if [ "$LXC_DESTROY" = "lxc-destroy" ]; then
+    if [ "$LXC_DESTROY" = "true" ]; then
         sudo $LXC_TERM -n $lxc_name
     fi
 
