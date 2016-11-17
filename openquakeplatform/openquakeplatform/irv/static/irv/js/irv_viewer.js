@@ -108,10 +108,13 @@ var primaryChartElems = {"graph": "primaryGraph",
 var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
 
 $(document).ready(function() {
+    var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+    app.initialize(startApp);
     $('#cover').remove();
     // FIXME: We are never showing alert-unscaled-data currently
     $('.alert-unscaled-data').hide();
-    $('.alert-unsupported-operators').hide();
+    $('.alert-custom-operators').hide();
     $('#absoluteSpinner').hide();
     $('#loadProjectBtn').show();
 });
@@ -139,10 +142,8 @@ var mappingLayerAttributes = {};
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
 var projectLayerAttributes;
 var regionNames = [];
-var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
-var projDefOperatorsAreSupported = false;
+var projDefOperatorsAreStandard = false;
 
 function setWidgetsToDefault(){
     $('#pdSelection').empty();
@@ -330,9 +331,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
-    if (!projDefOperatorsAreSupported) {
-        return;
-    }
     var weightChange = 0;
     if (arguments[2]) {
         weightChange = arguments[2];
@@ -1477,12 +1475,12 @@ function whenProjDefSelected() {
         if (tempProjectDef[i].title === pdSelection) {
             // Deep copy the temp project definition object
             sessionProjectDef = jQuery.extend(true, {}, tempProjectDef[i]);
-            if (has_non_root_custom_fields(sessionProjectDef)) {
-                projDefOperatorsAreSupported = false;
-                $('.alert-unsupported-operators').show();
+            if (has_custom_fields(sessionProjectDef)) {
+                projDefOperatorsAreStandard = false;
+                $('.alert-custom-operators').show();
             } else {
-                projDefOperatorsAreSupported = true;
-                $('.alert-unsupported-operators').hide();
+                projDefOperatorsAreStandard = true;
+                $('.alert-custom-operators').hide();
             }
             loadPD(sessionProjectDef);
             $('#iri-spinner').hide();
@@ -1492,12 +1490,13 @@ function whenProjDefSelected() {
     }
 }
 
-function has_non_root_custom_fields(projDef) {
+function has_custom_fields(projDef) {
+    if (typeof(projDef.operator) !== 'undefined' && namesToOperators[projDef.operator].code == 'CUSTOM') {
+        return true;
+    }
     for (var childIdx in projDef.children) {
         var child = projDef.children[childIdx];
-        if (typeof(child.operator) !== 'undefined' && namesToOperators[child.operator].code == 'CUSTOM') {
-            return true;
-        } else if (has_non_root_custom_fields(child)) {
+        if (has_custom_fields(child)) {
             return true;
         }
     }
@@ -2029,5 +2028,3 @@ function projDefJSONRequest(selectedLayer) {
 function triggerPdSelection () {
     $('#pdSelection').trigger('change');
 }
-
-app.initialize(startApp);

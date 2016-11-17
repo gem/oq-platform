@@ -370,7 +370,7 @@
 
         function onTreeWeightClick(d) {
             $('#projectDefWeightDialog').empty();
-            if (!projDefOperatorsAreSupported) {
+            if (!projDefOperatorsAreStandard) {
                 return;
             }
             pdName = d.name;
