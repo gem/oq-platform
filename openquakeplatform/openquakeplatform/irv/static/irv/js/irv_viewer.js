@@ -108,6 +108,9 @@ var primaryChartElems = {"graph": "primaryGraph",
 var chartElems = {"iri": iriChartElems, "theme": themeChartElems, "primary": primaryChartElems};
 
 $(document).ready(function() {
+    var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+    app.initialize(startApp);
     $('#cover').remove();
     // FIXME: We are never showing alert-unscaled-data currently
     $('.alert-unscaled-data').hide();
@@ -139,8 +142,6 @@ var mappingLayerAttributes = {};
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
 var projectLayerAttributes;
 var regionNames = [];
-var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 var projDefOperatorsAreStandard = false;
 
@@ -2027,5 +2028,3 @@ function projDefJSONRequest(selectedLayer) {
 function triggerPdSelection () {
     $('#pdSelection').trigger('change');
 }
-
-app.initialize(startApp);
