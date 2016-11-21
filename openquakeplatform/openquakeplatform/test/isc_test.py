@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 import unittest
 
-# from IPython.core import ultratb
-# sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-#      color_scheme='Linux', call_pdb=1)
-
 from openquakeplatform.test import pla
-
 
 class IscTest(unittest.TestCase):
     def isc_test(self):
-        pla.navigate('explore')
+        pla.get('/explore')
+        pla.wait_new_page("//b[contains(text(), 'Seismic Hazard Data Sets and Models')]",
+                          "/explore", strategy="next", timeout=10)
 
         #<li>
         #<a href="/maps/23">
