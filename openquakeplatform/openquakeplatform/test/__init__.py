@@ -1,7 +1,3 @@
-import time
-import sys
-import nose
-
 from openquake.moon import Moon
 
 pla = Moon()
