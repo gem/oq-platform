@@ -464,7 +464,7 @@ _lxc_name_and_ip_get()
         for e in $(seq 1 40); do
             sleep 2
             lxc_ip="$(sudo lxc-ls -f --filter "^${lxc_name}\$" | tail -n 1 | sed 's/ \+/ /g' | cut -d ' ' -f 5)"
-            if [ "$lxc_ip" ]; then
+            if [ "$lxc_ip" -a "$lxc_ip" != "-" ]; then
                 break
             fi
         done
