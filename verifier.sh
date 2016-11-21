@@ -333,12 +333,26 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
+    ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-latest-linux64.tar.gz ; tar zxvf geckodriver-latest-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
+    ssh -t  $lxc_ip "sudo pip install -U selenium==3.0.1"
+
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils"
     ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-hazardlib/archive/stable.zip"
     ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-engine/archive/stable.zip"
+
+
+    # to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
+    ssh -t  $lxc_ip "sudo echo \"try:
+    __import__('pkg_resources').declare_namespace(__name__)
+except ImportError:
+    __path__ = __import__('pkgutil').extend_path(__path__, __name__)\" > /tmp/new_init.py ;
+    init_file=\"\$(python -c 'import openquake ; print openquake.__path__[0]')/__init__.py\" ;
+    sudo cp /tmp/new_init.py \"\${init_file}\" ;
+    sudo python -m py_compile \"\${init_file}\" "
+    
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
 
     ssh -t  $lxc_ip "sudo sed -i \"s/\([#        ]*listen_addresses[     ]*=[    ]*\)[^#]*\(#.*\)*/listen_addresses = '*'    \2/g\" /etc/postgresql/9.1/main/postgresql.conf"
@@ -347,6 +361,7 @@ _devtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 -b  $repo_id/oq-moon"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 -b  $repo_id/oq-platform-taxtweb"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
@@ -420,10 +435,10 @@ fab --show=everything test
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
 
-export PYTHONPATH=\$(pwd)
-cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
+export PYTHONPATH=\$(pwd):\$(pwd)/../oq-moon:\$(pwd)/openquakeplatform/test/config
+cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
-python openquakeplatform/test/nose_runner.py --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
+python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
 fab stop
 "
