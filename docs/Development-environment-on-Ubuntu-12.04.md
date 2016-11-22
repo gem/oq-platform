@@ -53,7 +53,6 @@ pip install decorator
 pip install psutil
 pip install Cython
 pip install h5py
-pip install selenium
 pip install nose
 pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
 pip install 'http://github.com/gem/oq-engine/tarball/master'
