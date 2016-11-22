@@ -1,3 +1,7 @@
+python-oq-platform (1.8.0)
+  [Paolo Tormene]
+  * irv: accept custom operators defined with the modified format
+
 python-oq-platform (1.7.1)
   
   [Paolo Tormene]
