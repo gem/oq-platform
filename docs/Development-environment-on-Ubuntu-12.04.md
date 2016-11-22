@@ -8,7 +8,7 @@ sudo apt-get install build-essential python-dev python-mock python-imaging pytho
 
 ## Change the PostgreSQL configuration
 
-On top of `/etc/postgresql/9,1/main/pg_hba.conf` add:
+On top of `/etc/postgresql/9.1/main/pg_hba.conf` add:
 
 ```
 local   all             all                                     trust
