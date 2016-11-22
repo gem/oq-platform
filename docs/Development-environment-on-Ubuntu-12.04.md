@@ -31,7 +31,7 @@ virtualenv --system-site-packages platform-env
 ## Install software dependencies
 ### Install OpenQuake Engine and Hazardlib
 
-#### Using a virtualenv with access to the global site-packages
+#### Using a virtualenv with access to the global site-packages (default)
 
 ```bash
 sudo apt-get install python-software-properties
