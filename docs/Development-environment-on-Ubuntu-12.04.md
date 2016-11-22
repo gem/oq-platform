@@ -72,7 +72,7 @@ pip install -e openquakeplatform
 
 ### Install standalone apps
 
-```  
+```bash 
 # IPT
 pip install https://github.com/gem/oq-platform-ipt/tarball/master
 # Taxtweb
