@@ -38,14 +38,9 @@ On top the `pg_hba.conf` add:
 
 ```
 local   all             all                                     trust
-host    all             all             <cidr-address>          md5
 ```
-Where **&lt;cidr-address&gt;** (i.e.: 10.0.3.0/24) is the network containing the **OpenQuake Engine Server** and the **OpenQuake Platform** servers. If both are installed locally on the same machine the "host" line can be skipped.
-
 
 In `postgresql.conf` change:
-
-`listen_addresses = '*'`
 
 Then restart PostgreSQL
 
