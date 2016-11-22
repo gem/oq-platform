@@ -4,6 +4,9 @@ These are the main steps to install the OpenQuake Platform on Ubuntu 12.04 LTS u
 
 ```bash
 sudo apt-get install build-essential python-dev python-mock python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev
+
+sudo apt-get install build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties
+
 ```
 
 ## Change the PostgreSQL configuration
@@ -32,41 +35,22 @@ virtualenv --system-site-packages platform-env
 ## Install software dependencies
 ### Install OpenQuake Engine and Hazardlib
 
-#### Using a virtualenv with access to the global site-packages (default)
-
 ```bash
-sudo apt-get install python-software-properties
 sudo add-apt-repository -y ppa:openquake/ppa
 sudo apt-get update
-sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
+sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
 
-pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
-pip install 'http://github.com/gem/oq-engine/tarball/master'
-
-```
-
-#### Using a virtualenv without access to the global site-packages
-
-```bash
-# you can install all required packages using pip:
-pip install futures
-pip install decorator
-pip install psutil
-pip install Cython
-pip install h5py
-pip install nose
 pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
 pip install 'http://github.com/gem/oq-engine/tarball/master'
 ```
 
-Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github  and made available via PYTHONPATH before running any python application.
+Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github and made available via `PYTHONPATH` before running any python application.
+When a virtualenv which has not access to the global site-packages is used dependencies must be installed via pip, See https://github.com/gem/oq-engine/blob/master/requirements-dev.txt.
 
 ### Install OpenQuake Platform
 
 ```bash
 cd ~/oq-platform
-# Workaround for https://github.com/scipy/scipy/pull/453
-pip install numpy==1.6.1
 pip install -e openquakeplatform
 ```
 
@@ -104,6 +88,7 @@ vim local_settings.py
 
 ## Start GeoServer and Django webserver
 ```bash
+cd ~/oq-platform/openquakeplatform
 fab start
 ```
 
