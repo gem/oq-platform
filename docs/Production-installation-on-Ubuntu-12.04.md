@@ -30,20 +30,6 @@ oq-platform/openquakeplatform/bin/deploy.sh --help
 
 ## Extra optional steps 
 
-### Change the PostgreSQL configuration
-
-_This must be done if the OpenQuake Platform is used in conjunction with the OpenQuake Engine Server._
-
-On top the `pg_hba.conf` add:
-
-```
-local   all             all                                     trust
-```
-
-In `postgresql.conf` change:
-
-Then restart PostgreSQL
-
 ### Tune local_settings
 
 Customize the ```/etc/openquake/platform/local_settings.py``` as you need; for example add:
