@@ -8,7 +8,7 @@ sudo apt-get install build-essential python-dev python-mock python-imaging pytho
 
 ## Change the PostgreSQL configuration
 
-On top the `pg_hba.conf` add:
+On top of `/etc/postgresql/9,1/main/pg_hba.conf` add:
 
 ```
 local   all             all                                     trust
@@ -28,8 +28,8 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 ```
 
-## Install the software local dependencies
-### Install optional dependencies to be able to use nrml validator from risklib package
+## Install software dependencies
+### Install OpenQuake Engine and Hazardlib
 
 #### Using a virtualenv with access to the global site-packages
 
@@ -42,8 +42,6 @@ sudo apt-get install python-decorator python-h5py python-psutil python-concurren
 pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
 pip install 'http://github.com/gem/oq-engine/tarball/master'
 
-# OR download 'oq-hazardlib' and 'oq-engine' manually from github and make available via PYTHONPATH
-# before run any python applications
 ```
 
 #### Using a virtualenv without access to the global site-packages
@@ -61,13 +59,24 @@ pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
 pip install 'http://github.com/gem/oq-engine/tarball/master'
 ```
 
-### Install the Platform
+Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github  and made available via PYTHONPATH before running any python application.
+
+### Install OpenQuake Platform
 
 ```bash
 cd ~/oq-platform
 # Workaround for https://github.com/scipy/scipy/pull/453
 pip install numpy==1.6.1
 pip install -e openquakeplatform
+```
+
+### Install standalone apps
+
+```  
+# IPT
+pip install https://github.com/gem/oq-platform-ipt/tarball/master
+# Taxtweb
+pip install https://github.com/gem/oq-platform-taxtweb/tarball/master
 ```
 
 ## Per-user installation
