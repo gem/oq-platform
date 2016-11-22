@@ -14,7 +14,7 @@ On top of `/etc/postgresql/9.1/main/pg_hba.conf` add:
 local   all             all                                     trust
 ```
 
-Then restart PostgreSQL
+Then restart PostgreSQL: `sudo service postgresql restart`
 
 ## Clone the GitHub repo
 ```bash
@@ -36,7 +36,7 @@ virtualenv --system-site-packages platform-env
 
 ```bash
 sudo apt-get install python-software-properties
-sudo add-apt-repository ppa:openquake/ppa
+sudo add-apt-repository -y ppa:openquake/ppa
 sudo apt-get update
 sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
 
