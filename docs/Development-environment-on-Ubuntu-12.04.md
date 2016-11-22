@@ -18,6 +18,7 @@ Then restart PostgreSQL
 
 ## Clone the GitHub repo
 ```bash
+cd ~
 git clone http://github.com/gem/oq-platform.git
 ```
 
