@@ -1,6 +1,7 @@
-python-oq-platform (1.8.0)
+python-oq-platform (1.7.2)
   [Paolo Tormene]
-  * irv: accept custom operators defined with the modified format
+  * irv: accept also a modified format of custom operators and display the formula
+    that was used to calculate the custom field (or a textual description)
 
 python-oq-platform (1.7.1)
   
