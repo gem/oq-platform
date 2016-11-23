@@ -78,6 +78,8 @@ var namesToOperators = {
     'Simple multiplication (ignore weights)': operators.MUL_S,
     'Weighted multiplication':                operators.MUL_W,
     'Geometric mean (ignore weights)':        operators.GEOM_MEAN,
+    'Use a custom field':                     operators.CUSTOM,
+    // the following is for backwards compatibility
     'Use a custom field (no recalculation)':  operators.CUSTOM
 };
 
