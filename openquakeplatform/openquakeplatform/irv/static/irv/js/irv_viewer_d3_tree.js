@@ -465,7 +465,7 @@
                     if (d.children){
                         var operator = d.operator? d.operator : DEFAULT_OPERATOR;
                         d.operator = operator;
-                        if (operator.indexOf('ignore weights') != -1 || operator.indexOf('no recalculation') != -1) {
+                        if (operator.indexOf('ignore weights') != -1) {
                             parts = operator.split('(');
                             operator = parts[0];
                         }
@@ -488,13 +488,23 @@
             nodeEnter.append("text")
                 .text(function(d) {
                     if (d.children){
-                        var ignoreWeightsStr = '';
-                         if (d.operator.indexOf('ignore weights') != -1 || d.operator.indexOf('no recalculation') != -1) {
+                        if (d.operator.indexOf('ignore weights') != -1) {
                             parts = d.operator.split('(');
-                            ignoreWeightsStr = '(' + parts[1];
+                            var ignoreWeightsStr = '(' + parts[1];
+                            return ignoreWeightsStr;
                         }
-                        return ignoreWeightsStr;
+                        if (d.operator.indexOf('custom') != -1) {
+                            var customString = '';
+                            if (typeof d.customFormula !== 'undefined') {
+                                customString += '(' + d.customFormula + ')';
+                            }
+                            else if (typeof d.fieldDescription !== 'undefined') {
+                                customString += '(' + d.fieldDescription + ')';
+                            }
+                            return customString;
+                        }
                     }
+                    return '';
                 })
                 .style("fill", function(d) {
                     if (d.operator != 'undefined') {
