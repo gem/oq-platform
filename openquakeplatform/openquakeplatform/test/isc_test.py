@@ -21,7 +21,7 @@ class IscTest(unittest.TestCase):
             "//a[@href='/maps/23/view' and "
             "normalize-space(text()) = 'View Map']")
         enter_button.click()
-        pla.wait_new_page(enter_button, '/maps/23/view', timeout=15)
+        pla.wait_new_page(enter_button, '/maps/23/view', timeout=150)
 
         # <button id="ext-gen159" class=" x-btn-text gxp-icon-getfeatureinfo"
         # type="button">Identify
