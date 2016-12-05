@@ -30,8 +30,11 @@ class IscTest(unittest.TestCase):
             "= 'Identify']", 50)
         enter_button.click()
 
-        import time
-        time.sleep(3)
+        # wait info button will be clicked
+        pla.xpath_finduniq(
+            "//button[@type='button' and normalize-space(text())"
+            "= 'Identify']/../../../../..[contains(concat(' ', @class, ' '),"
+            " ' x-btn-pressed ')]", 100)
 
         tail_ptr = pla.xpath_finduniq(
             "//img[contains(@src, 'wms?LAYERS=oqplatform%3Aisc_viewer_measure"
