@@ -30,6 +30,9 @@ class IscTest(unittest.TestCase):
             "= 'Identify']", 50)
         enter_button.click()
 
+        import time
+        time.sleep(3)
+
         tail_ptr = pla.xpath_finduniq(
             "//img[contains(@src, 'wms?LAYERS=oqplatform%3Aisc_viewer_measure"
             "&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1"
