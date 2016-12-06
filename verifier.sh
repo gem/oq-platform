@@ -438,7 +438,7 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
-python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test || true
+python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test
 # sleep 20000 || true
 sleep 3
 fab stop
@@ -615,10 +615,11 @@ cd oq-platform/openquakeplatform
 # add a simulated qgis uploaded layer
 ./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.localdomain"
 
-export PYTHONPATH=\$(pwd)
-sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
+export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
+sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
+python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test
 sleep 3
 cd -
 "
