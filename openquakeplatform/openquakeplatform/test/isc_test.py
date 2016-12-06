@@ -18,7 +18,7 @@ class IscTest(unittest.TestCase):
         pla.wait_new_page(enter_button, '/maps/23')
 
         import time
-        time.wait(15)
+        time.sleep(20)
 
         enter_button = pla.xpath_finduniq(
             "//a[@href='/maps/23/view' and "
