@@ -369,13 +369,16 @@
         d3.select(self.frameElement).style("height", "800px");
 
         function onTreeWeightClick(d) {
+            $('#projectDefWeightDialog').empty();
+            if (!projDefOperatorsAreStandard) {
+                return;
+            }
             pdName = d.name;
             pdData = data;
             pdWeight = d.weight;
             pdLevel = d.level;
             pdTempSpinnerIds = [];
             pdTempIds = [];
-            $('#projectDefWeightDialog').empty();
             findTreeBranchInfo(pdData, [pdName], [pdLevel]);
             updateButton();
         }
@@ -485,13 +488,23 @@
             nodeEnter.append("text")
                 .text(function(d) {
                     if (d.children){
-                        var ignoreWeightsStr = '';
-                         if (d.operator.indexOf('ignore weights') != -1) {
+                        if (d.operator.indexOf('ignore weights') != -1) {
                             parts = d.operator.split('(');
-                            ignoreWeightsStr = '(' + parts[1];
+                            var ignoreWeightsStr = '(' + parts[1];
+                            return ignoreWeightsStr;
                         }
-                        return ignoreWeightsStr;
+                        if (d.operator.indexOf('custom') != -1) {
+                            var customString = '';
+                            if (typeof d.customFormula !== 'undefined') {
+                                customString += '(' + d.customFormula + ')';
+                            }
+                            else if (typeof d.fieldDescription !== 'undefined') {
+                                customString += '(' + d.fieldDescription + ')';
+                            }
+                            return customString;
+                        }
                     }
+                    return '';
                 })
                 .style("fill", function(d) {
                     if (d.operator != 'undefined') {

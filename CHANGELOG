@@ -1,4 +1,13 @@
+python-oq-platform (1.7.2)
+  [Paolo Tormene]
+  * irv: accept also a modified format of custom operators and display the formula
+    that was used to calculate the custom field (or a textual description)
+
 python-oq-platform (1.7.1)
+  
+  [Paolo Tormene]
+  * irv: enable visualizing projects in which one or more composite indices were
+    calculated using custom operators, and disable changing weights in such cases.
 
   [Daniele Viganò]
   * Add Creative Commons 4 licenses
