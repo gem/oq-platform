@@ -94,7 +94,7 @@ setup(
         "django-taggit==0.10a2",
         "django-taggit-templatetags==0.4.6dev",
         "django-templatetag-sugar==0.1",
-        "fabric",
+        "fabric==1.10.5",
         "GeoNode==2.0.2",
         "geonode-avatar==2.1.1",
         "geonode-user-accounts==1.0.5",
