@@ -438,14 +438,6 @@ python ./manage.py loaddata dev-data.json.bz2
 
 
 
-# to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
-sudo echo \"try:
-    __import__('pkg_resources').declare_namespace(__name__)
-except ImportError:
-    __path__ = __import__('pkgutil').extend_path(__path__, __name__)\" > /tmp/new_init.py ;
-init_file=\"\$(python -c 'import openquake ; print openquake.__path__[0]')/__init__.py\" ;
-sudo cp /tmp/new_init.py \"\${init_file}\" ;
-sudo python -m py_compile \"\${init_file}\"
 
 export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
@@ -626,6 +618,15 @@ cd oq-platform/openquakeplatform
 
 # add a simulated qgis uploaded layer
 ./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.localdomain"
+
+# to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
+sudo echo \"try:
+    __import__('pkg_resources').declare_namespace(__name__)
+except ImportError:
+    __path__ = __import__('pkgutil').extend_path(__path__, __name__)\" > /tmp/new_init.py ;
+init_file=\"\$(python -c 'import openquake ; print openquake.__path__[0]')/__init__.py\" ;
+sudo cp /tmp/new_init.py \"\${init_file}\" ;
+sudo python -m py_compile \"\${init_file}\"
 
 export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
