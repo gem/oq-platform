@@ -419,7 +419,7 @@ else
         sleep 5
     done
     if [ \$i -eq \$bootstrap_tout ]; then
-        echo "timeout reached"
+        echo \"timeout reached\"
         kill -TERM \$bootstrap_pid
         sleep 5
         kill -KILL \$bootstrap_pid || true
@@ -434,6 +434,18 @@ fab --show=everything test
 # download and install vulnerability development data
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
+
+
+
+
+# to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
+sudo echo \"try:
+    __import__('pkg_resources').declare_namespace(__name__)
+except ImportError:
+    __path__ = __import__('pkgutil').extend_path(__path__, __name__)\" > /tmp/new_init.py ;
+init_file=\"\$(python -c 'import openquake ; print openquake.__path__[0]')/__init__.py\" ;
+sudo cp /tmp/new_init.py \"\${init_file}\" ;
+sudo python -m py_compile \"\${init_file}\"
 
 export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
