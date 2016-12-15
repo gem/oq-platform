@@ -618,7 +618,6 @@ cd oq-platform/openquakeplatform
 export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
-python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test
 sleep 3
 cd -
