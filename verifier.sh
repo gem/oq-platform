@@ -577,6 +577,9 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
+    ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-latest-linux64.tar.gz ; tar zxvf geckodriver-latest-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
+    ssh -t  $lxc_ip "sudo pip install -U selenium==3.0.1"
+
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
@@ -589,6 +592,7 @@ _prodtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 -b  $repo_id/oq-moon"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 -b  $repo_id/oq-platform-taxtweb"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
