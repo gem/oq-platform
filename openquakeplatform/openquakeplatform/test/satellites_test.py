@@ -16,8 +16,8 @@ def get_checks(pkgname):
             newname = re.sub('^openquakeplatform_', '',
                              "%s__%s" % (pkgname.replace('.', '__'), objname))
             newname = re.sub('__test__', '__', newname, 1)
-            globals()[newname] = obj
             obj.__name__ = newname
+            globals()[newname] = obj
 
 for pkgname in ['openquakeplatform_ipt.test', 'openquakeplatform_taxtweb.test']:
     try:
