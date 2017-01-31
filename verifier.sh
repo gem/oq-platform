@@ -381,8 +381,7 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
-pip install https://github.com/gem/oq-hazardlib/archive/stable.zip
-pip install https://github.com/gem/oq-engine/archive/stable.zip
+pip install openquake.engine
 
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
