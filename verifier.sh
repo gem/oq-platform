@@ -383,19 +383,19 @@ source platform-env/bin/activate
 
 # Setup.py has requirements too high for Precise.
 # We do not want to change them because Engine and Hazardlib
-# aren't tested anymore with Precise's stack
+# aren't tested anymore with Precise's stack, so --no-deps is
+# used. We need it for oq-platform-* too because pip tries to
+# resolve dependencies of dependencies too.
 pip install --no-deps openquake.hazardlib
 pip install --no-deps openquake.engine
+pip install --no-deps -e oq-platform-ipt/
+pip install --no-deps -e oq-platform-taxtweb/
 
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
 if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
     pip install simplejson==2.0.9
 fi
-cd -
-pip install --no-deps -e oq-platform-ipt/
-pip install --no-deps -e oq-platform-taxtweb/
-cd ~/$GEM_GIT_PACKAGE
 
 pip install -e openquakeplatform
 cd openquakeplatform
