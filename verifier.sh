@@ -381,6 +381,10 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
+
+# Setup.py has requirements too high for Precise.
+# We do not want to change them because Engine and Hazardlib
+# aren't tested anymore with Precise's stack
 pip install --no-deps openquake.hazardlib openquake.engine
 
 # if host machine includes python-simplejson package it must overrided with
