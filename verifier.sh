@@ -340,8 +340,6 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils"
-    ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-hazardlib/archive/stable.zip"
-    ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-engine/archive/stable.zip"
 
 
     # to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
@@ -383,6 +381,9 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
+pip install https://github.com/gem/oq-hazardlib/archive/stable.zip
+pip install https://github.com/gem/oq-engine/archive/stable.zip
+
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
 if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
