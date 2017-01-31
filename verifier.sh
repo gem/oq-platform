@@ -325,7 +325,6 @@ _devtest_innervm_run () {
     scp .gem_init.sh ${lxc_ip}:
     scp .gem_ffox_init.sh ${lxc_ip}:
 
-    # build oq-hazardlib speedups and put in the right place
     ssh -t  $lxc_ip "source .gem_init.sh"
 
     ssh -t  $lxc_ip "rm -f ssh.log"
@@ -394,12 +393,8 @@ if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
     pip install simplejson==2.0.9
 fi
 cd -
-cd oq-platform-ipt
-sudo python setup.py install
-cd -
-cd oq-platform-taxtweb
-sudo python setup.py install
-cd -
+pip install --no-deps -e oq-platform-ipt/
+pip install --no-deps -e oq-platform-taxtweb/
 cd ~/$GEM_GIT_PACKAGE
 
 pip install -e openquakeplatform
