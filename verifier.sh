@@ -385,7 +385,8 @@ source platform-env/bin/activate
 # Setup.py has requirements too high for Precise.
 # We do not want to change them because Engine and Hazardlib
 # aren't tested anymore with Precise's stack
-pip install --no-deps openquake.hazardlib openquake.engine
+pip install --no-deps openquake.hazardlib
+pip install --no-deps openquake.engine
 
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
