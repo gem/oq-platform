@@ -38,8 +38,8 @@ sudo add-apt-repository -y ppa:openquake/ppa
 sudo apt-get update
 sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
 
-pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
-pip install 'http://github.com/gem/oq-engine/tarball/master'
+pip install --no-deps 'http://github.com/gem/oq-hazardlib/tarball/master'
+pip install --no-deps 'http://github.com/gem/oq-engine/tarball/master'
 ```
 
 Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github and made available via `PYTHONPATH` before running any python application.
