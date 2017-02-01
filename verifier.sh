@@ -388,8 +388,8 @@ source platform-env/bin/activate
 # resolve dependencies of dependencies too.
 pip install --no-deps openquake.hazardlib
 pip install --no-deps openquake.engine
-pip install --no-deps -e oq-platform-ipt
-pip install --no-deps -e oq-platform-taxtweb
+pip install --no-deps -e \$HOME/oq-platform-ipt
+pip install --no-deps -e \$HOME/oq-platform-taxtweb
 
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
@@ -439,7 +439,7 @@ python ./manage.py loaddata dev-data.json.bz2
 
 
 
-export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
+export PYTHONPATH=\$(pwd):\$HOME/oq-moon:\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test #  || true
