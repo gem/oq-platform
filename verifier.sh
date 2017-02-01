@@ -388,8 +388,8 @@ source platform-env/bin/activate
 # resolve dependencies of dependencies too.
 pip install --no-deps openquake.hazardlib
 pip install --no-deps openquake.engine
-pip install --no-deps -e oq-platform-ipt/
-pip install --no-deps -e oq-platform-taxtweb/
+pip install --no-deps -e oq-platform-ipt
+pip install --no-deps -e oq-platform-taxtweb
 
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
