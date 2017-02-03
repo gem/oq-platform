@@ -49,7 +49,7 @@ pip install gdal==1.10.0
 
 git clone -b 2.5.x https://github.com/GeoNode/geonode.git
 cd ~/dev/geonode/geonode
-cp -a local_settings.py.geoserver.sample local_settings.py.geoserver
+cp -a local_settings.py.geoserver.sample local_settings.py
 
 cd ~/dev/geonode
 pip install -r requirements.txt
