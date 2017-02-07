@@ -388,7 +388,7 @@ source platform-env/bin/activate
 # resolve dependencies of dependencies too.
 pip install --no-deps openquake.hazardlib
 pip install --no-deps openquake.engine
-pip install --no-deps -e \$HOME/oq-moon-ipt
+pip install --no-deps -e \$HOME/oq-moon
 pip install --no-deps -e \$HOME/oq-platform-ipt
 pip install --no-deps -e \$HOME/oq-platform-taxtweb
 
