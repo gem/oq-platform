@@ -436,11 +436,7 @@ fab --show=everything test
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
 
-
-
-
-
-export PYTHONPATH=\$(pwd):\$HOME/oq-moon:\$(pwd)/openquakeplatform/test/config
+export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test #  || true
