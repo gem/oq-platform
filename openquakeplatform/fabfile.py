@@ -49,18 +49,12 @@ GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 def _check_risklib_nrmllib():
     try:
-        local('python -c "from openquake.commonlib import nrml" >/dev/null 2>&1')
+        local('python -c "from openquake.hazardlib import nrml" >/dev/null 2>&1')
     except SystemExit:
         print """
-WARNING: 'openquake.commonlib.nrml' from 'oq-engine' not found,
+WARNING: 'openquake.hazardlib.nrml' from 'oq-hazardlib' not found,
 'ipt' application will not work properly; to add it you can choose one
 of these solutions:
-
-- install 'oq-hazardlib' and 'oq-engine' as packages running:
-   sudo apt-get install python-software-properties
-   sudo add-apt-repository ppa:openquake/ppa
-   sudo apt-get update
-   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-engine
 
 - install 'oq-hazardlib' and 'oq-engine' packages with pip directly from git running:
    sudo apt-get install python-software-properties

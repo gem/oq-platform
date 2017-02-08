@@ -325,7 +325,6 @@ _devtest_innervm_run () {
     scp .gem_init.sh ${lxc_ip}:
     scp .gem_ffox_init.sh ${lxc_ip}:
 
-    # build oq-hazardlib speedups and put in the right place
     ssh -t  $lxc_ip "source .gem_init.sh"
 
     ssh -t  $lxc_ip "rm -f ssh.log"
@@ -340,8 +339,6 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils"
-    ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-hazardlib/archive/stable.zip"
-    ssh -t  $lxc_ip "sudo pip install https://github.com/gem/oq-engine/archive/stable.zip"
 
 
     # to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
@@ -383,19 +380,23 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
+
+# Setup.py has requirements too high for Precise.
+# We do not want to change them because Engine and Hazardlib
+# aren't tested anymore with Precise's stack, so --no-deps is
+# used. We need it for oq-platform-* too because pip tries to
+# resolve dependencies of dependencies too.
+pip install --no-deps openquake.hazardlib
+pip install --no-deps openquake.engine
+pip install --no-deps \$HOME/oq-moon
+pip install --no-deps -e \$HOME/oq-platform-ipt
+pip install --no-deps -e \$HOME/oq-platform-taxtweb
+
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
 if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
     pip install simplejson==2.0.9
 fi
-cd -
-cd oq-platform-ipt
-sudo python setup.py install
-cd -
-cd oq-platform-taxtweb
-sudo python setup.py install
-cd -
-cd ~/$GEM_GIT_PACKAGE
 
 pip install -e openquakeplatform
 cd openquakeplatform
@@ -435,11 +436,7 @@ fab --show=everything test
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
 
-
-
-
-
-export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
+export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test #  || true
@@ -592,9 +589,9 @@ _prodtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 -b  $repo_id/oq-moon"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 -b  $repo_id/oq-platform-ipt"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 -b  $repo_id/oq-platform-taxtweb"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 $repo_id/oq-moon"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -605,6 +602,11 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
+
+# install oq-moon
+cd oq-moon
+sudo pip install . -U --no-deps
+cd -
 
 # install IPT
 cd oq-platform-ipt
@@ -632,7 +634,7 @@ init_file=\"\$(python -c 'import openquake ; print openquake.__path__[0]')/__ini
 sudo cp /tmp/new_init.py \"\${init_file}\" ;
 sudo python -m py_compile \"\${init_file}\"
 
-export PYTHONPATH=\$(pwd):\$(pwd)/../../oq-moon:\$(pwd)/openquakeplatform/test/config
+export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true
