@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# verifier.sh  Copyright (c) 2015-2016, GEM Foundation.
+# verifier.sh  Copyright (c) 2015-2017, GEM Foundation.
 #
 # OpenQuake is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Affero General Public License as published
@@ -361,6 +361,7 @@ except ImportError:
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 $repo_id/oq-moon"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-building-class || git clone --depth=1 $repo_id/oq-platform-building-class"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -391,6 +392,7 @@ pip install --no-deps openquake.engine
 pip install --no-deps \$HOME/oq-moon
 pip install --no-deps -e \$HOME/oq-platform-ipt
 pip install --no-deps -e \$HOME/oq-platform-taxtweb
+pip install --no-deps -e \$HOME/oq-platform-building-class
 
 # if host machine includes python-simplejson package it must overrided with
 # a proper version that don't conflict with Django requirements
@@ -592,6 +594,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 $repo_id/oq-moon"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-building-class || git clone --depth=1 $repo_id/oq-platform-building-class"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -615,6 +618,11 @@ cd -
 
 # install taxtweb
 cd oq-platform-taxtweb
+sudo pip install . -U --no-deps
+cd -
+
+# install building-class
+cd oq-platform-building-class
 sudo pip install . -U --no-deps
 cd -
 

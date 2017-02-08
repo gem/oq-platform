@@ -286,6 +286,7 @@ INSTALLED_APPS = (
 
     'openquakeplatform_ipt',
     'openquakeplatform_taxtweb',
+    'openquakeplatform_building_class',
 
     # gemecd
     'openquakeplatform.weblib',
