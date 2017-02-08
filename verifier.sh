@@ -388,6 +388,7 @@ source platform-env/bin/activate
 # resolve dependencies of dependencies too.
 pip install --no-deps openquake.hazardlib
 pip install --no-deps openquake.engine
+pip install --no-deps \$HOME/oq-moon
 pip install --no-deps -e \$HOME/oq-platform-ipt
 pip install --no-deps -e \$HOME/oq-platform-taxtweb
 
@@ -435,11 +436,7 @@ fab --show=everything test
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
 
-
-
-
-
-export PYTHONPATH=\$(pwd):\$HOME/oq-moon:\$(pwd)/openquakeplatform/test/config
+export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test #  || true
@@ -606,6 +603,11 @@ if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
 
+# install oq-moon
+cd oq-moon
+sudo pip install . -U --no-deps
+cd -
+
 # install IPT
 cd oq-platform-ipt
 sudo pip install . -U --no-deps
@@ -632,7 +634,7 @@ init_file=\"\$(python -c 'import openquake ; print openquake.__path__[0]')/__ini
 sudo cp /tmp/new_init.py \"\${init_file}\" ;
 sudo python -m py_compile \"\${init_file}\"
 
-export PYTHONPATH=\$(pwd):\$HOME/oq-moon:\$(pwd)/openquakeplatform/test/config
+export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true
