@@ -1,19 +1,13 @@
 #!/usr/bin/env python
-import time
-import sys
 import unittest
 
-# from IPython.core import ultratb
-# sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-#      color_scheme='Linux', call_pdb=1)
-
 from openquakeplatform.test import pla
-from openquakeplatform.test.utils import *
-
 
 class IscTest(unittest.TestCase):
     def isc_test(self):
-        pla.navigate('explore')
+        pla.get('/explore')
+        pla.wait_new_page("//b[contains(text(), 'Seismic Hazard Data Sets and Models')]",
+                          "/explore", strategy="next", timeout=10)
 
         #<li>
         #<a href="/maps/23">
@@ -27,7 +21,7 @@ class IscTest(unittest.TestCase):
             "//a[@href='/maps/23/view' and "
             "normalize-space(text()) = 'View Map']")
         enter_button.click()
-        pla.wait_new_page(enter_button, '/maps/23/view')
+        pla.wait_new_page(enter_button, '/maps/23/view', timeout=15)
 
         # <button id="ext-gen159" class=" x-btn-text gxp-icon-getfeatureinfo"
         # type="button">Identify
@@ -35,6 +29,12 @@ class IscTest(unittest.TestCase):
             "//button[@type='button' and normalize-space(text())"
             "= 'Identify']", 50)
         enter_button.click()
+
+        # wait info button will be clicked
+        pla.xpath_finduniq(
+            "//button[@type='button' and normalize-space(text())"
+            "= 'Identify']/../../../../..[contains(concat(' ', @class, ' '),"
+            " ' x-btn-pressed ')]", 100)
 
         tail_ptr = pla.xpath_finduniq(
             "//img[contains(@src, 'wms?LAYERS=oqplatform%3Aisc_viewer_measure"
@@ -48,5 +48,4 @@ class IscTest(unittest.TestCase):
                      115 + tail_ptr.location['y'])
         # raise ValueError
 
-        popup_ctx = pla.xpath_finduniq("//div[text() = '1951-03-19T04:23:00']",
-                                       50)
+        pla.xpath_finduniq("//div[text() = '1951-03-19T04:23:00']", 50)

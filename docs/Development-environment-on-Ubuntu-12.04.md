@@ -3,43 +3,63 @@ These are the main steps to install the OpenQuake Platform on Ubuntu 12.04 LTS u
 ## Install the base dependencies
 
 ```bash
-sudo apt-get install build-essential python-dev python-mock python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev
+sudo apt-get install build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties
+
 ```
 
 ## Change the PostgreSQL configuration
 
-On top the `pg_hba.conf` add:
+On top of `/etc/postgresql/9.1/main/pg_hba.conf` add:
 
 ```
 local   all             all                                     trust
-host    all             all             <cidr-address>          md5
 ```
-Where **&lt;cidr-address&gt;** (i.e.: 10.0.3.0/24) is the network containing the **OpenQuake Engine Server** and the **OpenQuake Platform** servers. If both are installed locally on the same machine the "host" line can be skipped.
 
-
-In `postgresql.conf` change:
-
-`listen_addresses = '*'`
-
-Then restart PostgreSQL
+Then restart PostgreSQL: `sudo service postgresql restart`
 
 ## Clone the GitHub repo
 ```bash
+cd ~
 git clone http://github.com/gem/oq-platform.git
 ```
 
 ## Create the virtualenv
 ```bash
 cd ~/oq-platform
-virtualenv platform-env
+virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 ```
-## Install the software local dependencies
+
+## Install software dependencies
+### Install OpenQuake Engine and Hazardlib
+
+```bash
+sudo add-apt-repository -y ppa:openquake/ppa
+sudo apt-get update
+sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
+
+pip install --no-deps 'http://github.com/gem/oq-hazardlib/tarball/master'
+pip install --no-deps 'http://github.com/gem/oq-engine/tarball/master'
+```
+
+Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github and made available via `PYTHONPATH` before running any python application.
+
+When a virtualenv which has not access to the global site-packages is used dependencies must be installed via pip, See https://github.com/gem/oq-engine/blob/master/requirements-dev.txt.
+
+### Install OpenQuake Platform
+
 ```bash
 cd ~/oq-platform
-# Workaround for https://github.com/scipy/scipy/pull/453
-pip install numpy==1.6.1
 pip install -e openquakeplatform
+```
+
+### Install standalone apps
+
+```bash 
+# IPT
+pip install https://github.com/gem/oq-platform-ipt/tarball/master
+# Taxtweb
+pip install https://github.com/gem/oq-platform-taxtweb/tarball/master
 ```
 
 ## Per-user installation
@@ -67,6 +87,7 @@ vim local_settings.py
 
 ## Start GeoServer and Django webserver
 ```bash
+cd ~/oq-platform/openquakeplatform
 fab start
 ```
 

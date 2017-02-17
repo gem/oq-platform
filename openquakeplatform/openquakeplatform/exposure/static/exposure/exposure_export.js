@@ -22,7 +22,7 @@ var regionSelection;
 
 var drawnItems;
 var drawControl;
-var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+var baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 var DRAW_TOOL_COLOR = '#FFA54F';
 var app = new OQLeaflet.OQLeafletApp(THIRD_PARTY_URLS.leaflet_base_map);
 

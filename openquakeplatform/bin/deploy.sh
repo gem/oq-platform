@@ -54,7 +54,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('common' 'world' 'isc_viewer' 'ghec_viewer' 'gaf_viewer' 'geodetic' 'exposure' 'faulted_earth' 'icebox' 'vulnerability' 'svir' 'grv' 'hazus' 'hrde' 'irv' 'ript')
+GEM_APP_LIST=('common' 'world' 'isc_viewer' 'ghec_viewer' 'gaf_viewer' 'geodetic' 'exposure' 'faulted_earth' 'vulnerability' 'svir' 'grv' 'hazus' 'hrde' 'irv' 'ipt')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -322,10 +322,10 @@ function_exists () {
 #
 #
 locset_create () {
-    local oqpdir gem_host_name gem_secr_key gem_db_name gem_db_user gem_db_pass
+    local oqpdir gem_hostname gem_secr_key gem_db_name gem_db_user gem_db_pass
     local gem_hazard_calc_addr gem_risk_calc_addr gem_oq_engserv_key gem_oq_bing_key
     oqpdir="$1" ; shift
-    gem_host_name="$1" ; shift
+    gem_hostname="$1" ; shift
     gem_secr_key="$1" ; shift
     gem_db_name="$1" ; shift
     gem_db_user="$1" ; shift
@@ -342,8 +342,8 @@ locset_create () {
 import string, random
 local_settings = open('${oqpdir}/$GEM_LOCAL_SETTINGS_TMPL', 'r').read()
 with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
-    fh.write(local_settings % dict(host='${gem_host_name}',
-                                   siteurl='${gem_host_name}',
+    fh.write(local_settings % dict(hostname='${gem_hostname}',
+                                   siteurl='${gem_hostname}',
                                    db_name='${gem_db_name}',
                                    db_user='${gem_db_user}',
                                    db_pass='${gem_db_pass}',
@@ -357,6 +357,7 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    mediaroot='/var/www/openquake/platform/uploaded',
                                    staticroot='/var/www/openquake/platform/static/',
                                    is_gem_experimental=False,
+                                   datadir='/var/www/openquake/platform/data/',
                                    ))"
 }
 
@@ -463,15 +464,15 @@ deps_install () {
 #
 #
 oq_platform_install () {
-    local norm_user norm_dir gem_host_name norm_home ret a distdesc rv
+    local norm_user norm_dir gem_hostname norm_home ret a distdesc rv
     local cur_step
 
-    if [ "${globargs['norm_user']}" == "" -o "${globargs['norm_dir']}" == ""  -o "${globargs['host']}" == "" ]; then
+    if [ "${globargs['norm_user']}" == "" -o "${globargs['norm_dir']}" == ""  -o "${globargs['hostname']}" == "" ]; then
         usage "$0" 1
     fi
     norm_user="${globargs['norm_user']}"
     norm_dir="${globargs['norm_dir']}"
-    gem_host_name="${globargs['host']}"
+    gem_hostname="${globargs['hostname']}"
 
     gem_db_name="${globargs['db_name']:-$GEM_DB_NAME}"
     gem_db_user="${globargs['db_user']:-$GEM_DB_USER}"
@@ -515,6 +516,7 @@ oq_platform_install () {
     apt-get update
     apt-get install -y python-software-properties
     add-apt-repository -y "deb http://ftp.openquake.org/ubuntu precise main"
+    add-apt-repository -y "ppa:openquake/ppa"
     # add Ariel Nuñez key
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  925F51BF
 
@@ -524,6 +526,12 @@ oq_platform_install () {
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
     apt-get install -y --force-yes geonode python-geonode-user-accounts
+
+    # add dependencies to use nrml validation as library
+    apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
+
+    pip install --no-deps openquake.hazardlib
+    pip install --no-deps openquake.engine
 
     # FIXME this code will be used in the future
     ## check for oq-platform packaged dependencies
@@ -572,7 +580,7 @@ oq_platform_install () {
         mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.orig
     fi
 
-    locset_create "$oqpdir" "$gem_host_name" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"  "${gem_oq_bing_key}"
+    locset_create "$oqpdir" "$gem_hostname" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"  "${gem_oq_bing_key}"
 
     if [ "$GEM_IS_INSTALL" != "y" ]; then
 	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
@@ -703,7 +711,7 @@ oq_platform_install () {
 
 usage() {
     local com="$1" ret="$2"
-    echo "${com} <--help|-p> <--host|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>] [<--oq_bing_key|-B> <bing-key>]"
+    echo "${com} <--help|-p> <--hostname|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>] [<--oq_bing_key|-B> <bing-key>]"
     exit $ret
 }
 
@@ -724,17 +732,17 @@ fi
 wai="$(whoami)"
 
 if [ "$wai" = "root" ]; then
-    parsargs "norm_user|U:,norm_dir|D:,help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
-    if [ "${globargs['host']}" == "" ]; then
+    parsargs "norm_user|U:,norm_dir|D:,help|p,hostname|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
+    if [ "${globargs['hostname']}" == "" ]; then
         usage "$0" 1
     fi
 
     oq_platform_install
     exit $?
 else
-    parsargs "help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
+    parsargs "help|p,hostname|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
 
-    if [ "${globargs['host']}" == "" -o "${globargs['help']}" ]; then
+    if [ "${globargs['hostname']}" == "" -o "${globargs['help']}" ]; then
         usage "$0" 1
     fi
 

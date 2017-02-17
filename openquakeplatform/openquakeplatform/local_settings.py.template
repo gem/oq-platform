@@ -78,9 +78,9 @@ BING_KEY = {
 
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
-ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']
+ALLOWED_HOSTS = ['%(hostname)s', 'testserver', 'localhost']
 
-PROXY_ALLOWED_HOSTS = ('%(host)s', 'localhost')
+PROXY_ALLOWED_HOSTS = ('%(hostname)s', 'localhost')
 
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
@@ -111,11 +111,6 @@ LOCALE_PATHS = (
     os.path.join(OQPLATFORM_ROOT, "locale"),
     os.path.join(GEONODE_ROOT, "locale"),
 )
-
-OQ_ENGINE_SERVER_URLS = {
-    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/run',  # i.e. : 'http://oq-platform:8800'
-    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/run',        # i.e. : 'http://oq-platform:8800'
-}
 
 THIRD_PARTY_URLS = {
     'leaflet_base_map': (
@@ -225,6 +220,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
+    'django.contrib.redirects',
 
     # Third party apps
     'photologue',
@@ -281,21 +277,21 @@ INSTALLED_APPS = (
     'openquakeplatform.geodetic',
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
-    'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
     'openquakeplatform.grv',
     'openquakeplatform.hazus',
     'openquakeplatform.hrde',
     'openquakeplatform.irv',
-    'openquakeplatform.ript',
+
+    'openquakeplatform_ipt',
+    'openquakeplatform_taxtweb',
+    'openquakeplatform_building_class',
 
     # gemecd
     'openquakeplatform.weblib',
     'openquakeplatform.econd',
     'openquakeplatform.gemecdwebsite',
-
-    'openquakeplatform.taxtweb',
 
 )
 
@@ -304,8 +300,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'pagination.middleware.PaginationMiddleware',
-    # icebox need csrf to be disabled to work
+    # irv needs csrf to be disabled to work
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # geonode.security is enabled to lockdown the website
@@ -320,6 +317,13 @@ MAP_BASELAYERS = [{
      },
     "name":"geoserver"
   },{
+    "source": {"ptype": "gxp_osmsource"},
+    "type":"OpenLayers.Layer.OSM",
+    "name":"mapnik",
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
@@ -327,23 +331,6 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "fixed": True,
     "group":"background"
-  }, {
-    "source": {"ptype": "gxp_osmsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "name":"mapnik",
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"osm",
-    "group":"background",
-    "visibility": True
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"naip",
-    "group":"background",
-    "visibility": False
   },{
     "source": {"ptype": "gxp_tilestreamsource" },
     "name":"tilestream"
@@ -369,14 +356,15 @@ if BING_KEY['bing_key']:
 # authentication.
 AUTH_EXEMPT_URLS = ('/$',
                     '/account/signup/',
-                    '/icebox/calculation/(\d+)',
+                    '/calculate/',
+                    '/share/',
+                    '/explore/',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*',
-                    '/taxtweb/',
-                    '/ript/')
+                    '/taxtweb/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.
@@ -391,20 +379,22 @@ AUTH_EXEMPT_URLS = ('/$',
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 25
-# DEFAULT_FROM_EMAIL = 'info@%(host)s'
-# THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(host)s'
+# DEFAULT_FROM_EMAIL = 'info@%(hostname)s'
+# THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(hostname)s'
 
-# this value must be the same of oq-engine-server key settings
-OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
-
-# Max input upload size for Icebox
-ICEBOX_MAX_SIZE_MB = 10
-# Send an email with an Icebox job report
-# WARNING: untested feature
-ICEBOX_SEND_EMAIL = False
+# These limits define the maximum data that can be retreived
+# from GEM in the Exposure app
+# Max area size in degrees (i.e. 2 * 2)
+EXPOSURE_MAX_EXPORT_AREA_SQ_DEG = 4
+# Max number of rows
+EXPOSURE_MAX_TOT_GRID_COUNT = 100000
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
 
 # Enable Google Analytics tracking code
 # You must provide a valid UA code
 # GOOGLE_UA = 'UA-********-*'
+
+# For IPT we need a path where store temporary files
+# FILE_PATH_FIELD_DIRECTORY = 'data/'
+FILE_PATH_FIELD_DIRECTORY = '%(datadir)s'

@@ -352,9 +352,7 @@
 {% endblock gemecd_map %}
 
  <script type="text/javascript">
-        backgroundmap = new L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
-            subdomains: ['1', '2', '3', '4'],
-            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
+        backgroundmap = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18
         });
         var overlays = {

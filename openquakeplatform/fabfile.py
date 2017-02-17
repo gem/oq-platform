@@ -47,9 +47,30 @@ GEM_DB_USER = os.getenv('GEM_DB_USER', 'oqplatform')
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
+def _check_risklib_nrmllib():
+    try:
+        local('python -c "from openquake.hazardlib import nrml" >/dev/null 2>&1')
+    except SystemExit:
+        print """
+WARNING: 'openquake.hazardlib.nrml' from 'oq-hazardlib' not found,
+'ipt' application will not work properly; to add it you can choose one
+of these solutions:
+
+- install 'oq-hazardlib' and 'oq-engine' packages with pip directly from git running:
+   sudo apt-get install python-software-properties
+   sudo add-apt-repository ppa:openquake/ppa
+   sudo apt-get update
+   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
+   # (into virtualenv)
+   pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
+   pip install 'http://github.com/gem/oq-engine/tarball/master'
+
+- download 'oq-hazardlib' and 'oq-engine' manually from github and make available via PYTHONPATH
+  before run any python applications
+"""
 
 def bootstrap(db_name=None, db_user=None,
-              db_pass=DB_PASSWORD, host='oq-platform.localdomain',
+              db_pass=DB_PASSWORD, hostname='oq-platform.localdomain',
               geonode_port=None,
               geoserver_port=None,
               hazard_calc_addr='http://oq-platform.localdomain:8800',
@@ -91,7 +112,7 @@ def bootstrap(db_name=None, db_user=None,
     oq_secret_key = ''.join(random.choice(string.ascii_letters + string.digits
                     + '%$&()=+-|#@?') for _ in range(50))
 
-    baseenv(host, db_name=db_name, db_user=db_user, db_pass=db_pass,
+    baseenv(hostname, db_name=db_name, db_user=db_user, db_pass=db_pass,
             geonode_port=geonode_port, geoserver_port=geoserver_port,
             hazard_calc_addr=hazard_calc_addr,
             risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
@@ -114,9 +135,9 @@ def bootstrap(db_name=None, db_user=None,
     # leave the user with superuser privs.
     # if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
+    _check_risklib_nrmllib()
 
-
-def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
+def baseenv(hostname, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             geonode_port=None, geoserver_port=None,
             hazard_calc_addr='http://oq-platform.localdomain:8800',
             risk_calc_addr='http://oq-platform.localdomain:8800',
@@ -133,7 +154,7 @@ def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWOR
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
 
-    _write_local_settings(host, db_name, db_user, db_pass, geonode_port, geoserver_port, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
+    _write_local_settings(hostname, db_name, db_user, db_pass, geonode_port, geoserver_port, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -270,20 +291,20 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(host, db_name, db_user, db_pass,
+def _write_local_settings(hostname, db_name, db_user, db_pass,
                           geonode_port, geoserver_port,
                           hazard_calc_addr, risk_calc_addr,
                           oq_engserv_key, oq_secret_key,
                           oq_bing_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
-        fh.write(local_settings % dict(host=host,
+        fh.write(local_settings % dict(hostname=hostname,
                                        db_name=db_name,
                                        db_user=db_user,
                                        db_pass=db_pass,
                                        geonode_port=geonode_port,
                                        geoserver_port=geoserver_port,
-                                       siteurl="%s:%s" % (host, geonode_port),
+                                       siteurl="%s:%s" % (hostname, geonode_port),
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
                                        oq_engserv_key=oq_engserv_key,
@@ -292,6 +313,7 @@ def _write_local_settings(host, db_name, db_user, db_pass,
                                        mediaroot=mediaroot,
                                        staticroot=staticroot,
                                        is_gem_experimental=True,
+                                       datadir='data/'
                                        ))
 
 
@@ -410,10 +432,6 @@ def _add_isc_viewer_1(db_name, db_user, db_pass):
           ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
 
 
-def _add_icebox_1(db_name, db_user, db_pass):
-    pass
-
-
 def _add_faulted_earth_1(db_name, db_user, db_pass):
     pass
 
@@ -450,7 +468,8 @@ def _add_vulnerability_1(db_name, db_user, db_pass):
     local('python manage.py vuln_groups_create')
 
 def _add_svir_99(db_name, db_user, db_pass):
-    local('./openquakeplatform/bin/simqgis-layer-up.sh');
+    local('./openquakeplatform/bin/simqgis-layer-up.sh -s "http://localhost:%s"'
+          % GEM_GEONODE_PORT)
 
 def _set_auth():
     local('python manage.py loaddata '

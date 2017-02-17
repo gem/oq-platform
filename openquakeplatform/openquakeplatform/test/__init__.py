@@ -1,22 +1,18 @@
-import time
-import sys
-import nose
+from openquake.moon import Moon
+import atexit
 
-from openquakeplatform.test.oqplatform import Platform
-
-# uncomment to run pdb when untrapped exception is raised
-#
-# from IPython.core import ultratb
-# sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-#      color_scheme='Linux', call_pdb=1)
-
-
-pla = Platform()
-
+pla = Moon(jqheavy=True)
+pla.primary_set()
 
 def setup_package():
     pla.init()
 
+# turned off because nose run it at the wrong time
+#def teardown_package():
+#    print "teardown_package here"
+#    pla.fini()
 
-def teardown_package():
+def my_at_exit():
     pla.fini()
+
+atexit.register(my_at_exit)
