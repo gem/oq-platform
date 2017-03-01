@@ -370,13 +370,15 @@ AUTH_EXEMPT_URLS = ('/$',
 # FIXME: there's no admin validation on new accounts.
 # REGISTRATION_OPEN = True
 
-# Uncomment to allow open registration.
+# Uncomment to allow open registration and enable EMAIL_BACKEND
+#                   (use '...console.EmailBackend' for devel purposes).
 # This setting define in how many days an account
 # must be verified by the user.
 # ACCOUNT_ACTIVATION_DAYS = 1
 
 # A valid mailserver must be configured to make open registration work.
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 25
 # DEFAULT_FROM_EMAIL = 'info@%(hostname)s'
