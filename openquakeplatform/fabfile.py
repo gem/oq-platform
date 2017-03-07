@@ -66,8 +66,7 @@ def bootstrap(db_name=None, db_user=None,
               db_pass=DB_PASSWORD, hostname='oq-platform.localdomain',
               geonode_port=None,
               geoserver_port=None,
-              hazard_calc_addr='http://oq-platform.localdomain:8800',
-              risk_calc_addr='http://oq-platform.localdomain:8800',
+              webuiurl='http://oq-platform.localdomain:8800',
               oq_engserv_key='oq-platform',
               oq_bing_key='',
               mediaroot=None, staticroot='/home'):
@@ -107,8 +106,8 @@ def bootstrap(db_name=None, db_user=None,
 
     baseenv(hostname, db_name=db_name, db_user=db_user, db_pass=db_pass,
             geonode_port=geonode_port, geoserver_port=geoserver_port,
-            hazard_calc_addr=hazard_calc_addr,
-            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
+            webuiurl=webuiurl,
+            oq_engserv_key=oq_engserv_key,
             oq_secret_key=oq_secret_key, oq_bing_key=oq_bing_key,
             mediaroot=mediaroot, staticroot=staticroot)
 
@@ -132,8 +131,7 @@ def bootstrap(db_name=None, db_user=None,
 
 def baseenv(hostname, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             geonode_port=None, geoserver_port=None,
-            hazard_calc_addr='http://oq-platform.localdomain:8800',
-            risk_calc_addr='http://oq-platform.localdomain:8800',
+            webuiurl='http://oq-platform.localdomain:8800',
             oq_engserv_key='oq-platform',
             oq_secret_key=None, oq_bing_key='',
             mediaroot=None, staticroot='/home'):
@@ -147,7 +145,7 @@ def baseenv(hostname, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PAS
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
 
-    _write_local_settings(hostname, db_name, db_user, db_pass, geonode_port, geoserver_port, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
+    _write_local_settings(hostname, db_name, db_user, db_pass, geonode_port, geoserver_port, webuiurl, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -286,8 +284,7 @@ def test_with_xunit():
 
 def _write_local_settings(hostname, db_name, db_user, db_pass,
                           geonode_port, geoserver_port,
-                          hazard_calc_addr, risk_calc_addr,
-                          oq_engserv_key, oq_secret_key,
+                          webuiurl, oq_engserv_key, oq_secret_key,
                           oq_bing_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
@@ -298,8 +295,7 @@ def _write_local_settings(hostname, db_name, db_user, db_pass,
                                        geonode_port=geonode_port,
                                        geoserver_port=geoserver_port,
                                        siteurl="%s:%s" % (hostname, geonode_port),
-                                       hazard_calc_addr=hazard_calc_addr,
-                                       risk_calc_addr=risk_calc_addr,
+                                       webuiurl=webuiurl,
                                        oq_engserv_key=oq_engserv_key,
                                        oq_secret_key=oq_secret_key,
                                        oq_bing_key=oq_bing_key,
