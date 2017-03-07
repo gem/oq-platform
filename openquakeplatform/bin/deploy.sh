@@ -525,13 +525,10 @@ oq_platform_install () {
 
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
-    apt-get install -y --force-yes geonode python-geonode-user-accounts
+    apt-get install -y --force-yes geonode python-geonode-user-accounts python-oq-engine
 
-    # add dependencies to use nrml validation as library
-    apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
-
-    pip install --no-deps openquake.hazardlib
-    pip install --no-deps openquake.engine
+    # add dependencies to use oq webui as service
+    apt-get install -y --force-yes python-requests
 
     # FIXME this code will be used in the future
     ## check for oq-platform packaged dependencies
