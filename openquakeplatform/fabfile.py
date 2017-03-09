@@ -302,7 +302,7 @@ def _write_local_settings(hostname, db_name, db_user, db_pass,
                                        mediaroot=mediaroot,
                                        staticroot=staticroot,
                                        is_gem_experimental=True,
-                                       datadir='data/'
+                                       datadir="data/"
                                        ))
 
 
