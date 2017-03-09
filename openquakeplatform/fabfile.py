@@ -66,7 +66,7 @@ def bootstrap(db_name=None, db_user=None,
               db_pass=DB_PASSWORD, hostname='oq-platform.localdomain',
               geonode_port=None,
               geoserver_port=None,
-              webuiurl='http://oq-platform.localdomain:8800',
+              webuiurl='localhost.localdomain:8800',
               oq_engserv_key='oq-platform',
               oq_bing_key='',
               mediaroot=None, staticroot='/home'):
@@ -131,7 +131,7 @@ def bootstrap(db_name=None, db_user=None,
 
 def baseenv(hostname, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             geonode_port=None, geoserver_port=None,
-            webuiurl='http://oq-platform.localdomain:8800',
+            webuiurl='localhost.localdomain:8800',
             oq_engserv_key='oq-platform',
             oq_secret_key=None, oq_bing_key='',
             mediaroot=None, staticroot='/home'):
