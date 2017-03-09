@@ -49,8 +49,7 @@ fi
 GEM_DB_NAME='oqplatform'
 GEM_DB_USER='oqplatform'
 GEM_DB_PASS='the-password'
-GEM_HAZARD_CALC_ADDR='http://localhost:8800'
-GEM_RISK_CALC_ADDR='http://localhost:8800'
+GEM_WEBUIURL='http://localhost.localdomain:8800/'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
@@ -323,15 +322,14 @@ function_exists () {
 #
 locset_create () {
     local oqpdir gem_hostname gem_secr_key gem_db_name gem_db_user gem_db_pass
-    local gem_hazard_calc_addr gem_risk_calc_addr gem_oq_engserv_key gem_oq_bing_key
+    local gem_webuiurl gem_oq_engserv_key gem_oq_bing_key
     oqpdir="$1" ; shift
     gem_hostname="$1" ; shift
     gem_secr_key="$1" ; shift
     gem_db_name="$1" ; shift
     gem_db_user="$1" ; shift
     gem_db_pass="$1" ; shift
-    gem_hazard_calc_addr="$1" ; shift
-    gem_risk_calc_addr="$1" ; shift
+    gem_webuiurl="$1" ; shift
     gem_oq_engserv_key="$1"; shift
     gem_oq_bing_key="$1"
 
@@ -349,8 +347,7 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    db_pass='${gem_db_pass}',
                                    geonode_port=80,
                                    geoserver_port=8080,
-                                   hazard_calc_addr='${gem_hazard_calc_addr}',
-                                   risk_calc_addr='${gem_risk_calc_addr}',
+                                   webuiurl='${gem_webuiurl}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
                                    oq_bing_key='${gem_oq_bing_key}',
                                    oq_secret_key='${gem_secr_key}',
@@ -478,8 +475,7 @@ oq_platform_install () {
     gem_db_user="${globargs['db_user']:-$GEM_DB_USER}"
     gem_db_pass="${globargs['db_pass']:-$GEM_DB_PASS}"
 
-    gem_hazard_calc_addr="${globargs['hazard_calc_addr']:-$GEM_HAZARD_CALC_ADDR}"
-    gem_risk_calc_addr="${globargs['risk_calc_addr']:-$GEM_RISK_CALC_ADDR}"
+    gem_webuiurl="${globargs['webuiurl']:-$GEM_WEBUIURL}"
     gem_oq_engserv_key="${globargs['oq_engserv_key']:-$GEM_OQ_ENGSERV_KEY}"
     gem_oq_bing_key="${globargs['oq_bing_key']:-$GEM_OQ_BING_KEY}"
 
@@ -577,7 +573,7 @@ oq_platform_install () {
         mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.orig
     fi
 
-    locset_create "$oqpdir" "$gem_hostname" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"  "${gem_oq_bing_key}"
+    locset_create "$oqpdir" "$gem_hostname" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_webuiurl}" "${gem_oq_engserv_key}"  "${gem_oq_bing_key}"
 
     if [ "$GEM_IS_INSTALL" != "y" ]; then
 	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
@@ -708,7 +704,7 @@ oq_platform_install () {
 
 usage() {
     local com="$1" ret="$2"
-    echo "${com} <--help|-p> <--hostname|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>] [<--oq_bing_key|-B> <bing-key>]"
+    echo "${com} <--help|-p> <--hostname|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--webuiurl|-w> <addr>] [<--oq_engserv_key|-k> <key>] [<--oq_bing_key|-B> <bing-key>]"
     exit $ret
 }
 
@@ -729,7 +725,7 @@ fi
 wai="$(whoami)"
 
 if [ "$wai" = "root" ]; then
-    parsargs "norm_user|U:,norm_dir|D:,help|p,hostname|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
+    parsargs "norm_user|U:,norm_dir|D:,help|p,hostname|H:,db_name|d:,db_user|u:,webuiurl|w:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
     if [ "${globargs['hostname']}" == "" ]; then
         usage "$0" 1
     fi
@@ -737,7 +733,7 @@ if [ "$wai" = "root" ]; then
     oq_platform_install
     exit $?
 else
-    parsargs "help|p,hostname|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
+    parsargs "help|p,hostname|H:,db_name|d:,db_user|u:,webuiurl|w:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
 
     if [ "${globargs['hostname']}" == "" -o "${globargs['help']}" ]; then
         usage "$0" 1
