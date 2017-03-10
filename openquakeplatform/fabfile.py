@@ -49,7 +49,7 @@ GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 def _check_oq_engine_webui():
     try:
-        ret_code = local('python -c "import requests ; x = requests.get(\"http://localhost.localdomain:8800/engine_version\") ; print x.status_code"', capture=True)
+        ret_code = local('python -c "import requests ; x = requests.get(\\"http://localhost.localdomain:8800/engine_version\\") ; print x.status_code"', capture=True)
         if ret_code != "200":
             raise SystemExit
     except SystemExit:
