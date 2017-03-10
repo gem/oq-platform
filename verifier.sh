@@ -55,9 +55,9 @@
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
 
-export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 if [ $GEM_SET_DEBUG ]; then
     set -x
+    export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 fi
 set -e
 GEM_GIT_REPO="git://github.com/gem"
@@ -375,6 +375,7 @@ rem_sig_hand() {
 trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
     set -x
 fi
 cd ~/$GEM_GIT_PACKAGE
@@ -402,6 +403,7 @@ cd openquakeplatform
 if [ 1 -eq 1 ]; then
     # NEW METHOD: more simple to prevent hang
     fab --show=everything bootstrap
+    sleep 40000 | true
 else
     # OLD METHOD
     nohup fab --show=everything bootstrap &
@@ -601,6 +603,7 @@ rem_sig_hand() {
 trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
     set -x
 fi
 
@@ -644,7 +647,7 @@ export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true
-# sleep 40000 || true
+sleep 40000 || true
 sleep 3
 cd -
 "
