@@ -49,7 +49,7 @@ fi
 GEM_DB_NAME='oqplatform'
 GEM_DB_USER='oqplatform'
 GEM_DB_PASS='the-password'
-GEM_WEBUIURL='http://localhost.localdomain:8800/'
+GEM_WEBUIURL='localhost.localdomain:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
