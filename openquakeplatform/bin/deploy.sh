@@ -573,7 +573,7 @@ oq_platform_install () {
         mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.orig
     fi
 
-    locset_create "$oqpdir" "$gem_hostname" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_webuiurl}" "${gem_oq_engserv_key}"  "${gem_oq_bing_key}"
+    locset_create "$oqpdir" "$gem_hostname" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_webuiurl}" "${gem_oq_engserv_key}" "${gem_oq_bing_key}"
 
     if [ "$GEM_IS_INSTALL" != "y" ]; then
 	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
