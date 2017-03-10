@@ -338,7 +338,7 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
-    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-oq-engine"
+    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-requests python-oq-engine"
 
     # to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
     ssh -t  $lxc_ip "sudo echo \"try:
@@ -646,7 +646,7 @@ sudo python -m py_compile \"\${init_file}\"
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
-python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true
+python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test || true
 sleep 40000 || true
 sleep 3
 cd -
