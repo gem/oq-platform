@@ -43,9 +43,10 @@ class IscTest(unittest.TestCase):
             "-10018754.17,0,-5009377.085,5009377.085&WIDTH=256&HEIGHT=256')]",
             50)
 
+        x = tail_ptr['x']
+        y = tail_ptr['y']
+
         pla.add_click_event()
-        pla.click_at(107 + tail_ptr.location['x'],
-                     115 + tail_ptr.location['y'])
-        # raise ValueError
+        pla.click_at(107 + x, 115 + y)
 
         pla.xpath_finduniq("//div[text() = '1951-03-19T04:23:00']", 50)
