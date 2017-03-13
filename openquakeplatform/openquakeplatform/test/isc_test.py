@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import unittest
+import time
 
 from openquakeplatform.test import pla
 
+# @unittest.skip("temporarily disabled")
 class IscTest(unittest.TestCase):
     def isc_test(self):
         pla.get('/explore')
@@ -36,6 +38,7 @@ class IscTest(unittest.TestCase):
             "= 'Identify']/../../../../..[contains(concat(' ', @class, ' '),"
             " ' x-btn-pressed ')]", 100)
 
+        time.sleep(3)
         tail_ptr = pla.xpath_finduniq(
             "//img[contains(@src, 'wms?LAYERS=oqplatform%3Aisc_viewer_measure"
             "&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1"
@@ -43,9 +46,10 @@ class IscTest(unittest.TestCase):
             "-10018754.17,0,-5009377.085,5009377.085&WIDTH=256&HEIGHT=256')]",
             50)
 
+        x = tail_ptr.location['x']
+        y = tail_ptr.location['y']
+
         pla.add_click_event()
-        pla.click_at(107 + tail_ptr.location['x'],
-                     115 + tail_ptr.location['y'])
-        # raise ValueError
+        pla.click_at(107 + x, 115 + y)
 
         pla.xpath_finduniq("//div[text() = '1951-03-19T04:23:00']", 50)

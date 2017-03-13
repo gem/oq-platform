@@ -55,9 +55,9 @@
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
 
-# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 if [ $GEM_SET_DEBUG ]; then
     set -x
+    export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 fi
 set -e
 GEM_GIT_REPO="git://github.com/gem"
@@ -338,8 +338,7 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
-    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils"
-
+    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-requests python-oq-engine"
 
     # to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
     ssh -t  $lxc_ip "sudo echo \"try:
@@ -376,6 +375,7 @@ rem_sig_hand() {
 trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
     set -x
 fi
 cd ~/$GEM_GIT_PACKAGE
@@ -387,8 +387,6 @@ source platform-env/bin/activate
 # aren't tested anymore with Precise's stack, so --no-deps is
 # used. We need it for oq-platform-* too because pip tries to
 # resolve dependencies of dependencies too.
-pip install --no-deps openquake.hazardlib
-pip install --no-deps openquake.engine
 pip install --no-deps \$HOME/oq-moon
 pip install --no-deps -e \$HOME/oq-platform-ipt
 pip install --no-deps -e \$HOME/oq-platform-taxtweb
@@ -405,6 +403,7 @@ cd openquakeplatform
 if [ 1 -eq 1 ]; then
     # NEW METHOD: more simple to prevent hang
     fab --show=everything bootstrap
+    # sleep 40000 | true
 else
     # OLD METHOD
     nohup fab --show=everything bootstrap &
@@ -441,7 +440,7 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
-python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test #  || true
+python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test # || true
 # sleep 20000 || true
 # sleep 3
 fab stop
@@ -582,6 +581,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
+    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-oq-engine"
 
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
 
@@ -603,6 +603,7 @@ rem_sig_hand() {
 trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
     set -x
 fi
 
