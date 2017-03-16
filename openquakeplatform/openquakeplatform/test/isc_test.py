@@ -38,16 +38,12 @@ class IscTest(unittest.TestCase):
             "= 'Identify']/../../../../..[contains(concat(' ', @class, ' '),"
             " ' x-btn-pressed ')]", 100)
 
-        time.sleep(3)
-        tail_ptr = pla.xpath_finduniq(
+        _, x, y = pla.xpath_finduniq_coords(
             "//img[contains(@src, 'wms?LAYERS=oqplatform%3Aisc_viewer_measure"
             "&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SERVICE=WMS&VERSION=1.1.1"
             "&REQUEST=GetMap&STYLES=&TILED=true&SRS=EPSG%3A900913&BBOX="
             "-10018754.17,0,-5009377.085,5009377.085&WIDTH=256&HEIGHT=256')]",
             50)
-
-        x = tail_ptr.location['x']
-        y = tail_ptr.location['y']
 
         pla.add_click_event()
         pla.click_at(107 + x, 115 + y)
