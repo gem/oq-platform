@@ -356,11 +356,10 @@ except ImportError:
     ssh -t  $lxc_ip "sudo service postgresql restart"
 
     repo_id="$GEM_GIT_REPO"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 $repo_id/oq-moon"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-building-class || git clone --depth=1 $repo_id/oq-platform-building-class"
+    for repo in $GEM_GIT_PACKAGE oq-moon oq-platform-ipt oq-platform-taxtweb oq-platform-building-class; do
+        ssh -t  $lxc_ip "git clone -b $branch_id $repo_id/$repo || git clone $repo_id/$repo"
+        ssh -t  $lxc_ip "cd $repo; echo 'Repository $repo : ' | tr -d '\n' ; git rev-parse --short HEAD ; cd -"
+    done
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -659,7 +658,7 @@ cd -
 
 
 #
-#  devtest_run <branch_id> - main function of source test
+#  prodtest_run <branch_id> - main function of source test
 #      <branch_id>    name of the tested branch
 #
 prodtest_run () {
