@@ -36,15 +36,8 @@ virtualenv --system-site-packages platform-env
 ```bash
 sudo add-apt-repository -y ppa:openquake/ppa
 sudo apt-get update
-sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
-
-pip install --no-deps 'http://github.com/gem/oq-hazardlib/tarball/master'
-pip install --no-deps 'http://github.com/gem/oq-engine/tarball/master'
+sudo apt-get install python-oq-engine
 ```
-
-Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github and made available via `PYTHONPATH` before running any python application.
-
-When a virtualenv which has not access to the global site-packages is used dependencies must be installed via pip, See https://github.com/gem/oq-engine/blob/master/requirements-dev.txt.
 
 ### Install OpenQuake Platform
 
