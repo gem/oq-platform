@@ -25,7 +25,7 @@ git clone http://github.com/gem/oq-platform.git
 
 ## Create the virtualenv
 ```bash
-cd ~/oq-platform
+cd ~
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 ```
@@ -53,6 +53,8 @@ pip install -e openquakeplatform
 pip install https://github.com/gem/oq-platform-ipt/tarball/master
 # Taxtweb
 pip install https://github.com/gem/oq-platform-taxtweb/tarball/master
+# Building class
+pip install https://github.com/gem/oq-platform-building-class/tarball/master
 ```
 
 ## Per-user installation
