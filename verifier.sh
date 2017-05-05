@@ -126,7 +126,7 @@ cat >.gem_ffox_init.sh <<EOF
 export GEM_FIREFOX_ON_HOLD=$GEM_FIREFOX_ON_HOLD
 if [ "\$GEM_FIREFOX_ON_HOLD" ]; then
     sudo apt-mark hold firefox firefox-locale-en
-else
+elif [ "\$GEM_FIREFOX_DEBIAN_VERSION" ]; then
     sudo apt-get update
     ffox_pol="\$(apt-cache policy firefox)"
     ffox_cur="\$(echo "\$ffox_pol" | grep '^  Installed:' | sed 's/.*: //g')"
@@ -158,6 +158,12 @@ else
         kill \$ffox_pid || true
         sleep 2
     fi
+else
+    sudo apt-get remove firefox
+    cd /usr/local
+    wget http://ftp.mozilla.org/pub/firefox/releases/53.0/linux-x86_64/en-US/firefox-53.0.tar.bz2
+    tar xvjf firefox-53.0.tar.bz2
+    sudo ln -s /usr/local/firefox/firefox /usr/local/bin/firefox 
 fi
 EOF
 
