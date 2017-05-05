@@ -159,7 +159,7 @@ elif [ "\$GEM_FIREFOX_DEBIAN_VERSION" ]; then
         sleep 2
     fi
 else
-    sudo apt-get remove firefox
+    sudo apt-get -y remove firefox
     cd /usr/local
     wget http://ftp.mozilla.org/pub/firefox/releases/53.0/linux-x86_64/en-US/firefox-53.0.tar.bz2
     tar xvjf firefox-53.0.tar.bz2
