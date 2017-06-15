@@ -57,7 +57,7 @@ def _check_oq_engine_webui():
 WARNING: 'webui service is not working on port 8800, please install
 'python-oq-engine' package from openquake repository to enable it:
    sudo apt-get install python-software-properties
-   sudo add-apt-repository ppa:openquake/ppa
+   sudo add-apt-repository ppa:openquake/engine-2.4
    sudo apt-get update
    sudo apt-get install python-oq-engine
 """
