@@ -512,6 +512,9 @@ oq_platform_install () {
     apt-get update
     apt-get install -y python-software-properties
     add-apt-repository -y "deb http://ftp.openquake.org/ubuntu precise main"
+    # GeoNode
+    add-apt-repository -y "ppa:openquake/ppa"
+    # OQ Engine
     add-apt-repository -y "ppa:openquake/release-2.4"
     # add Ariel Nuñez key
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  925F51BF
