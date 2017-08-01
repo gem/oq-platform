@@ -24,7 +24,7 @@ csv.field_size_limit(maxInt)
 
 
 class Command(BaseCommand):
-    args = ('<shapefile containing geometries> <country iso code>'
+    args = ('<csv file containing geometries> <country iso code>'
             ' <attribute name for zone names> <attribute name for zone codes>')
     help = ('Import subnational geometries from a csv file and update the'
             ' geometries in the DB accordingly.')
