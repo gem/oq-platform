@@ -6,6 +6,7 @@ from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
 
 SITENAME = 'OpenQuake Platform'
 SITEURL = 'http://%(siteurl)s/'
+WEBUIURL = 'http://%(webuiurl)s/'
 
 OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
@@ -364,19 +365,22 @@ AUTH_EXEMPT_URLS = ('/$',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*',
-                    '/taxtweb/')
+                    '/taxtweb/',
+                    '/building-class/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.
 # REGISTRATION_OPEN = True
 
-# Uncomment to allow open registration.
+# Uncomment to allow open registration and enable EMAIL_BACKEND
+#                   (use '...console.EmailBackend' for devel purposes).
 # This setting define in how many days an account
 # must be verified by the user.
 # ACCOUNT_ACTIVATION_DAYS = 1
 
 # A valid mailserver must be configured to make open registration work.
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 25
 # DEFAULT_FROM_EMAIL = 'info@%(hostname)s'

@@ -7,3 +7,5 @@ oq-ui-client2/build
 \#*
 .\#*
 .DS_Store
+/.gem_ffox_init.sh
+/.gem_init.sh

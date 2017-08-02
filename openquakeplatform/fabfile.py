@@ -47,34 +47,26 @@ GEM_DB_USER = os.getenv('GEM_DB_USER', 'oqplatform')
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
-def _check_risklib_nrmllib():
+def _check_oq_engine_webui():
     try:
-        local('python -c "from openquake.hazardlib import nrml" >/dev/null 2>&1')
+        ret_code = local('python -c "import requests ; x = requests.get(\\"http://localhost.localdomain:8800/engine_version\\") ; print x.status_code"', capture=True)
+        if ret_code != "200":
+            raise SystemExit
     except SystemExit:
         print """
-WARNING: 'openquake.hazardlib.nrml' from 'oq-hazardlib' not found,
-'ipt' application will not work properly; to add it you can choose one
-of these solutions:
-
-- install 'oq-hazardlib' and 'oq-engine' packages with pip directly from git running:
+WARNING: 'webui service is not working on port 8800, please install
+'python-oq-engine' package from openquake repository to enable it:
    sudo apt-get install python-software-properties
-   sudo add-apt-repository ppa:openquake/ppa
+   sudo add-apt-repository ppa:openquake/engine-2.4
    sudo apt-get update
-   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
-   # (into virtualenv)
-   pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
-   pip install 'http://github.com/gem/oq-engine/tarball/master'
-
-- download 'oq-hazardlib' and 'oq-engine' manually from github and make available via PYTHONPATH
-  before run any python applications
+   sudo apt-get install python-oq-engine
 """
 
 def bootstrap(db_name=None, db_user=None,
               db_pass=DB_PASSWORD, hostname='oq-platform.localdomain',
               geonode_port=None,
               geoserver_port=None,
-              hazard_calc_addr='http://oq-platform.localdomain:8800',
-              risk_calc_addr='http://oq-platform.localdomain:8800',
+              webuiurl='localhost.localdomain:8800',
               oq_engserv_key='oq-platform',
               oq_bing_key='',
               mediaroot=None, staticroot='/home'):
@@ -114,8 +106,8 @@ def bootstrap(db_name=None, db_user=None,
 
     baseenv(hostname, db_name=db_name, db_user=db_user, db_pass=db_pass,
             geonode_port=geonode_port, geoserver_port=geoserver_port,
-            hazard_calc_addr=hazard_calc_addr,
-            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
+            webuiurl=webuiurl,
+            oq_engserv_key=oq_engserv_key,
             oq_secret_key=oq_secret_key, oq_bing_key=oq_bing_key,
             mediaroot=mediaroot, staticroot=staticroot)
 
@@ -135,12 +127,11 @@ def bootstrap(db_name=None, db_user=None,
     # leave the user with superuser privs.
     # if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
-    _check_risklib_nrmllib()
+    _check_oq_engine_webui()
 
 def baseenv(hostname, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             geonode_port=None, geoserver_port=None,
-            hazard_calc_addr='http://oq-platform.localdomain:8800',
-            risk_calc_addr='http://oq-platform.localdomain:8800',
+            webuiurl='localhost.localdomain:8800',
             oq_engserv_key='oq-platform',
             oq_secret_key=None, oq_bing_key='',
             mediaroot=None, staticroot='/home'):
@@ -154,7 +145,7 @@ def baseenv(hostname, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PAS
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
 
-    _write_local_settings(hostname, db_name, db_user, db_pass, geonode_port, geoserver_port, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
+    _write_local_settings(hostname, db_name, db_user, db_pass, geonode_port, geoserver_port, webuiurl, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -293,8 +284,7 @@ def test_with_xunit():
 
 def _write_local_settings(hostname, db_name, db_user, db_pass,
                           geonode_port, geoserver_port,
-                          hazard_calc_addr, risk_calc_addr,
-                          oq_engserv_key, oq_secret_key,
+                          webuiurl, oq_engserv_key, oq_secret_key,
                           oq_bing_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
@@ -305,15 +295,14 @@ def _write_local_settings(hostname, db_name, db_user, db_pass,
                                        geonode_port=geonode_port,
                                        geoserver_port=geoserver_port,
                                        siteurl="%s:%s" % (hostname, geonode_port),
-                                       hazard_calc_addr=hazard_calc_addr,
-                                       risk_calc_addr=risk_calc_addr,
+                                       webuiurl=webuiurl,
                                        oq_engserv_key=oq_engserv_key,
                                        oq_secret_key=oq_secret_key,
                                        oq_bing_key=oq_bing_key,
                                        mediaroot=mediaroot,
                                        staticroot=staticroot,
                                        is_gem_experimental=True,
-                                       datadir='data/'
+                                       datadir="data/"
                                        ))
 
 

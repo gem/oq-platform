@@ -25,7 +25,7 @@ git clone http://github.com/gem/oq-platform.git
 
 ## Create the virtualenv
 ```bash
-cd ~/oq-platform
+cd ~
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 ```
@@ -36,15 +36,8 @@ virtualenv --system-site-packages platform-env
 ```bash
 sudo add-apt-repository -y ppa:openquake/ppa
 sudo apt-get update
-sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils
-
-pip install --no-deps 'http://github.com/gem/oq-hazardlib/tarball/master'
-pip install --no-deps 'http://github.com/gem/oq-engine/tarball/master'
+sudo apt-get install python-oq-engine
 ```
-
-Note: `oq-hazardlib` and `oq-engine` can be manually fetched from github and made available via `PYTHONPATH` before running any python application.
-
-When a virtualenv which has not access to the global site-packages is used dependencies must be installed via pip, See https://github.com/gem/oq-engine/blob/master/requirements-dev.txt.
 
 ### Install OpenQuake Platform
 
@@ -60,6 +53,8 @@ pip install -e openquakeplatform
 pip install https://github.com/gem/oq-platform-ipt/tarball/master
 # Taxtweb
 pip install https://github.com/gem/oq-platform-taxtweb/tarball/master
+# Building class
+pip install https://github.com/gem/oq-platform-building-class/tarball/master
 ```
 
 ## Per-user installation
@@ -90,4 +85,3 @@ vim local_settings.py
 cd ~/oq-platform/openquakeplatform
 fab start
 ```
-

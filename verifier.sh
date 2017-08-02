@@ -55,9 +55,9 @@
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
 
-# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 if [ $GEM_SET_DEBUG ]; then
     set -x
+    export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 fi
 set -e
 GEM_GIT_REPO="git://github.com/gem"
@@ -126,7 +126,7 @@ cat >.gem_ffox_init.sh <<EOF
 export GEM_FIREFOX_ON_HOLD=$GEM_FIREFOX_ON_HOLD
 if [ "\$GEM_FIREFOX_ON_HOLD" ]; then
     sudo apt-mark hold firefox firefox-locale-en
-else
+elif [ "\$GEM_FIREFOX_DEBIAN_VERSION" ]; then
     sudo apt-get update
     ffox_pol="\$(apt-cache policy firefox)"
     ffox_cur="\$(echo "\$ffox_pol" | grep '^  Installed:' | sed 's/.*: //g')"
@@ -158,6 +158,12 @@ else
         kill \$ffox_pid || true
         sleep 2
     fi
+else
+    sudo apt-get -y remove firefox
+    cd /usr/local
+    sudo wget http://ftp.mozilla.org/pub/firefox/releases/53.0/linux-x86_64/en-US/firefox-53.0.tar.bz2
+    sudo tar xvjf firefox-53.0.tar.bz2
+    sudo ln -s /usr/local/firefox/firefox /usr/local/bin/firefox
 fi
 EOF
 
@@ -332,14 +338,14 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-latest-linux64.tar.gz ; tar zxvf geckodriver-latest-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
-    ssh -t  $lxc_ip "sudo pip install -U selenium==3.0.1"
+    # ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-latest-linux64.tar.gz ; tar zxvf geckodriver-latest-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
+    ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-v0.16.1-linux64.tar.gz ; tar zxvf geckodriver-v0.16.1-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
+    ssh -t  $lxc_ip "sudo pip install -U selenium==3.4.1"
 
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
-    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-pyshp python-scipy python-numpy python-shapely python-mock python-requests python-docutils"
-
+    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-requests python-oq-engine"
 
     # to allow mixed openquake packages installation (from packages and from sources) an 'ad hoc' __init__.py injection.
     ssh -t  $lxc_ip "sudo echo \"try:
@@ -357,11 +363,10 @@ except ImportError:
     ssh -t  $lxc_ip "sudo service postgresql restart"
 
     repo_id="$GEM_GIT_REPO"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-moon || git clone --depth=1 $repo_id/oq-moon"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
-    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-building-class || git clone --depth=1 $repo_id/oq-platform-building-class"
+    for repo in $GEM_GIT_PACKAGE oq-moon oq-platform-ipt oq-platform-taxtweb oq-platform-building-class; do
+        ssh -t  $lxc_ip "git clone -b $branch_id $repo_id/$repo || git clone $repo_id/$repo"
+        ssh -t  $lxc_ip "cd $repo; echo 'Repository $repo : ' | tr -d '\n' ; git rev-parse --short HEAD ; cd -"
+    done
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -376,6 +381,7 @@ rem_sig_hand() {
 trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
     set -x
 fi
 cd ~/$GEM_GIT_PACKAGE
@@ -387,8 +393,6 @@ source platform-env/bin/activate
 # aren't tested anymore with Precise's stack, so --no-deps is
 # used. We need it for oq-platform-* too because pip tries to
 # resolve dependencies of dependencies too.
-pip install --no-deps openquake.hazardlib
-pip install --no-deps openquake.engine
 pip install --no-deps \$HOME/oq-moon
 pip install --no-deps -e \$HOME/oq-platform-ipt
 pip install --no-deps -e \$HOME/oq-platform-taxtweb
@@ -405,6 +409,7 @@ cd openquakeplatform
 if [ 1 -eq 1 ]; then
     # NEW METHOD: more simple to prevent hang
     fab --show=everything bootstrap
+    # sleep 40000 | true
 else
     # OLD METHOD
     nohup fab --show=everything bootstrap &
@@ -441,7 +446,7 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
-python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test #  || true
+python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test # || true
 # sleep 20000 || true
 # sleep 3
 fab stop
@@ -576,12 +581,14 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-latest-linux64.tar.gz ; tar zxvf geckodriver-latest-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
-    ssh -t  $lxc_ip "sudo pip install -U selenium==3.0.1"
+    # ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-latest-linux64.tar.gz ; tar zxvf geckodriver-latest-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
+    ssh -t  $lxc_ip "wget http://ftp.openquake.org/mirror/mozilla/geckodriver-v0.16.1-linux64.tar.gz ; tar zxvf geckodriver-v0.16.1-linux64.tar.gz ; sudo cp geckodriver /usr/local/bin"
+    ssh -t  $lxc_ip "sudo pip install -U selenium==3.4.1"
 
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
+    ssh -t  $lxc_ip "sudo apt-get install -y --force-yes python-oq-engine"
 
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
 
@@ -603,6 +610,7 @@ rem_sig_hand() {
 trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
     set -x
 fi
 
@@ -658,7 +666,7 @@ cd -
 
 
 #
-#  devtest_run <branch_id> - main function of source test
+#  prodtest_run <branch_id> - main function of source test
 #      <branch_id>    name of the tested branch
 #
 prodtest_run () {
