@@ -49,7 +49,7 @@ COPYRIGHT_HEADER = """\
  data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
  the GEM Foundation at: licensing@globalquakemodel.org
 
- More information on licensing: http://storage.globalquakemodel.org/licensing\n
+ More information on licensing: http://www.globalquakemodel.org/terms-of-use\n
 """
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"

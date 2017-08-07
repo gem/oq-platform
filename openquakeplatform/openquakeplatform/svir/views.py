@@ -65,7 +65,7 @@ COPYRIGHT_HEADER = u"""\
  data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
  the GEM Foundation at: licensing@globalquakemodel.org
 
- More information on licensing: http://storage.globalquakemodel.org/licensing
+ More information on licensing: http://www.globalquakemodel.org/terms-of-use
 """
 
 
