@@ -30,7 +30,7 @@ from openquakeplatform.exposure import util
 COPYRIGHT_HEADER = """\
  Copyright (C) 2014 GEM Foundation
 
- Contributions by: see http://www.globalquakemodel.org/contributors
+ Contributions by: see http://storage.globalquakemodel.org/contributors
 
  You may use this work under the terms of the CC-BY-NC-SA 3.0 (unported)
  [http://creativecommons.org/licenses/by-nc-sa/3.0/]
@@ -49,7 +49,7 @@ COPYRIGHT_HEADER = """\
  data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
  the GEM Foundation at: licensing@globalquakemodel.org
 
- More information on licensing: http://www.globalquakemodel.org/licensing\n
+ More information on licensing: http://storage.globalquakemodel.org/licensing\n
 """
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"

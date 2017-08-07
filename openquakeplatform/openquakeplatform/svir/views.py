@@ -46,7 +46,7 @@ from geonode.layers.views import (_resolve_layer,
 COPYRIGHT_HEADER = u"""\
  Copyright (C) 2014-2015 GEM Foundation
 
- Contributions by: see http://www.globalquakemodel.org/contributors
+ Contributions by: see http://storage.globalquakemodel.org/contributors
 
  You may use this work under the terms of the CC-BY-NC-SA 3.0 (unported)
  [http://creativecommons.org/licenses/by-nc-sa/3.0/]
@@ -65,7 +65,7 @@ COPYRIGHT_HEADER = u"""\
  data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
  the GEM Foundation at: licensing@globalquakemodel.org
 
- More information on licensing: http://www.globalquakemodel.org/licensing
+ More information on licensing: http://storage.globalquakemodel.org/licensing
 """
 
 
