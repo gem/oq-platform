@@ -341,14 +341,6 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh -t  $lxc_ip "wget \"http://ftp.openquake.org/common/selenium-deps\"
-    GEM_FIREFOX_VERSION=\"\$(dpkg-query --show -f '\${Version}' firefox)\"
-    . selenium-deps
-    wget \"http://ftp.openquake.org/mirror/mozilla/geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
-    tar zxvf \"geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
-    sudo cp geckodriver /usr/local/bin
-    sudo pip install -U selenium==\${GEM_SELENIUM_VERSION}"
-
     ssh -t  $lxc_ip "sudo apt-get install -y --force-yes build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev python-software-properties"
     ssh -t  $lxc_ip "sudo add-apt-repository -y ppa:openquake-automatic-team/latest-master"
     ssh -t  $lxc_ip "sudo apt-get update"
@@ -394,6 +386,15 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
+
+wget \"http://ftp.openquake.org/common/selenium-deps\"
+GEM_FIREFOX_VERSION=\"\$(dpkg-query --show -f '\${Version}' firefox)\"
+. selenium-deps
+wget \"http://ftp.openquake.org/mirror/mozilla/geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
+tar zxvf \"geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
+sudo cp geckodriver /usr/local/bin
+sudo pip install -U selenium==\${GEM_SELENIUM_VERSION}
+
 
 # Setup.py has requirements too high for Precise.
 # We do not want to change them because Engine and Hazardlib
