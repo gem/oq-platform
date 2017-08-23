@@ -160,9 +160,11 @@ elif [ "\$GEM_FIREFOX_DEBIAN_VERSION" ]; then
     fi
 else
     sudo apt-get -y remove firefox
+    wget "http://ftp.openquake.org/common/selenium-deps"
+    . ./selenium-deps
     cd /usr/local
-    sudo wget http://ftp.mozilla.org/pub/firefox/releases/55.0b9/linux-x86_64/en-US/firefox-55.0b9.tar.bz2
-    sudo tar xvjf firefox-55.0b9.tar.bz2
+    sudo wget http://ftp.mozilla.org/pub/firefox/releases/${GEM_NATIVE_FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
+    sudo tar xvjf firefox-${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
     sudo rm -f /usr/local/bin/firefox || true
     sudo ln -s /usr/local/firefox/firefox /usr/local/bin/firefox
 fi
@@ -587,7 +589,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
     ssh -t  $lxc_ip "wget \"http://ftp.openquake.org/common/selenium-deps\"
-    GEM_FIREFOX_VERSION=\"\$(dpkg-query --show -f '\${Version}' firefox)\"
+    GEM_FIREFOX_VERSION=\"\$(firefox --version | sed 's/^.* //g')\"
     . selenium-deps
     wget \"http://ftp.openquake.org/mirror/mozilla/geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
     tar zxvf \"geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
