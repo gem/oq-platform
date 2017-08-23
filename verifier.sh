@@ -163,8 +163,8 @@ else
     wget "http://ftp.openquake.org/common/selenium-deps"
     . ./selenium-deps
     cd /usr/local
-    sudo wget http://ftp.mozilla.org/pub/firefox/releases/${GEM_NATIVE_FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
-    sudo tar xvjf firefox-${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
+    sudo wget http://ftp.mozilla.org/pub/firefox/releases/\${GEM_NATIVE_FIREFOX_VERSION}/linux-x86_64/en-US/firefox-\${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
+    sudo tar xvjf firefox-\${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
     sudo rm -f /usr/local/bin/firefox || true
     sudo ln -s /usr/local/firefox/firefox /usr/local/bin/firefox
 fi
