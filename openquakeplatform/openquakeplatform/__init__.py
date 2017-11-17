@@ -15,5 +15,5 @@
 
 import version
 
-__version__ = '1.10.0'
+__version__ = '1.10.1'
 __version__ += version.git_suffix(__file__)
