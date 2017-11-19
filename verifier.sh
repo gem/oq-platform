@@ -450,8 +450,8 @@ fab --show=everything test
 # download and install vulnerability development data
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
-
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
+export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test # || true
@@ -663,6 +663,7 @@ sudo cp /tmp/new_init.py \"\${init_file}\" ;
 sudo python -m py_compile \"\${init_file}\"
 
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
+export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true
