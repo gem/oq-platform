@@ -8,4 +8,3 @@ def setup_package():
 
 def teardown_package():
     platform_del()
-
