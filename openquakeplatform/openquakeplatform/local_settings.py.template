@@ -207,8 +207,13 @@ PYCSW = {
     }
 }
 
-INSTALLED_APPS = (
+STANDALONE_APPS = (
+    'openquakeplatform_ipt',
+    'openquakeplatform_taxtweb',
+    'openquakeplatform_building_class',
+)
 
+INSTALLED_APPS = (
     # Apps bundled with Django
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -284,16 +289,11 @@ INSTALLED_APPS = (
     'openquakeplatform.hazus',
     'openquakeplatform.hrde',
     'openquakeplatform.irv',
-
-    'openquakeplatform_ipt',
-    'openquakeplatform_taxtweb',
-    'openquakeplatform_building_class',
-
+) + STANDALONE_APPS + (
     # gemecd
     'openquakeplatform.weblib',
     'openquakeplatform.econd',
     'openquakeplatform.gemecdwebsite',
-
 )
 
 MIDDLEWARE_CLASSES = (
