@@ -678,7 +678,7 @@ export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import S
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true
-# sleep 40000 || true
+sleep 80000 || true
 sleep 3
 cd -
 "
