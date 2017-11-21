@@ -614,6 +614,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-building-class || git clone --depth=1 $repo_id/oq-platform-building-class"
+    ssh -t $lxc_ip "sudo adduser \$USER www-data"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -669,7 +670,10 @@ ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
 
 # to be able to add files to server side IPT storage we change data folders permissions
 sudo mkdir -p /var/www/openquake/platform/data/1/ipt
-sudo chmod 777 \$(find /var/www/openquake/platform -type d)
+sudo chmod 775 \$(find /var/www/openquake/platform -type d)
+sudo chmod 664 \$(find /var/www/openquake/platform -type f)
+sudo chmod g+s \$(find /var/www/openquake/platform -type d)
+
 export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
