@@ -663,7 +663,12 @@ sudo cp /tmp/new_init.py \"\${init_file}\" ;
 sudo python -m py_compile \"\${init_file}\"
 
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
+
+# link system-wide local_settings.py locally
 ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
+
+# to be able to add files to server side IPT storage we change data folders permissions
+chmod 777 -R \$(find /var/www/openquake/platform -type d)
 export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
