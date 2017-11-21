@@ -673,7 +673,6 @@ sudo chmod 775 /var/www/openquake/platform
 sudo chmod g+s /var/www/openquake/platform
 sudo mkdir -p /var/www/openquake/platform/data/1/ipt
 sudo chmod 775 \$(find /var/www/openquake/platform/data -type d)
-sudo chmod 664 \$(find /var/www/openquake/platform/data -type f)
 sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
 export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
