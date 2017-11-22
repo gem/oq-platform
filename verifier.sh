@@ -677,7 +677,8 @@ sudo chmod g+s /var/www/openquake/platform
 sudo mkdir -p /var/www/openquake/platform/data/1/ipt
 sudo chmod 775 \$(find /var/www/openquake/platform/data -type d)
 sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
-export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
+# export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
+export GEM_OPT_PACKAGES=\"openquakeplatform_ipt\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test || true
