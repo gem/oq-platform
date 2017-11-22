@@ -683,7 +683,7 @@ sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
 
 sudo mkdir -p /var/www/openquake/platform/data/1/ipt
 sudo chmod 0775 /var/www/openquake/platform/data/1/ipt
-sudo chown www-data /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
+sudo chown www-data.www-data /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
 sudo chmod 0775 /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
 
 # export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
