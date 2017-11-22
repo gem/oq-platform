@@ -671,14 +671,20 @@ ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
 # add www-data group permission to the current session
 newgrp www-data
 
+umask 002
+sudo mkdir -p /var/www/openquake/platform/data
+
 # to be able to add files to server side IPT storage we change data folders permissions
 sudo chmod 775 /var/www/openquake/platform
 sudo chmod g+s /var/www/openquake/platform
-umask 002
-sudo mkdir -p /var/www/openquake/platform/data/1/ipt
-sudo chown www-data /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
+
 sudo chmod 775 \$(find /var/www/openquake/platform/data -type d)
 sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
+
+sudo mkdir -p /var/www/openquake/platform/data/1/ipt
+sudo chown www-data /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
+sudo chmod 0775 /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
+
 # export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 export GEM_OPT_PACKAGES=\"openquakeplatform_ipt\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
