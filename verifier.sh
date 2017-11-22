@@ -668,6 +668,9 @@ export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 # link system-wide local_settings.py locally
 ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
 
+# add www-data group permission to the current session
+newgrp www-data
+
 # to be able to add files to server side IPT storage we change data folders permissions
 sudo chmod 775 /var/www/openquake/platform
 sudo chmod g+s /var/www/openquake/platform
