@@ -674,7 +674,9 @@ newgrp www-data
 # to be able to add files to server side IPT storage we change data folders permissions
 sudo chmod 775 /var/www/openquake/platform
 sudo chmod g+s /var/www/openquake/platform
+umask 002
 sudo mkdir -p /var/www/openquake/platform/data/1/ipt
+chown www-data /var/www/openquake/platform/data /var/www/openquake/platform/data/1 /var/www/openquake/platform/data/1/ipt
 sudo chmod 775 \$(find /var/www/openquake/platform/data -type d)
 sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
 # export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
