@@ -614,7 +614,6 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-ipt || git clone --depth=1 $repo_id/oq-platform-ipt"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-taxtweb || git clone --depth=1 $repo_id/oq-platform-taxtweb"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/oq-platform-building-class || git clone --depth=1 $repo_id/oq-platform-building-class"
-    ssh -t $lxc_ip "sudo adduser \$USER www-data"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
@@ -667,9 +666,6 @@ export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
 
 # link system-wide local_settings.py locally
 ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
-
-# add www-data group permission to the current session
-newgrp www-data
 
 sudo service apache2 stop
 sleep 10
