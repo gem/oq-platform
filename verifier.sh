@@ -671,6 +671,9 @@ ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
 # add www-data group permission to the current session
 newgrp www-data
 
+sudo service apache2 stop
+sleep 10
+
 umask 002
 sudo mkdir -p /var/www/openquake/platform/data/1/ipt
 sudo chown -R www-data.www-data /var/www/openquake/platform/data
@@ -681,6 +684,9 @@ sudo chmod g+s /var/www/openquake/platform
 
 sudo chmod 0775 \$(find /var/www/openquake/platform/data -type d)
 sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
+
+sudo service apache2 start
+sleep 10
 
 # export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 export GEM_OPT_PACKAGES=\"openquakeplatform_ipt\"
