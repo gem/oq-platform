@@ -15,6 +15,8 @@ framework.
 """
 import os
 
+# moving umask from 022 to 002 add writablility for process owner group
+# on new files and directories and allow tests to create filesystem fixtures
 os.umask(002)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
