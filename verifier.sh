@@ -450,8 +450,8 @@ fab --show=everything test
 # download and install vulnerability development data
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
-
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
+export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 cp openquakeplatform/test/config/moon_config.py.tmpl openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml openquakeplatform/test # || true
@@ -663,6 +663,28 @@ sudo cp /tmp/new_init.py \"\${init_file}\" ;
 sudo python -m py_compile \"\${init_file}\"
 
 export PYTHONPATH=\$(pwd):\$(pwd)/openquakeplatform/test/config
+
+# link system-wide local_settings.py locally
+ln -sf /etc/openquake/platform/local_settings.py openquakeplatform/
+
+sudo service apache2 stop
+sleep 10
+
+umask 002
+sudo mkdir -p /var/www/openquake/platform/data/1/ipt
+sudo chown -R www-data.www-data /var/www/openquake/platform/data
+
+# to be able to add files to server side IPT storage we change data folders permissions
+sudo chmod 0775 /var/www/openquake/platform
+sudo chmod g+s /var/www/openquake/platform
+
+sudo chmod 0775 \$(find /var/www/openquake/platform/data -type d)
+sudo chmod g+s \$(find /var/www/openquake/platform/data -type d)
+
+sudo service apache2 start
+sleep 10
+
+export GEM_OPT_PACKAGES=\"\$(python -c 'from openquakeplatform.settings import STANDALONE_APPS ; print(\",\".join(x for x in STANDALONE_APPS))')\"
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config/moon_config.py.tmpl > openquakeplatform/test/config/moon_config.py
 export DISPLAY=:1
 python -m openquake.moon.nose_runner --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml openquakeplatform/test # || true

@@ -1,18 +1,10 @@
-from openquake.moon import Moon
-import atexit
+from openquake.moon import platform_get, platform_del
 
-pla = Moon(jqheavy=True)
-pla.primary_set()
 
 def setup_package():
+    pla = platform_get()
     pla.init()
 
-# turned off because nose run it at the wrong time
-#def teardown_package():
-#    print "teardown_package here"
-#    pla.fini()
 
-def my_at_exit():
-    pla.fini()
-
-atexit.register(my_at_exit)
+def teardown_package():
+    platform_del()
