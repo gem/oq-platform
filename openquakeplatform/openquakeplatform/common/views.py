@@ -7,7 +7,7 @@ from openquakeplatform.settings import INSTALLED_APPS
 
 
 def versions(request, **kwargs):
-    page_title = 'Applications Versions'
+    page_title = 'Application Versions'
 
     apps_list = []
     for app_name in INSTALLED_APPS:
