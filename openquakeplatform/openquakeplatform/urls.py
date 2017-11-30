@@ -1,6 +1,5 @@
 from django.conf.urls import include, patterns, url
 from django.conf import settings
-from django.http import HttpResponseBadRequest
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
@@ -19,8 +18,7 @@ import openquakeplatform.gemecdwebsite.uploadnrml.urls
 import openquakeplatform.gemecdwebsite.lookup.urls
 import photologue.urls
 
-
-from django.conf import settings
+import openquakeplatform.common.views as oq_common_views
 
 import geonode.proxy.urls
 
@@ -112,6 +110,7 @@ urlpatterns = patterns('',
     url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
     url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
+    url(r'^versions/$', oq_common_views.versions, name='oq_common_versions'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
