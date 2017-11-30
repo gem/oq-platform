@@ -18,13 +18,13 @@ def versions(request, **kwargs):
         header_info = getattr(app, 'header_info', None)
         vers = getattr(app, '__version__', None)
 
+        if vers is None:
+            continue
+
         if header_info:
             name = header_info['title']
         else:
             name = app_name
-
-        if vers is None:
-            continue
 
         apps_list.append({'name': name, 'vers': vers})
 

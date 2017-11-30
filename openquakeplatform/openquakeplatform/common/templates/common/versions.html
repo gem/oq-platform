@@ -42,8 +42,8 @@
   <h2 class="page-title">{{page_title}}</h2>
   <div class="versions_subcontent">
     <table class="versions_table">
-      {% for item in apps_list %}
-      <tr><td>{{ item.name }}</td><td class="second">{{ item.vers }}</td></tr>
+      {% for app in apps_list %}
+      <tr><td>{{ app.name }}</td><td class="second">{{ app.vers }}</td></tr>
       {% endfor %}
     </table>
   </div>
