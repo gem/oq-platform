@@ -1,7 +1,7 @@
 OpenQuake Platform
 ==================
 
-![OpenQuake Logo](https://github.com/gem/oq-infrastructure/tree/master/logos/oq-logo.png)
+![OpenQuake Logo](https://github.com/gem/oq-infrastructure/blob/master/logos/oq-logo.png)
 
 A web-based risk assessment platform which offers an interactive environment for modeling, viewing, exploring, and managing earthquake risk.
 
