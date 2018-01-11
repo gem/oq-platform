@@ -55,6 +55,7 @@
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
 
+
 if [ $GEM_SET_DEBUG ]; then
     set -x
     export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
