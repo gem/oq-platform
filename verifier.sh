@@ -160,8 +160,8 @@ elif [ "\$GEM_FIREFOX_DEBIAN_VERSION" ]; then
     fi
 else
     sudo apt-get -y remove firefox
-    wget "http://ftp.openquake.org/common/selenium-deps"
-    . ./selenium-deps
+    wget "http://ftp.openquake.org/common/selenium-deps-platform2"
+    . ./selenium-deps-platform2
     cd /usr/local
     sudo wget http://ftp.mozilla.org/pub/firefox/releases/\${GEM_NATIVE_FIREFOX_VERSION}/linux-x86_64/en-US/firefox-\${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
     sudo tar xvjf firefox-\${GEM_NATIVE_FIREFOX_VERSION}.tar.bz2
@@ -387,9 +387,9 @@ cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
 
-wget \"http://ftp.openquake.org/common/selenium-deps\"
+wget \"http://ftp.openquake.org/common/selenium-deps-platform2\"
 GEM_FIREFOX_VERSION=\"\$(dpkg-query --show -f '\${Version}' firefox)\"
-. selenium-deps
+. selenium-deps-platform2
 wget \"http://ftp.openquake.org/mirror/mozilla/geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
 tar zxvf \"geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
 sudo cp geckodriver /usr/local/bin
@@ -589,9 +589,9 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh -t  $lxc_ip "wget \"http://ftp.openquake.org/common/selenium-deps\"
+    ssh -t  $lxc_ip "wget \"http://ftp.openquake.org/common/selenium-deps-platform2\"
     GEM_FIREFOX_VERSION=\"\$(firefox --version | sed 's/^.* //g')\"
-    . selenium-deps
+    . selenium-deps-platform2
     wget \"http://ftp.openquake.org/mirror/mozilla/geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
     tar zxvf \"geckodriver-v\${GEM_GECKODRIVER_VERSION}-linux64.tar.gz\"
     sudo cp geckodriver /usr/local/bin
