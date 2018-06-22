@@ -338,6 +338,7 @@ _devtest_innervm_run () {
 
     ssh -t  $lxc_ip "rm -f ssh.log"
 
+    ssh -t  $lxc_ip "sudo service cron stop"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
@@ -586,6 +587,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "getent hosts oq-platform.localdomain"
     ssh -t  $lxc_ip "rm -f ssh.log"
 
+    ssh -t  $lxc_ip "sudo service cron stop"
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
